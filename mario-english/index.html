@@ -109,22 +109,126 @@ const ALL_WORDS = {
          {w:'banana',p:'/bəˈnɑːnə/',icon:'🍌',s:'It is a ___.',o:['球','男孩','婴儿','香蕉'],a:'香蕉'},
          {w:'ball',p:'/bɔːl/',icon:'⚽',s:'It is a ___.',o:['男孩','香蕉','婴儿','球'],a:'球'},
          {w:'boy',p:'/bɔɪ/',icon:'👦',s:'It is a ___.',o:['香蕉','球','婴儿','男孩'],a:'男孩'}],
+  '1-3':[{w:'cow',p:'/kaʊ/',icon:'🐄',s:'A ___ gives us milk.',o:['狗','鸭子','母牛','汽车'],a:'母牛'},
+         {w:'car',p:'/kɑːr/',icon:'🚗',s:'My dad has a red ___.',o:['汽车','书桌','大象','蛋糕'],a:'汽车'},
+         {w:'cake',p:'/keɪk/',icon:'🎂',s:'I like to eat ___.',o:['鸡蛋','蛋糕','糖果','母牛'],a:'蛋糕'},
+         {w:'clock',p:'/klɒk/',icon:'🕐',s:'The ___ shows the time.',o:['时钟','爸爸','门','蛋糕'],a:'时钟'},
+         {w:'candy',p:'/ˈkændi/',icon:'🍬',s:'I like to eat ___.',o:['糖果','母牛','鸡蛋','时钟'],a:'糖果'}],
+  '1-4':[{w:'dad',p:'/dæd/',icon:'👨',s:'My ___ is very tall.',o:['鸭子','爸爸','狗','门'],a:'爸爸'},
+         {w:'duck',p:'/dʌk/',icon:'🦆',s:'A ___ can swim in water.',o:['狗','鸭子','书桌','爸爸'],a:'鸭子'},
+         {w:'desk',p:'/desk/',icon:'🪑',s:'I sit at my ___ to study.',o:['书桌','门','大象','鸭子'],a:'书桌'},
+         {w:'door',p:'/dɔːr/',icon:'🚪',s:'Please open the ___.',o:['狗','门','爸爸','书桌'],a:'门'},
+         {w:'dog',p:'/dɒɡ/',icon:'🐕',s:'I have a pet ___.',o:['大象','狗','鸭子','门'],a:'狗'}],
+  '1-5':[{w:'egg',p:'/eɡ/',icon:'🥚',s:'I eat an ___ for breakfast.',o:['鸡蛋','大象','床','糖果'],a:'鸡蛋'},
+         {w:'elephant',p:'/ˈelɪfənt/',icon:'🐘',s:'The ___ has a long nose.',o:['鸡蛋','大象','床','狗'],a:'大象'},
+         {w:'bed',p:'/bed/',icon:'🛏️',s:'I go to ___ at night.',o:['床','鸡蛋','大象','糖果'],a:'床'}],
+  '2-6':[{w:'fish',p:'/fɪʃ/',icon:'🐟',s:'I can see a ___ in the water.',o:['狐狸','鱼','风扇','青蛙'],a:'鱼'},
+         {w:'fan',p:'/fæn/',icon:'🌀',s:'The ___ makes me cool.',o:['风扇','鱼','游戏','走'],a:'风扇'},
+         {w:'fox',p:'/fɒks/',icon:'🦊',s:'The ___ has a big tail.',o:['狐狸','青蛙','鱼','风扇'],a:'狐狸'},
+         {w:'frog',p:'/frɒɡ/',icon:'🐸',s:'The ___ can jump very high.',o:['走','青蛙','狐狸','游戏'],a:'青蛙'}],
+  '2-7':[{w:'girl',p:'/ɡɜːrl/',icon:'👧',s:'She is a ___.',o:['好','游戏','女孩','走'],a:'女孩'},
+         {w:'game',p:'/ɡeɪm/',icon:'🎮',s:'Let\'s play a ___.',o:['游戏','走','女孩','好'],a:'游戏'},
+         {w:'go',p:'/ɡoʊ/',icon:'🚶',s:'Let\'s ___ to the park.',o:['女孩','走','游戏','好'],a:'走'},
+         {w:'good',p:'/ɡʊd/',icon:'👍',s:'You did a ___ job.',o:['好','女孩','游戏','走'],a:'好'}],
+  '2-8':[{w:'hat',p:'/hæt/',icon:'🎩',s:'I wear a ___ on my head.',o:['手','帽子','头','开心'],a:'帽子'},
+         {w:'hair',p:'/heər/',icon:'💇',s:'She has long ___.',o:['帽子','头发','手','头'],a:'头发'},
+         {w:'head',p:'/hed/',icon:'🧑',s:'I have a hat on my ___.',o:['头','开心','头发','帽子'],a:'头'},
+         {w:'hand',p:'/hænd/',icon:'✋',s:'I write with my ___.',o:['头发','手','开心','头'],a:'手'},
+         {w:'happy',p:'/ˈhæpi/',icon:'😊',s:'I feel very ___ today.',o:['头','开心','手','帽子'],a:'开心'}],
+  '2-9':[{w:'igloo',p:'/ˈɪɡluː/',icon:'🏠',s:'An ___ is made of ice.',o:['冰屋','在里面','大的','小孩'],a:'冰屋'},
+         {w:'in',p:'/ɪn/',icon:'⬇️',s:'The cat is ___ the box.',o:['小孩','在里面','冰屋','大的'],a:'在里面'},
+         {w:'kid',p:'/kɪd/',icon:'🧒',s:'I am a ___.',o:['大的','小孩','在里面','冰屋'],a:'小孩'},
+         {w:'big',p:'/bɪɡ/',icon:'🔤',s:'That is a ___ tree.',o:['在里面','大的','小孩','冰屋'],a:'大的'}],
+  '2-10':[{w:'juice',p:'/dʒuːs/',icon:'🧃',s:'I want to drink ___.',o:['果汁','夹克','跳','大的'],a:'果汁'},
+         {w:'jacket',p:'/ˈdʒækɪt/',icon:'🧥',s:'I wear a ___ when it\'s cold.',o:['跳','夹克','果汁','小孩'],a:'夹克'},
+         {w:'jump',p:'/dʒʌmp/',icon:'🦘',s:'I can ___ very high.',o:['夹克','跳','果汁','好的'],a:'跳'}],
+  '3-11':[{w:'koala',p:'/koʊˈɑːlə/',icon:'🐨',s:'The ___ lives in a tree.',o:['koala','kite','kick','kitchen'],a:'koala'},
+         {w:'kite',p:'/kaɪt/',icon:'🪁',s:'I fly a ___ in the sky.',o:['kick','kite','koala','kitchen'],a:'kite'},
+         {w:'kick',p:'/kɪk/',icon:'⚽',s:'I can ___ the ball.',o:['kitchen','kick','koala','lion'],a:'kick'},
+         {w:'kitchen',p:'/ˈkɪtʃɪn/',icon:'🍳',s:'Mom is in the ___.',o:['kitchen','kite','lion','milk'],a:'kitchen'}],
+  '3-12':[{w:'lion',p:'/ˈlaɪən/',icon:'🦁',s:'The ___ is the king.',o:['lion','lamp','lemon','look'],a:'lion'},
+         {w:'lamp',p:'/læmp/',icon:'💡',s:'I turn on the ___.',o:['lamp','lion','look','milk'],a:'lamp'},
+         {w:'lemon',p:'/ˈlemən/',icon:'🍋',s:'The ___ is yellow.',o:['lemon','lamp','lion','moon'],a:'lemon'},
+         {w:'look',p:'/lʊk/',icon:'👀',s:'___ at that bird.',o:['look','lemon','milk','lamp'],a:'look'}],
+  '3-13':[{w:'milk',p:'/mɪlk/',icon:'🥛',s:'I drink ___ every day.',o:['milk','moon','mouse','monkey'],a:'milk'},
+         {w:'moon',p:'/muːn/',icon:'🌙',s:'The ___ is in the sky.',o:['monkey','moon','milk','neck'],a:'moon'},
+         {w:'mouse',p:'/maʊs/',icon:'🐭',s:'The ___ likes cheese.',o:['mouse','milk','neck','nose'],a:'mouse'},
+         {w:'monkey',p:'/ˈmʌŋki/',icon:'🐒',s:'The ___ likes bananas.',o:['monkey','mouse','nose','orange'],a:'monkey'}],
+  '3-14':[{w:'neck',p:'/nek/',icon:'🧑',s:'I have a sore ___.',o:['neck','nose','name','number'],a:'neck'},
+         {w:'nose',p:'/noʊz/',icon:'👃',s:'I smell with my ___.',o:['nose','name','neck','octopus'],a:'nose'},
+         {w:'name',p:'/neɪm/',icon:'📛',s:'My ___ is Tom.',o:['name','neck','orange','pen'],a:'name'},
+         {w:'number',p:'/ˈnʌmbər/',icon:'🔢',s:'What is your phone ___.',o:['number','nose','pen','pencil'],a:'number'}],
+  '3-15':[{w:'orange',p:'/ˈɒrɪndʒ/',icon:'🍊',s:'I eat an ___.',o:['orange','octopus','ox','hot'],a:'orange'},
+         {w:'octopus',p:'/ˈɒktəpəs/',icon:'🐙',s:'The ___ has eight legs.',o:['octopus','ox','orange','pig'],a:'octopus'},
+         {w:'ox',p:'/ɒks/',icon:'🐂',s:'The ___ is a big animal.',o:['ox','orange','pencil','panda'],a:'ox'},
+         {w:'hot',p:'/hɒt/',icon:'🔥',s:'The soup is ___.',o:['hot','octopus','ox','pig'],a:'hot'}],
+  '3-16':[{w:'pen',p:'/pen/',icon:'🖊️',s:'I write with a ___.',o:['pen','pencil','pig','panda'],a:'pen'},
+         {w:'pencil',p:'/ˈpensəl/',icon:'✏️',s:'I draw with a ___.',o:['pencil','pen','pig','panda'],a:'pencil'},
+         {w:'pig',p:'/pɪɡ/',icon:'🐷',s:'The ___ is pink.',o:['pig','panda','pen','queen'],a:'pig'},
+         {w:'panda',p:'/ˈpændə/',icon:'🐼',s:'The ___ eats bamboo.',o:['panda','pig','queen','rabbit'],a:'panda'}],
+  '4-17':[{w:'queen',p:'/kwiːn/',icon:'👑',s:'The ___ has a crown.',o:['queen','quilt','question','rabbit'],a:'queen'},
+         {w:'quilt',p:'/kwɪlt/',icon:'🛏️',s:'I sleep under a ___.',o:['quilt','queen','question','rice'],a:'quilt'},
+         {w:'question',p:'/ˈkwestʃən/',icon:'❓',s:'I have a ___.',o:['question','queen','red','run'],a:'question'}],
+  '4-18':[{w:'rabbit',p:'/ˈræbɪt/',icon:'🐰',s:'The ___ has long ears.',o:['rabbit','rice','red','run'],a:'rabbit'},
+         {w:'rice',p:'/raɪs/',icon:'🍚',s:'I eat ___ for lunch.',o:['rice','red','rabbit','sun'],a:'rice'},
+         {w:'red',p:'/red/',icon:'🔴',s:'The apple is ___.',o:['red','rice','six','snake'],a:'red'},
+         {w:'run',p:'/rʌn/',icon:'🏃',s:'I can ___ very fast.',o:['run','red','school','tiger'],a:'run'}],
+  '4-19':[{w:'sun',p:'/sʌn/',icon:'☀️',s:'The ___ is very bright.',o:['sun','six','snake','school'],a:'sun'},
+         {w:'six',p:'/sɪks/',icon:'6️⃣',s:'I have ___ apples.',o:['six','sun','snake','tiger'],a:'six'},
+         {w:'snake',p:'/sneɪk/',icon:'🐍',s:'The ___ is very long.',o:['snake','six','taxi','tree'],a:'snake'},
+         {w:'school',p:'/skuːl/',icon:'🏫',s:'I go to ___.',o:['school','sun','snake','tiger'],a:'school'}],
+  '4-20':[{w:'tiger',p:'/ˈtaɪɡər/',icon:'🐯',s:'The ___ has stripes.',o:['tiger','ten','taxi','tree'],a:'tiger'},
+         {w:'ten',p:'/ten/',icon:'🔟',s:'I have ___ fingers.',o:['ten','tiger','taxi','umbrella'],a:'ten'},
+         {w:'taxi',p:'/ˈtæksi/',icon:'🚕',s:'I take a ___ to go home.',o:['taxi','ten','uncle','umbrella'],a:'taxi'},
+         {w:'tree',p:'/triː/',icon:'🌳',s:'The ___ is very tall.',o:['tree','tiger','taxi','ten'],a:'tree'}],
+  '4-21':[{w:'umbrella',p:'/ʌmˈbrelə/',icon:'☂️',s:'I use an ___ when it rains.',o:['umbrella','uncle','under','violin'],a:'umbrella'},
+         {w:'uncle',p:'/ˈʌŋkəl/',icon:'👨',s:'My ___ is my mom\'s brother.',o:['uncle','umbrella','under','vest'],a:'uncle'},
+         {w:'under',p:'/ˈʌndər/',icon:'⬇️',s:'The ball is ___ the bed.',o:['under','uncle','umbrella','violin'],a:'under'}],
+  '5-22':[{w:'violin',p:'/vaɪəˈlɪn/',icon:'🎻',s:'I play the ___.',o:['violin','van','vest','water'],a:'violin'},
+         {w:'van',p:'/væn/',icon:'🚐',s:'We go camping in a ___.',o:['van','vest','violin','wolf'],a:'van'},
+         {w:'vest',p:'/vest/',icon:'🦺',s:'I wear a ___ over my shirt.',o:['vest','van','water','woman'],a:'vest'}],
+  '5-23':[{w:'water',p:'/ˈwɔːtər/',icon:'💧',s:'I drink ___ every day.',o:['water','window','wolf','woman'],a:'water'},
+         {w:'window',p:'/ˈwɪndoʊ/',icon:'🪟',s:'I look out the ___.',o:['window','water','woman','yes'],a:'window'},
+         {w:'wolf',p:'/wʊlf/',icon:'🐺',s:'The ___ howls at night.',o:['wolf','woman','window','yellow'],a:'wolf'},
+         {w:'woman',p:'/ˈwʊmən/',icon:'👩',s:'She is a ___.',o:['woman','wolf','water','zero'],a:'woman'}],
+  '5-24':[{w:'box',p:'/bɒks/',icon:'📦',s:'I put toys in the ___.',o:['box','fox','ax','yellow'],a:'box'},
+         {w:'fox',p:'/fɒks/',icon:'🦊',s:'The ___ is very clever.',o:['fox','ax','box','yo-yo'],a:'fox'},
+         {w:'ax',p:'/æks/',icon:'🪓',s:'He cuts wood with an ___.',o:['ax','box','fox','yes'],a:'ax'}],
+  '5-25':[{w:'yellow',p:'/ˈjeloʊ/',icon:'🟡',s:'The sun is ___.',o:['yellow','yo-yo','yes','zoo'],a:'yellow'},
+         {w:'yo-yo',p:'/ˈjoʊ joʊ/',icon:'🪀',s:'I play with a ___.',o:['yo-yo','yes','zebra','zoo'],a:'yo-yo'},
+         {w:'yes',p:'/jes/',icon:'✅',s:'___ , I can do it.',o:['yes','yellow','yo-yo','zero'],a:'yes'}],
+  '5-26':[{w:'zoo',p:'/zuː/',icon:'🦓',s:'We go to the ___.',o:['zoo','zebra','zero','yes'],a:'zoo'},
+         {w:'zebra',p:'/ˈziːbrə/',icon:'🦓',s:'The ___ has black and white stripes.',o:['zebra','zoo','zero','yellow'],a:'zebra'},
+         {w:'zero',p:'/ˈzɪəroʊ/',icon:'0️⃣',s:'One minus one is ___.',o:['zero','zebra','zoo','yes'],a:'zero'}],
 };
-// Boss questions for L2 (mix L1+L2 words)
-const BOSS_QUESTIONS = [
-  {s:'I want to eat an ___.',hint:'🍎 苹果 / 🐱 猫 / 🏠  / ⚽ 球',o:['apple','cat','ball','boy'],a:'apple',icons:['🍎','🐱','⚽','👦']},
-  {s:'It is a ___.',hint:'🍌 / 🦇 / 🐱 / 👶',o:['banana','bat','cat','baby'],a:'banana',icons:['🍌','🦇','🐱','👶']},
-  {s:'The ___ is sleeping on the sofa.',hint:'🐱 猫 / 🎒 包 / 👦 男孩 / 🍎 苹果',o:['cat','bag','boy','apple'],a:'cat',icons:['🐱','🎒','👦','🍎']},
-];
-
-// Level config
-const LEVELS = {};
-ALL_WORDS['1-1'].forEach((wd,i)=>{
-  LEVELS['1-1']={words:ALL_WORDS['1-1'],quizzes:[{x:[400,1000,1600,2200][i]}],hasBoss:false,worldName:'🌿 草地王国'};
-});
-ALL_WORDS['1-2'].forEach((wd,i)=>{
-  LEVELS['1-2']={words:ALL_WORDS['1-2'],quizzes:[{x:[550,1150,1650,2200][i]}],hasBoss:true,worldName:'🌿 草地王国'};
-});
+// Boss questions per world
+const BOSS_QUESTIONS = {
+  '1':[
+    {s:'I want to eat an ___.',hint:'🍎',o:['apple','cat','ball','boy'],a:'apple',icons:['🍎','🐱','⚽','👦']},
+    {s:'The ___ is sleeping on the sofa.',hint:'🐱',o:['cat','bag','baby','bat'],a:'cat',icons:['🐱','🎒','👶','🦇']},
+    {s:'It is a ___.',hint:'🍌',o:['banana','ball','boy','baby'],a:'banana',icons:['🍌','⚽','👦','👶']},
+  ],
+  '2':[
+    {s:'The ___ can jump very high.',hint:'🐸',o:['frog','fish','fox','fan'],a:'frog',icons:['🐸','🐟','🦊','🌀']},
+    {s:'She is a ___.',hint:'👧',o:['girl','game','go','good'],a:'girl',icons:['👧','🎮','🚶','👍']},
+    {s:'I wear a ___ on my head.',hint:'🎩',o:['hat','hair','head','hand'],a:'hat',icons:['🎩','💇','🧑','✋']},
+  ],
+  '3':[
+    {s:'The ___ lives in a tree.',hint:'🐨',o:['koala','kite','lion','monkey'],a:'koala',icons:['🐨','🪁','🦁','🐒']},
+    {s:'I drink ___ every day.',hint:'🥛',o:['milk','moon','mouse','water'],a:'milk',icons:['🥛','🌙','🐭','💧']},
+    {s:'I write with a ___.',hint:'🖊️',o:['pen','pencil','pig','panda'],a:'pen',icons:['🖊️','✏️','🐷','🐼']},
+  ],
+  '4':[
+    {s:'The ___ has a crown.',hint:'👑',o:['queen','quilt','question','rabbit'],a:'queen',icons:['👑','🛏️','❓','🐰']},
+    {s:'The ___ is very bright.',hint:'☀️',o:['sun','six','snake','school'],a:'sun',icons:['☀️','6️⃣','🐍','🏫']},
+    {s:'The ___ has stripes.',hint:'🐯',o:['tiger','ten','taxi','tree'],a:'tiger',icons:['🐯','🔟','🚕','🌳']},
+  ],
+  '5':[
+    {s:'I play the ___.',hint:'🎻',o:['violin','van','vest','water'],a:'violin',icons:['🎻','🚐','🦺','💧']},
+    {s:'The ___ howls at night.',hint:'🐺',o:['wolf','woman','window','water'],a:'wolf',icons:['🐺','👩','🪟','💧']},
+    {s:'We go to the ___.',hint:'🦓',o:['zoo','zebra','zero','yellow'],a:'zoo',icons:['🦓','🦓','0️⃣','🟡']},
+  ],
+};
 
 // ===== PRONUNCIATION =====
 const synth=window.speechSynthesis;let soundOn=true;
@@ -292,7 +396,7 @@ function answerWord(choice,btn){
 
 // ===== BOSS CARD =====
 function showBossQuestion(){
-  scene='quiz';const q=BOSS_QUESTIONS[bossQIdx%BOSS_QUESTIONS.length];
+  scene='quiz';const worldQs=BOSS_QUESTIONS[curLevel.world]||BOSS_QUESTIONS['1'];const q=worldQs[bossQIdx%worldQs.length];
   const correctIcon=q.icons[q.o.indexOf(q.a)];
   document.getElementById('b-hint').textContent=correctIcon;
   document.getElementById('b-sentence').innerHTML=q.s.replace('___','<b>___</b>');
@@ -305,14 +409,14 @@ function showBossQuestion(){
   speak(q.s.replace('___',q.a),0.7);
 }
 function answerBoss(choice,btn){
-  const q=BOSS_QUESTIONS[bossQIdx%BOSS_QUESTIONS.length];
+  const worldQs=BOSS_QUESTIONS[curLevel.world]||BOSS_QUESTIONS['1'];const q=worldQs[bossQIdx%worldQs.length];
   const opts=document.querySelectorAll('#boss-modal .boss-opt');opts.forEach(o=>o.disabled=true);
   if(choice===q.a){btn.classList.add('b-correct');document.getElementById('b-fb').textContent='✅ 答对了！库巴后退！';document.getElementById('b-fb').style.color='#4CAF50';bossCorrect++;bossRetreat=40;coins+=5;speak(q.a+'! Yes!',0.8);}
   else{btn.classList.add('b-wrong');document.getElementById('b-fb').textContent='❌ 正确答案：'+q.a;document.getElementById('b-fb').style.color='#E53935';opts.forEach(o=>{if(o.textContent.includes(q.a))o.classList.add('b-correct');});speak(q.a,0.7);}
   bossQIdx++;
   setTimeout(()=>{document.getElementById('boss-modal').classList.remove('active');
     if(bossCorrect>=3){scene='win';saveProgress();}
-    else if(bossQIdx>=BOSS_QUESTIONS.length){bossQIdx=0;showBossQuestion();}
+    else if(bossQIdx>=worldQs.length){bossQIdx=0;showBossQuestion();}
     else showBossQuestion();
   },1200);
 }
@@ -335,34 +439,64 @@ function saveProgress(){
   localStorage.setItem('marioProgress',JSON.stringify({lastLevel:key,learned:learnedWords}));
 }
 
-// ===== LEVEL SETUP =====
-const LEVEL_DATA = {
-  '1-1':{w:2800,hasBoss:false,platforms:[
-    {x:0,y:GROUND,w:2800,h:120,type:'ground'},{x:200,y:340,w:64,h:32,type:'brick',item:'coin'},{x:300,y:340,w:64,h:32,type:'brick',item:'mushroom'},{x:450,y:340,w:64,h:32,type:'brick',item:'coin'},{x:650,y:360,w:64,h:60,type:'pipe'},{x:850,y:340,w:64,h:32,type:'brick',item:'coin'},{x:1100,y:280,w:64,h:32,type:'brick',item:'star'},{x:1400,y:340,w:64,h:32,type:'brick',item:'coin'},{x:1550,y:340,w:64,h:32,type:'brick',item:'mushroom'},{x:1800,y:360,w:64,h:60,type:'pipe'},{x:2000,y:300,w:64,h:32,type:'brick',item:'star'},{x:2300,y:340,w:64,h:32,type:'brick',item:'coin'},
-  ],quizzes:[{x:400},{x:1000},{x:1600},{x:2200}],coins:[],enemies:[
-    {x:550,y:GROUND-28,w:28,h:28,vx:-1.2,sx:550,range:120,type:'goomba'},{x:750,y:GROUND-28,w:28,h:28,vx:-0.8,sx:750,range:100,type:'goomba'},{x:1050,y:GROUND-28,w:28,h:28,vx:-1,sx:1050,range:150,type:'goomba'},{x:1700,y:GROUND-28,w:28,h:28,vx:-1.4,sx:1700,range:160,type:'goomba'},{x:1900,y:GROUND-28,w:28,h:28,vx:-0.9,sx:1900,range:120,type:'goomba'},{x:2100,y:GROUND-28,w:28,h:28,vx:-1.1,sx:2100,range:180,type:'goomba'},{x:2400,y:GROUND-28,w:28,h:28,vx:-1.3,sx:2400,range:140,type:'goomba'},
-  ],movePlatforms:[]},
-  '1-2':{w:2800,hasBoss:true,platforms:[
-    {x:0,y:GROUND,w:2800,h:120,type:'ground'},{x:200,y:340,w:64,h:32,type:'brick',item:'coin'},{x:400,y:340,w:64,h:32,type:'brick',item:'coin'},{x:700,y:360,w:64,h:60,type:'pipe'},{x:1000,y:360,w:64,h:32,type:'brick',item:'mushroom'},{x:1400,y:240,w:128,h:64,type:'pipe'},{x:1500,y:280,w:64,h:32,type:'brick',item:'star'},{x:1800,y:360,w:64,h:60,type:'pipe'},{x:2100,y:340,w:64,h:32,type:'brick',item:'mushroom'},
-  ],quizzes:[{x:550},{x:1150},{x:1650},{x:2200}],coins:[],enemies:[
-    {x:500,y:GROUND-28,w:28,h:28,vx:-1,sx:500,range:100,type:'goomba'},{x:1050,y:GROUND-28,w:28,h:28,vx:-0.8,sx:1050,range:120,type:'goomba'},{x:1300,y:GROUND-28,w:28,h:28,vx:-1.2,sx:1300,range:150,type:'goomba'},{x:1750,y:GROUND-28,w:28,h:28,vx:-1.1,sx:1750,range:130,type:'koopa'},{x:1950,y:GROUND-28,w:28,h:28,vx:-0.9,sx:1950,range:140,type:'goomba'},{x:2300,y:GROUND-28,w:28,h:28,vx:-1.3,sx:2300,range:120,type:'koopa'},
-  ],movePlatforms:[
-    {x:900,y:300,w:80,h:20,type:'move',moveSpeed:1.2,startX:900,range:80},{x:1200,y:260,w:80,h:20,type:'move',moveSpeed:1.5,startX:1200,range:100},{x:1900,y:300,w:80,h:20,type:'move',moveSpeed:1.3,startX:1900,range:70},
-  ]}
-};
-// Generate coins for both levels
-Object.values(LEVEL_DATA).forEach(ld=>{for(let i=0;i<80;i++){let cx=150+i*35,cy=GROUND-60;if(i%4===2)cy=GROUND-100;if(i%7===3)cy=GROUND-140;ld.coins.push({x:cx,y:cy,collected:false});}});
+// ===== LEVEL SETUP (procedural) =====
+function generateLevelData(world, level, words, hasBoss) {
+  const numWords = words.length;
+  const lw = 2400 + numWords * 150;
+  const spacing = lw / (numWords + 2);
 
-function initLevel(world,level){
-  const key=world+'-'+level;
-  curLevel={world,level};
-  levelData=JSON.parse(JSON.stringify(LEVEL_DATA[key]));
-  player={x:80,y:GROUND-48,w:32,h:48,vx:0,vy:0,onGround:false,facing:1,big:false};
-  camera=0;coins=0;lives=3;time=0;frame=0;quizIdx=0;quizAnswered=0;quizCorrect=0;
-  triggeredQuiz=[];particles=[];invincible=0;bossPhase=false;bossQIdx=0;bossCorrect=0;bossRetreat=0;shell=null;paused=false;
-  enemies=levelData.enemies.map(e=>({...e}));
-  hitItems=levelData.platforms.filter(p=>p.item).map(p=>({x:p.x+20,y:p.y+50,item:p.item,active:false,hit:false}));
-  scene='playing';
+  // Ground
+  const platforms = [{x:0, y:GROUND, w:lw, h:120, type:'ground'}];
+
+  // Bricks spaced across level
+  for (let i = 0; i < numWords + 2; i++) {
+    const items = ['coin','mushroom','star','coin','coin'];
+    platforms.push({x: 200 + spacing * i, y: 320 + (i%3)*40, w:64, h:32, type:'brick', item: items[i%items.length]});
+  }
+
+  // Pipes
+  platforms.push({x: lw*0.25, y:360, w:64, h:60, type:'pipe'});
+  platforms.push({x: lw*0.65, y:360, w:64, h:60, type:'pipe'});
+
+  // Quiz triggers
+  const quizzes = words.map((_, i) => ({x: spacing * (i + 1) + 100}));
+
+  // Coins
+  const coins = [];
+  for (let i = 0; i < 60 + numWords * 5; i++) {
+    coins.push({x: 100 + i * (lw/70), y: GROUND - 60 - (i%4)*35, collected:false});
+  }
+
+  // Enemies
+  const enemies = [];
+  for (let i = 0; i < numWords + 3; i++) {
+    const ex = 300 + spacing * i * 0.8;
+    const type = (world >= 3 && i % 3 === 0) ? 'koopa' : 'goomba';
+    enemies.push({x:ex, y:GROUND-28, w:28, h:28, vx:-1 - Math.random()*0.5, sx:ex, range:100+Math.floor(Math.random()*100), type});
+  }
+
+  // Moving platforms for worlds 3+
+  const movePlatforms = world >= 3 ? [
+    {x: lw*0.4, y:300, w:80, h:20, type:'move', moveSpeed:1.2, startX: lw*0.4, range:80},
+    {x: lw*0.7, y:260, w:80, h:20, type:'move', moveSpeed:1.5, startX: lw*0.7, range:100},
+  ] : [];
+
+  return {w:lw, hasBoss, platforms, quizzes, coins, enemies, movePlatforms, worldName: ['','🌿 草地王国','🕳️ 洞穴王国','🐠 海底王国','☁️ 天空之城','🏰 库巴城堡'][world]};
+}
+
+function initLevel(world, level){
+  const key = world+'-'+level;
+  const words = ALL_WORDS[key];
+  if (!words) return;
+  const hasBoss = (level === 2 || level === 5 || level === 10 || level === 16 || level === 21 || level === 26);
+  curLevel = {world, level};
+  levelData = generateLevelData(world, level, words, hasBoss);
+  player = {x:80, y:GROUND-48, w:32, h:48, vx:0, vy:0, onGround:false, facing:1, big:false};
+  camera = 0; coins = 0; lives = 3; time = 0; frame = 0; quizIdx = 0; quizAnswered = 0; quizCorrect = 0;
+  triggeredQuiz = []; particles = []; invincible = 0; bossPhase = false; bossQIdx = 0; bossCorrect = 0; bossRetreat = 0; shell = null; paused = false;
+  enemies = levelData.enemies.map(e => ({...e}));
+  hitItems = levelData.platforms.filter(p => p.item).map(p => ({x:p.x+20, y:p.y+50, item:p.item, active:false, hit:false}));
+  scene = 'playing';
   document.getElementById('ui-bar').classList.add('show');
   document.getElementById('pause-btn').classList.add('show');
   document.getElementById('pause-overlay').classList.remove('show');
@@ -430,16 +564,16 @@ function render(){
     worldBtns=[];
     worlds.forEach((w,i)=>{
       const btnW=600,btnH=66,bx=W/2-btnW/2,by=120+i*80;
-      const unlocked=w.w===1;
-      const hover=unlocked&&mx>bx&&mx<bx+btnW&&my>by&&my<by+btnH;
-      ctx.fillStyle=unlocked?(hover?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.08)'):'rgba(255,255,255,0.03)';
+      const unlocked=true;
+      const hover=mx>bx&&mx<bx+btnW&&my>by&&my<by+btnH;
+      ctx.fillStyle=hover?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.08)';
       ctx.fillRect(bx,by,btnW,btnH);
-      ctx.strokeStyle=unlocked?'#FFD700':'#555';ctx.lineWidth=2;ctx.strokeRect(bx,by,btnW,btnH);
-      ctx.fillStyle=unlocked?'#FFD700':'#555';ctx.font='bold 22px "PingFang SC","Microsoft YaHei",sans-serif';ctx.textAlign='left';
-      ctx.fillText(unlocked?w.n:('🔒 '+w.n),bx+20,by+28);
+      ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.strokeRect(bx,by,btnW,btnH);
+      ctx.fillStyle='#FFD700';ctx.font='bold 22px "PingFang SC","Microsoft YaHei",sans-serif';ctx.textAlign='left';
+      ctx.fillText(w.n,bx+20,by+28);
       ctx.fillStyle='#888';ctx.font='14px "PingFang SC","Microsoft YaHei",sans-serif';
       ctx.fillText(w.sub,bx+20,by+52);
-      if(unlocked)worldBtns.push({bx,by,btnW,btnH,w:w.w});
+      worldBtns.push({bx,by,btnW,btnH,w:w.w});
     });
     ctx.textAlign='center';ctx.fillStyle='#888';ctx.font='14px "PingFang SC","Microsoft YaHei",sans-serif';
     ctx.fillText('← 点击返回主菜单',W/2,530);
@@ -448,32 +582,36 @@ function render(){
 
   function drawLevels(){
     ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,W,H);
+    const worldNames=['','🌿 草地王国','🕳️ 洞穴王国','🐠 海底王国','☁️ 天空之城','🏰 库巴城堡'];
+    const worldRanges=[[],[1,5],[6,10],[11,16],[17,21],[22,26]];
+    const [startL,endL]=worldRanges[selWorld]||[1,5];
     ctx.fillStyle='#FFD700';ctx.font='bold 28px "Courier New",monospace';ctx.textAlign='center';
-    ctx.fillText('🌿 草地王国 · 选择关卡',W/2,70);
-    const levels=[
-      {n:'L1 · Aa',words:'🍎 apple · 🐱 cat · 🦇 bat · 🎒 bag',sub:'4词 · 无Boss · 教学关',l:1},
-      {n:'L2 · Bb',words:'👶 baby · 🍌 banana · ⚽ ball · 👦 boy',sub:'4词 · 库巴Boss战',l:2},
-      {n:'L3 · Cc',words:'🐄 cow · 🚗 car · 🎂 cake · 🕐 clock · 🍬 candy',sub:'5词 · 🔒 未解锁',l:3},
-      {n:'L4 · Dd',words:'👨 dad · 🦆 duck · 🪑 desk · 🚪 door · 🐕 dog',sub:'5词 · 🔒 未解锁',l:4},
-      {n:'L5 · Ee',words:'🥚 egg · 🐘 elephant · 🛏️ bed',sub:'3词 · 🔒 未解锁',l:5},
-    ];
+    ctx.fillText(worldNames[selWorld]+' · 选择关卡',W/2,70);
+    const levels=[];
+    for(let l=startL;l<=endL;l++){
+      const key=selWorld+'-'+l;
+      const words=ALL_WORDS[key]||[];
+      const wordList=words.map(w=>w.icon+' '+w.w).join(' · ');
+      const nWords=words.length;
+      const isBoss=(l===2||l===5||l===10||l===16||l===21||l===26);
+      levels.push({n:'L'+l,words:wordList,sub:nWords+'词 · '+(isBoss?'库巴Boss战':'')});
+    }
     levelBtns=[];
-    levels.forEach((l,i)=>{
-      const btnW=620,btnH=70,bx=W/2-btnW/2,by=110+i*82;
-      const unlocked=l.l<=2;
-      const hover=unlocked&&mx>bx&&mx<bx+btnW&&my>by&&my<by+btnH;
-      ctx.fillStyle=unlocked?(hover?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.08)'):'rgba(255,255,255,0.03)';
+    levels.forEach((lv,i)=>{
+      const btnW=620,btnH=Math.min(70,Math.floor((H-140)/levels.length)),bx=W/2-btnW/2,by=110+i*82;
+      const hover=mx>bx&&mx<bx+btnW&&my>by&&my<by+btnH;
+      ctx.fillStyle=hover?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.08)';
       ctx.fillRect(bx,by,btnW,btnH);
-      ctx.strokeStyle=unlocked?'#FFD700':'#555';ctx.lineWidth=2;ctx.strokeRect(bx,by,btnW,btnH);
-      ctx.fillStyle=unlocked?'#FFD700':'#555';ctx.font='bold 20px "PingFang SC","Microsoft YaHei",sans-serif';ctx.textAlign='left';
-      ctx.fillText(unlocked?l.n:('🔒 '+l.n),bx+20,by+28);
+      ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.strokeRect(bx,by,btnW,btnH);
+      ctx.fillStyle='#FFD700';ctx.font='bold 20px "PingFang SC","Microsoft YaHei",sans-serif';ctx.textAlign='left';
+      ctx.fillText(lv.n,bx+20,by+28);
       ctx.fillStyle='#ccc';ctx.font='15px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText(l.words,bx+20,by+50);
-      if(unlocked)levelBtns.push({bx,by,btnW,btnH,l:l.l});
+      ctx.fillText(lv.words,bx+20,by+50);
+      levelBtns.push({bx,by,btnW,btnH,l:startL+i});
     });
     ctx.textAlign='center';ctx.fillStyle='#888';ctx.font='14px "PingFang SC","Microsoft YaHei",sans-serif';
     ctx.fillText('← 点击返回选择世界',W/2,530);
-    menuBack=true;selWorld=1;
+    menuBack=true;
   }
 
   function drawGame(){
@@ -496,7 +634,8 @@ function render(){
     if(scene==='win'){
       ctx.fillStyle='rgba(10,10,30,0.85)';ctx.fillRect(0,0,W,H);
       ctx.font='bold 36px "Courier New",monospace';ctx.textAlign='center';
-      const wn=curLevel.world===1&&curLevel.level===1?'🎉 第一关通过！':(bossCorrect>=3?'🎉 库巴被打败了！第二关通过！':'🎉 第二关通过！');
+      const isBoss=levelData.hasBoss&&bossCorrect>=3;
+      const wn=isBoss?'🎉 库巴被打败了！':('🎉 第'+curLevel.level+'关通过！');
       ctx.fillStyle='#FFD700';ctx.fillText(wn,W/2,180);
       ctx.fillStyle='#E0D5B8';ctx.font='20px "PingFang SC","Microsoft YaHei",sans-serif';
       ctx.fillText('答对 '+quizCorrect+'/'+ALL_WORDS[curLevel.world+'-'+curLevel.level].length+' 单词 · ⭐ '+coins+' 金币 · ⏱ '+Math.floor(time/60)+':'+String(Math.floor(time%60)).padStart(2,'0'),W/2,240);
@@ -527,11 +666,11 @@ canvas.addEventListener('click',e=>{
     worldBtns.forEach(b=>{if(mx>b.bx&&mx<b.bx+b.btnW&&my>b.by&&my<b.by+b.btnH){selWorld=b.w;scene='levels';}});
   }else if(scene==='levels'){
     if(menuBack&&my>510&&my<540)scene='worlds';
-    levelBtns.forEach(b=>{if(mx>b.bx&&mx<b.bx+b.btnW&&my>b.by&&my<b.by+b.btnH)initLevel(1,b.l);});
+    levelBtns.forEach(b=>{if(mx>b.bx&&mx<b.bx+b.btnW&&my>b.by&&my<b.by+b.btnH)initLevel(Number(selWorld),b.l);});
   }else if(scene==='win'){
     winBtns.forEach((b,i)=>{const bx=W/2-130;if(mx>bx&&mx<bx+260&&my>b.y&&my<b.y+44){
       if(i===0)resetLevel();
-      else if(i===1){if(curLevel.level<2)initLevel(curLevel.world,curLevel.level+1);else goToMenu();}
+      else if(i===1){const nk=curLevel.world+'-'+(curLevel.level+1);if(ALL_WORDS[nk])initLevel(curLevel.world,curLevel.level+1);else goToMenu();}
       else goToMenu();
     }});
   }else if(scene==='dead'){
@@ -575,7 +714,7 @@ function updateUI(){
   document.getElementById('ui-bar').classList.add('show');
   document.getElementById('pause-btn').classList.add('show');
   document.getElementById('coin-display').textContent=coins;
-  document.getElementById('level-display').textContent='L'+curLevel.level+' · '+(curLevel.world===1&&curLevel.level===1?'Aa':'Bb');
+  document.getElementById('level-display').textContent='W'+curLevel.world+' L'+curLevel.level;
   const t=Math.floor(time);document.getElementById('time-display').textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
   document.getElementById('lives-display').innerHTML=Array(Math.max(1,lives)).fill('<span style="color:#E53935;margin:0 1px">❤️</span>').join('');
 }
