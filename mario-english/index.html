@@ -306,10 +306,55 @@ function drawBoss(bx,by){
   ctx.fillStyle='#E53935';ctx.beginPath();ctx.ellipse(bx+50,by+80,30,20,0,0,Math.PI*2);ctx.fill();
 }
 function drawBg(){
-  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#87CEEB');g.addColorStop(0.6,'#5c94fc');g.addColorStop(1,'#4a7de0');
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='rgba(255,255,255,0.7)';for(let i=0;i<5;i++){const cx=((i*350)-camera*0.3)%(W+400)-200;ctx.fillRect(cx,60+i*40,80,30);ctx.fillRect(cx+15,48+i*40,50,20);}
-  ctx.fillStyle='#7CBF5C';for(let i=0;i<4;i++){const hx=i*800-300-camera*0.2;ctx.beginPath();ctx.moveTo(hx,GROUND);ctx.quadraticCurveTo(hx+200,GROUND-100,hx+400,GROUND);ctx.fill();}
+  const w=curLevel?curLevel.world:1;let g;
+  if(w===2){
+    // 洞穴王国：深紫黑+火焰把
+    g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#1a1020');g.addColorStop(0.5,'#2d2d4e');g.addColorStop(1,'#1a1a2e');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // 钟乳石
+    ctx.fillStyle='#3d3040';for(let i=0;i<8;i++){const sx=((i*220)-camera*0.2)%(W+300)-100;ctx.beginPath();ctx.moveTo(sx,0);ctx.lineTo(sx+15,80+i*12);ctx.lineTo(sx+30,0);ctx.fill();}
+    // 火焰把
+    for(let i=0;i<4;i++){const fx=((i*500+120)-camera*0.4)%(W+400)-200;const fy=GROUND-120-i*15;
+      ctx.fillStyle='#6D4C41';ctx.fillRect(fx-2,fy-40,4,80);
+      ctx.fillStyle='#FFA000';ctx.beginPath();ctx.ellipse(fx,fy-35,10,18,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#FFD700';ctx.beginPath();ctx.ellipse(fx,fy-38,5,10,0,0,Math.PI*2);ctx.fill();
+    }
+  }else if(w===3){
+    // 海底王国：深蓝渐变+气泡+海草
+    g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#01579B');g.addColorStop(0.4,'#0277BD');g.addColorStop(0.7,'#0288D1');g.addColorStop(1,'#F9A825');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // 气泡
+    ctx.globalAlpha=0.35;
+    for(let i=0;i<12;i++){const bx=((i*170+50)-camera*0.15)%(W+200)-100;const by=40+(i*37)%220;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(bx,by,6+i%8,0,Math.PI*2);ctx.stroke();}
+    ctx.globalAlpha=1;
+    // 海草
+    ctx.fillStyle='#2E7D32';for(let i=0;i<8;i++){const sx=((i*300+80)-camera*0.25)%(W+400)-200;ctx.beginPath();const sw=10+i*2;ctx.moveTo(sx,GROUND);ctx.quadraticCurveTo(sx+10,GROUND-50-i*5,sx+20,GROUND-90-i*3);ctx.quadraticCurveTo(sx+30,GROUND-50-i*5,sx+20,GROUND);ctx.fill();ctx.fillStyle=i%2?'#388E3C':'#2E7D32';}
+  }else if(w===4){
+    // 天空之城：浅蓝天空+大云
+    g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#E3F2FD');g.addColorStop(0.3,'#BBDEFB');g.addColorStop(0.8,'#90CAF9');g.addColorStop(1,'#CFD8DC');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // 大云
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    for(let i=0;i<4;i++){const cx=((i*500+100)-camera*0.2)%(W+500)-300;
+      const cy=50+i*70;ctx.fillRect(cx,cy,140,50);ctx.fillRect(cx+30,cy-25,80,35);ctx.fillRect(cx+10,cy+20,60,18);
+    }
+    // 小云
+    ctx.fillStyle='rgba(255,255,255,0.6)';for(let i=0;i<6;i++){const cx=((i*300+200)-camera*0.3)%(W+400)-150;ctx.fillRect(cx,30+i*60,80,28);ctx.fillRect(cx+15,18+i*60,50,18);}
+  }else if(w===5){
+    // 库巴城堡：暗红天空+岩浆
+    g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#1a0a0a');g.addColorStop(0.4,'#2d0a0a');g.addColorStop(0.7,'#4a1010');g.addColorStop(1,'#3d1b0e');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // 城堡轮廓
+    ctx.fillStyle='#1a0a10';for(let i=0;i<3;i++){const bx=((i*600)-camera*0.1)%(W+600)-200;ctx.fillRect(bx,GROUND-200-i*30,120,200+i*30);ctx.fillRect(bx+120,GROUND-180-i*30,80,180+i*30);ctx.fillRect(bx+130,GROUND-230-i*30,60,80+i*30);}
+    // 岩浆河(远处)
+    ctx.fillStyle='#FF5722';for(let i=0;i<8;i++){const lx=((i*180)-camera*0.3)%(W+300)-100;ctx.fillRect(lx,GROUND+8,60+Math.sin(i*3)*10,6);}
+  }else{
+    // 世界1 草地王国：蓝天白云绿山
+    g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#87CEEB');g.addColorStop(0.6,'#5c94fc');g.addColorStop(1,'#4a7de0');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,0.7)';for(let i=0;i<5;i++){const cx=((i*350)-camera*0.3)%(W+400)-200;ctx.fillRect(cx,60+i*40,80,30);ctx.fillRect(cx+15,48+i*40,50,20);}
+    ctx.fillStyle='#7CBF5C';for(let i=0;i<4;i++){const hx=i*800-300-camera*0.2;ctx.beginPath();ctx.moveTo(hx,GROUND);ctx.quadraticCurveTo(hx+200,GROUND-100,hx+400,GROUND);ctx.fill();}
+  }
 }
 
 function spawnParticles(x,y,color,n){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*5-3,life:20+Math.random()*15,color});}
@@ -504,7 +549,7 @@ function generateLevelData(world, level, words, hasBoss) {
     {x: lw*0.7, y:260, w:80, h:20, type:'move', moveSpeed:1.5, startX: lw*0.7, range:100},
   ] : [];
 
-  return {w:lw, hasBoss, platforms, quizzes, coins, enemies, movePlatforms, worldName: ['','🌿 草地王国','🕳️ 洞穴王国','🐠 海底王国','☁️ 天空之城','🏰 库巴城堡'][world]};
+  return {w:lw, hasBoss, platforms, quizzes, coins, enemies, movePlatforms, world, worldName: ['','🌿 草地王国','🕳️ 洞穴王国','🐠 海底王国','☁️ 天空之城','🏰 库巴城堡'][world]};
 }
 
 function initLevel(world, level){
@@ -639,7 +684,9 @@ function render(){
 
   function drawGame(){
     ctx.save();drawBg();ctx.translate(-Math.floor(camera),0);
-    ctx.fillStyle='#c84c09';ctx.fillRect(0,GROUND,levelData.w,120);ctx.fillStyle='#8BCE63';ctx.fillRect(0,GROUND,levelData.w,16);
+    const w=levelData.world||1;
+    const gc={1:['#c84c09','#8BCE63'],2:['#3d2b1e','#5D4037'],3:['#F9A825','#FBC02D'],4:['#B0BEC5','#CFD8DC'],5:['#2d1b0e','#4a1a1a']}[w]||['#c84c09','#8BCE63'];
+    ctx.fillStyle=gc[0];ctx.fillRect(0,GROUND,levelData.w,120);ctx.fillStyle=gc[1];ctx.fillRect(0,GROUND,levelData.w,16);
     levelData.platforms.forEach(p=>{if(p.type==='brick')drawBrick(p.x,p.y,p.item);else if(p.type==='pipe')drawPipe(p.x,p.y);else if(p.type==='move'){ctx.fillStyle='#6D4C41';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillStyle='#A0782C';ctx.fillRect(p.x+2,p.y+2,p.w-4,4);}});
     levelData.coins.forEach(c=>{if(c.collected)return;const g=Math.sin(frame*0.08)*0.3+0.7;ctx.fillStyle=`rgba(255,215,0,${g})`;ctx.fillRect(c.x-6,c.y-6,12,12);ctx.fillStyle='#FFD700';ctx.fillRect(c.x-4,c.y-4,8,8);});
     enemies.forEach(e=>{if(e.y>GROUND+50)return;if(e.type==='shell')drawShell(e);else if(e.type==='koopa')drawKoopa(e);else drawGoomba(e);});
