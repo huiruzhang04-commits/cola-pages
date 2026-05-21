@@ -2,12 +2,18 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="马里奥英语">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1a2e">
 <title>🍄 马里奥英语大冒险</title>
 <style>
 :root{--gold:#FFD700;--red:#E53935;--skin:#FFCCBC;--brown:#6D4C41;--blue:#1E88E5;--yellow:#FDD835;--white:#fff;--darkblue:#1565C0;--sky:#5c94fc;--grass:#4CAF50;--ground:#c84c09;--dark:#1a1a2e;--card:#FBF8F0;--green:#2E7D32}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;justify-content:center;align-items:center;min-height:100vh;padding-bottom:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:none;-webkit-user-select:none;user-select:none}
 #container{position:relative;width:960px;height:540px}
 canvas{display:block;border:3px solid #333;border-radius:8px;image-rendering:pixelated}
 #ui-bar{position:absolute;top:0;left:0;right:0;padding:6px 16px;display:none;justify-content:space-between;align-items:center;background:rgba(26,26,46,0.9);border-radius:8px 8px 0 0;z-index:10;color:#fff;font-size:14px;font-weight:700}
@@ -816,6 +822,11 @@ function loop(){
   updateUI();render();frame++;requestAnimationFrame(loop);
 }
 loop();
+
+// Register service worker for PWA
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 
 function resize(){
   const ctr=document.getElementById('container');
