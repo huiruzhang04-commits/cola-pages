@@ -298,6 +298,21 @@ function drawKoopa(e){
   ctx.fillStyle='#000';ctx.fillRect(e.x+9,e.y+12,2,2);ctx.fillRect(e.x+18,e.y+12,2,2);
   ctx.fillStyle='#FFA000';ctx.fillRect(e.x+2,e.y+22,6,6);ctx.fillRect(e.x+20,e.y+22,6,6);
 }
+function drawJellyfish(e){
+  const f=Math.sin(frame*0.05)*3,by=e.y;
+  ctx.fillStyle='rgba(255,105,180,0.7)';ctx.beginPath();ctx.ellipse(e.x+14,by+12,14,12,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,105,180,0.9)';ctx.beginPath();ctx.ellipse(e.x+14,by+8,10,8,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,182,193,0.7)';ctx.fillRect(e.x+10,by+22+f,3,10);ctx.fillRect(e.x+15,by+24-f,3,8);ctx.fillRect(e.x+20,by+20+f,3,10);
+  ctx.fillStyle='#fff';ctx.fillRect(e.x+12,by+6,3,3);ctx.fillRect(e.x+18,by+7,2,2);
+}
+function drawPufferfish(e){
+  const p=e.isPuffed,sz=p?20:12;
+  ctx.fillStyle='#FF9800';ctx.beginPath();ctx.ellipse(e.x+14,e.y+14,sz,sz,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#FFF3E0';ctx.beginPath();ctx.ellipse(e.x+10,e.y+12,6,6,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#000';ctx.fillRect(e.x+6,e.y+11,3,3);
+  if(p){ctx.fillStyle='#E65100';for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.beginPath();ctx.moveTo(e.x+14+sz*Math.cos(a),e.y+14+sz*Math.sin(a));ctx.lineTo(e.x+14+(sz+10)*Math.cos(a),e.y+14+(sz+10)*Math.sin(a));ctx.stroke();}}
+  ctx.strokeStyle='#E65100';ctx.lineWidth=2;
+}
 function drawShell(s){ctx.fillStyle='#2E7D32';ctx.fillRect(s.x,s.y,28,16);ctx.fillStyle='#4CAF50';ctx.fillRect(s.x+4,s.y+2,20,12);ctx.fillStyle='#FFD700';ctx.fillRect(s.x+6,s.y-2,16,6);}
 function drawBrick(x,y,item){
   ctx.fillStyle='#8B6914';ctx.fillRect(x,y,64,32);ctx.fillStyle='#A0782C';
@@ -378,12 +393,14 @@ function collides(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y
 
 function updatePhysics(){
   if(paused||scene!=='playing')return;
-  if(keys['ArrowLeft']||keys['a']){player.vx=-SPEED;player.facing=-1;}
-  else if(keys['ArrowRight']||keys['d']){player.vx=SPEED;player.facing=1;}
+  const w=curLevel?curLevel.world:1;
+  const grav=w===3?0.28:GRAVITY;const spd=w===3?3.0:SPEED;const jmp=w===3?(-12.5):JUMP;
+  if(keys['ArrowLeft']||keys['a']){player.vx=-spd;player.facing=-1;}
+  else if(keys['ArrowRight']||keys['d']){player.vx=spd;player.facing=1;}
   else player.vx*=0.7;
   if(Math.abs(player.vx)<0.1)player.vx=0;
-  if((keys[' ']||keys['ArrowUp']||keys['w'])&&player.onGround){player.vy=JUMP;player.onGround=false;}
-  player.vy+=GRAVITY;player.x+=player.vx;player.y+=player.vy;
+  if((keys[' ']||keys['ArrowUp']||keys['w'])&&player.onGround){player.vy=jmp;player.onGround=false;}
+  player.vy+=grav;player.x+=player.vx;player.y+=player.vy;
 
   player.onGround=false;
   const pb=player.big?{x:player.x,y:player.y,w:48,h:72}:{x:player.x,y:player.y,w:player.w,h:player.h};
@@ -410,11 +427,14 @@ function updatePhysics(){
   // Enemies
   enemies.forEach(e=>{
     if(e.y>GROUND+50)return;if(e.type==='shell')return;
-    e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;
+    if(e.type==='jellyfish'){e.y=e.baseY+Math.sin(frame*0.03+e.phase)*40;}
+    else if(e.type==='pufferfish'){e.puffTimer++;e.isPuffed=(e.puffTimer%120)>70;e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
+    else{e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
     const el={x:e.x+2,y:e.y+2,w:e.w-4,h:e.h-4};
     if(!collides(pb,el))return;
     if(player.vy>0&&pb.y+pb.h-el.y<18){
-      if(e.type==='koopa'){e.type='shell';e.h=16;e.y+=12;e.vx=0;spawnParticles(e.x+14,e.y,'#FFD700',8);coins+=3;}
+      if(e.type==='jellyfish'||(e.type==='pufferfish'&&e.isPuffed)){die();return;}
+      else if(e.type==='koopa'){e.type='shell';e.h=16;e.y+=12;e.vx=0;spawnParticles(e.x+14,e.y,'#FFD700',8);coins+=3;}
       else{e.y=GROUND+100;coins+=3;spawnParticles(e.x+14,e.y+14,'#FFD700',10);}
       player.vy=-5;
     }else if(invincible>0){e.y=GROUND+100;coins+=5;}
@@ -551,9 +571,14 @@ function generateLevelData(world, level, words, hasBoss) {
   // Enemies
   const enemies = [];
   for (let i = 0; i < numWords + 3; i++) {
-    const ex = 300 + spacing * i * 0.8;
-    const type = (world >= 2 && i % 3 === 0) ? 'koopa' : 'goomba';
-    enemies.push({x:ex, y:GROUND-28, w:28, h:28, vx:-1 - Math.random()*0.5, sx:ex, range:100+Math.floor(Math.random()*100), type});
+    const ex = 300 + spacing * i * 0.8;let type;
+    if(world===3){type=i%3===0?'jellyfish':i%3===1?'pufferfish':'goomba';}
+    else if(world>=2&&i%3===0)type='koopa';
+    else type='goomba';
+    const ee={x:ex, y:GROUND-28, w:28, h:28, vx:-1 - Math.random()*0.5, sx:ex, range:100+Math.floor(Math.random()*100), type};
+    if(type==='jellyfish'){ee.baseY=ee.y;ee.phase=Math.random()*Math.PI*2;ee.vx=0;}
+    if(type==='pufferfish'){ee.puffTimer=Math.floor(Math.random()*90);ee.isPuffed=false;}
+    enemies.push(ee);
   }
 
   // Moving platforms for worlds 2+
@@ -702,7 +727,7 @@ function render(){
     ctx.fillStyle=gc[0];ctx.fillRect(0,GROUND,levelData.w,120);ctx.fillStyle=gc[1];ctx.fillRect(0,GROUND,levelData.w,16);
     levelData.platforms.forEach(p=>{if(p.type==='brick')drawBrick(p.x,p.y,p.item);else if(p.type==='pipe')drawPipe(p.x,p.y);else if(p.type==='move'){ctx.fillStyle='#6D4C41';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillStyle='#A0782C';ctx.fillRect(p.x+2,p.y+2,p.w-4,4);}});
     levelData.coins.forEach(c=>{if(c.collected)return;const g=Math.sin(frame*0.08)*0.3+0.7;ctx.fillStyle=`rgba(255,215,0,${g})`;ctx.fillRect(c.x-6,c.y-6,12,12);ctx.fillStyle='#FFD700';ctx.fillRect(c.x-4,c.y-4,8,8);});
-    enemies.forEach(e=>{if(e.y>GROUND+50)return;if(e.type==='shell')drawShell(e);else if(e.type==='koopa')drawKoopa(e);else drawGoomba(e);});
+    enemies.forEach(e=>{if(e.y>GROUND+50)return;if(e.type==='shell')drawShell(e);else if(e.type==='koopa')drawKoopa(e);else if(e.type==='jellyfish')drawJellyfish(e);else if(e.type==='pufferfish')drawPufferfish(e);else drawGoomba(e);});
     if(shell&&shell.active)drawShell(shell);
     if(bossPhase){
       const bx=levelData.w-120-(bossCorrect*25)+Math.max(0,bossRetreat*0.6);
