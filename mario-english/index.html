@@ -259,6 +259,8 @@ const BOSS_QUESTIONS = {
     {s:'I play the ___.',hint:'🎻',o:['violin','van','vest','water'],a:'violin',icons:['🎻','🚐','🦺','💧']},
     {s:'The ___ howls at night.',hint:'🐺',o:['wolf','woman','window','water'],a:'wolf',icons:['🐺','👩','🪟','💧']},
     {s:'We go to the ___.',hint:'🦓',o:['zoo','zebra','zero','yellow'],a:'zoo',icons:['🦓','🦓','0️⃣','🟡']},
+    {s:'The ___ has a long neck.',hint:'🦒',o:['giraffe','girl','goat','gate'],a:'giraffe',icons:['🦒','👧','🐐','🚪']},
+    {s:'I can see a ___ in the sky.',hint:'⭐',o:['star','sun','snow','ship'],a:'star',icons:['⭐','☀️','❄️','🚢']},
   ],
 };
 
@@ -479,7 +481,7 @@ function showBossQuestion(){
   document.getElementById('b-hint').textContent=correctIcon;
   document.getElementById('b-sentence').innerHTML=q.s.replace('___','<b>___</b>');
   document.getElementById('b-fb').textContent='';
-  document.getElementById('boss-progress').textContent='连续答对 3 题击败库巴！('+(bossCorrect)+'/3)';
+  const mb=(curLevel.world===5&&curLevel.level===26)?5:3;document.getElementById('boss-progress').textContent='连续答对 '+mb+' 题击败库巴！('+(bossCorrect)+'/'+mb+')';
   const oel=document.getElementById('b-options');oel.innerHTML='';
   q.o.forEach((o,i)=>{const b=document.createElement('button');b.className='boss-opt';b.textContent=(o===q.a?q.icons[i]+' ':'')+o;b.onclick=()=>answerBoss(o,b);oel.appendChild(b);});
   document.getElementById('boss-modal').classList.add('active');
@@ -493,7 +495,7 @@ function answerBoss(choice,btn){
   else{btn.classList.add('b-wrong');document.getElementById('b-fb').textContent='❌ 正确答案：'+q.a;document.getElementById('b-fb').style.color='#E53935';opts.forEach(o=>{if(o.textContent.includes(q.a))o.classList.add('b-correct');});speak(q.a,0.7);}
   bossQIdx++;
   setTimeout(()=>{document.getElementById('boss-modal').classList.remove('active');
-    if(bossCorrect>=3){scene='win';saveProgress();}
+    const maxB=(curLevel.world===5&&curLevel.level===26)?5:3;if(bossCorrect>=maxB){scene='win';saveProgress();}
     else if(bossQIdx>=worldQs.length){bossQIdx=0;showBossQuestion();}
     else showBossQuestion();
   },1200);
@@ -566,7 +568,7 @@ function initLevel(world, level){
   const key = world+'-'+level;
   const words = ALL_WORDS[key];
   if (!words) return;
-  const hasBoss = (level === 2 || level === 5 || level === 10 || level === 16 || level === 21 || level === 26);
+  const hasBoss = level > 1;const maxBoss=(level===26)?5:3;
   curLevel = {world, level};
   levelData = generateLevelData(world, level, words, hasBoss);
   player = {x:80, y:GROUND-48, w:32, h:48, vx:0, vy:0, onGround:false, facing:1, big:false};
@@ -671,7 +673,7 @@ function render(){
       const words=ALL_WORDS[key]||[];
       const wordList=words.map(w=>w.icon+' '+w.w).join(' · ');
       const nWords=words.length;
-      const isBoss=(l===2||l===5||l===10||l===16||l===21||l===26);
+      const isBoss=l>1;
       levels.push({n:'L'+l,words:wordList,sub:nWords+'词 · '+(isBoss?'库巴Boss战':'')});
     }
     levelBtns=[];
@@ -704,7 +706,7 @@ function render(){
     if(bossPhase){
       const bx=levelData.w-120-(bossCorrect*25)+Math.max(0,bossRetreat*0.6);
       drawBoss(bx,GROUND-140-(bossRetreat*0.3));
-      if(bossCorrect>=3&&frame%5===0)for(let i=0;i<3;i++)spawnParticles(levelData.w-100+Math.random()*60,GROUND-200+Math.random()*40,'#FFD700',4);
+      const maxBc=(curLevel.world===5&&curLevel.level===26)?5:3;if(bossCorrect>=maxBc&&frame%5===0)for(let i=0;i<3;i++)spawnParticles(levelData.w-100+Math.random()*60,GROUND-200+Math.random()*40,'#FFD700',4);
     }
     if(invincible>0&&scene==='playing'){ctx.fillStyle=invincible%10<5?'#FFD700':'#fff';ctx.font='18px serif';ctx.textAlign='center';for(let i=0;i<3;i++)ctx.fillText('✦',player.x+16+(i-1)*12,player.y-8);}
     if(!(invincible>0&&invincible%6<3))drawPixelChar(player.x,player.y,player.facing,player.big);
@@ -718,12 +720,12 @@ function render(){
     if(scene==='win'){
       ctx.fillStyle='rgba(10,10,30,0.85)';ctx.fillRect(0,0,W,H);
       ctx.font='bold 36px "Courier New",monospace';ctx.textAlign='center';
-      const isBoss=levelData.hasBoss&&bossCorrect>=3;
-      const wn=isBoss?'🎉 库巴被打败了！':('🎉 第'+curLevel.level+'关通过！');
+      const isBossWin=levelData.hasBoss&&bossCorrect>=(curLevel.world===5&&curLevel.level===26?5:3);
+      const wn=isBossWin?'🎉 库巴被打败了！':('🎉 第'+curLevel.level+'关通过！');
       ctx.fillStyle='#FFD700';ctx.fillText(wn,W/2,180);
       ctx.fillStyle='#E0D5B8';ctx.font='20px "PingFang SC","Microsoft YaHei",sans-serif';
       ctx.fillText('答对 '+quizCorrect+'/'+ALL_WORDS[curLevel.world+'-'+curLevel.level].length+' 单词 · ⭐ '+coins+' 金币 · ⏱ '+Math.floor(time/60)+':'+String(Math.floor(time%60)).padStart(2,'0'),W/2,240);
-      if(levelData.hasBoss)ctx.fillText('Boss战答对 '+bossCorrect+'/3',W/2,275);
+      if(levelData.hasBoss)ctx.fillText('Boss战答对 '+bossCorrect+'/'+(curLevel.world===5&&curLevel.level===26?5:3),W/2,275);
       const btns=[{y:340,t:'🔄 重玩本关'},{y:400,t:'▶ 下一关'},{y:460,t:'🏠 返回主菜单'}];
       winBtns=btns;
       btns.forEach((b,i)=>{
