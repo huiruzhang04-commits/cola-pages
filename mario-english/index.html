@@ -454,9 +454,8 @@ function updatePhysics(){
     if(!collides(pb,{x:px,y:py,w:p.w,h:p.h}))return;
     const ot=pb.y+pb.h-py,ob=py+p.h-pb.y,ol=pb.x+pb.w-px,orr=px+p.w-pb.x;
     const mo=Math.min(ot,ob,ol,orr);
-    if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer++;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}
-    // Gold pipe: stand on it to enter bonus room
-    if(p.type==='goldpipe'){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}
+  // Gold pipe: stand on it to enter bonus room
+    if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer++;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}if(p.type==='goldpipe'){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}}
     else if(mo===ol&&player.vx>0)player.x=px-(player.big?48:32);
     else if(mo===orr&&player.vx<0)player.x=px+p.w;
   });
@@ -751,7 +750,7 @@ function updateBonusRoom(){
     }
   });
   const allHit=bonusRoom.bricks.every(b=>b.hit);
-  if(allHit||(bonusRoom.timer>bonusRoom.maxTime-60&&player.y+b.h>=GROUND-10&&player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40)){bonusRoom=null;}
+  if(allHit||(bonusRoom.timer>bonusRoom.maxTime-60&&player.y+player.h>=GROUND-10&&player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40)){bonusRoom=null;}
 }
 function drawBonusRoom(){
   if(!bonusRoom)return;
