@@ -456,11 +456,12 @@ function updatePhysics(){
     const mo=Math.min(ot,ob,ol,orr);
     if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer++;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}
     // Gold pipe: stand on it to enter bonus room
-    if(p.type==='goldpipe'){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}else player.goldPipeTimer=0;
+    if(p.type==='goldpipe'){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}
     else if(mo===ol&&player.vx>0)player.x=px-(player.big?48:32);
     else if(mo===orr&&player.vx<0)player.x=px+p.w;
   });
   if(player.y+(player.big?72:48)>=GROUND){player.y=GROUND-(player.big?72:48);player.vy=0;player.onGround=true;}
+  if(!player.onGround)player.goldPipeTimer=0;
   if(player.y>GROUND+200)die();
 
   // Moving platforms
