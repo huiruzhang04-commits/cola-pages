@@ -352,7 +352,8 @@ function drawBg(){
     }
     ctx.fillStyle='rgba(255,255,255,0.6)';for(let i=0;i<6;i++){const cx=((i*300+200)-camera*0.3)%(W+400)-150;ctx.fillRect(cx,30+i*60,80,28);ctx.fillRect(cx+15,18+i*60,50,18);}
     // L20城堡轮廓
-    if(w4l>=20){ctx.fillStyle='rgba(100,80,120,0.4)';const cfx=levelData?levelData.w-200-camera*0.05:700;ctx.fillRect(cfx,GROUND-150,80,150);ctx.fillRect(cfx+80,GROUND-120,60,120);ctx.fillRect(cfx+90,GROUND-170,40,80);ctx.fillStyle='rgba(150,130,170,0.25)';ctx.fillRect(cfx+10,GROUND-140,25,30);ctx.fillRect(cfx+50,GROUND-130,20,20);}else if(w===5){
+    if(w4l>=20){ctx.fillStyle='rgba(100,80,120,0.4)';const cfx=levelData?levelData.w-200-camera*0.05:700;ctx.fillRect(cfx,GROUND-150,80,150);ctx.fillRect(cfx+80,GROUND-120,60,120);ctx.fillRect(cfx+90,GROUND-170,40,80);ctx.fillStyle='rgba(150,130,170,0.25)';ctx.fillRect(cfx+10,GROUND-140,25,30);ctx.fillRect(cfx+50,GROUND-130,20,20);}
+  }else if(w===5){
     // 库巴城堡：暗红天空+岩浆
     g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#1a0a0a');g.addColorStop(0.4,'#2d0a0a');g.addColorStop(0.7,'#4a1010');g.addColorStop(1,'#3d1b0e');
     ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
