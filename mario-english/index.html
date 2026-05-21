@@ -455,8 +455,8 @@ function updatePhysics(){
     const ot=pb.y+pb.h-py,ob=py+p.h-pb.y,ol=pb.x+pb.w-px,orr=px+p.w-pb.x;
     const mo=Math.min(ot,ob,ol,orr);
     if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer++;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}
-    // Gold pipe: press down to enter bonus room
-    if(p.type==='goldpipe'&&(keys['s']||keys['ArrowDown'])){enterBonusRoom();return;}}
+    // Gold pipe: stand on it to enter bonus room
+    if(p.type==='goldpipe'){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}else player.goldPipeTimer=0;
     else if(mo===ol&&player.vx>0)player.x=px-(player.big?48:32);
     else if(mo===orr&&player.vx<0)player.x=px+p.w;
   });
@@ -703,7 +703,7 @@ function initLevel(world, level){
   const hasBoss = level > 1;const maxBoss=(level===26)?5:3;
   curLevel = {world, level};
   levelData = generateLevelData(world, level, words, hasBoss);
-  player = {x:80, y:GROUND-48, w:32, h:48, vx:0, vy:0, onGround:false, facing:1, big:false, hasFlower:false};
+  player = {x:80, y:GROUND-48, w:32, h:48, vx:0, vy:0, onGround:false, facing:1, big:false, hasFlower:false, goldPipeTimer:0};
   camera = 0; coins = 0; lives = 3; time = 0; frame = 0; quizIdx = 0; quizAnswered = 0; quizCorrect = 0;
   triggeredQuiz = []; particles = []; invincible = 0; bossPhase = false; bossQIdx = 0; bossCorrect = 0; bossRetreat = 0; shell = null; paused = false;
   enemies = levelData.enemies.map(e => ({...e}));
