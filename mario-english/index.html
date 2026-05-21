@@ -314,6 +314,14 @@ function drawPufferfish(e){
   ctx.strokeStyle='#E65100';ctx.lineWidth=2;
 }
 function drawShell(s){ctx.fillStyle='#2E7D32';ctx.fillRect(s.x,s.y,28,16);ctx.fillStyle='#4CAF50';ctx.fillRect(s.x+4,s.y+2,20,12);ctx.fillStyle='#FFD700';ctx.fillRect(s.x+6,s.y-2,16,6);}
+function drawDryBones(e){ctx.fillStyle='#BDBDBD';ctx.fillRect(e.x+4,e.y+2,20,22);ctx.fillStyle='#E0E0E0';ctx.fillRect(e.x+8,e.y+6,14,10);ctx.fillStyle='#000';ctx.fillRect(e.x+10,e.y+9,3,3);ctx.fillRect(e.x+18,e.y+9,3,3);ctx.fillStyle='#9E9E9E';ctx.fillRect(e.x+2,e.y+22,6,6);ctx.fillRect(e.x+20,e.y+22,6,6);}
+function drawFireBar(fb){
+  const segs=5,r=fb.len;ctx.globalAlpha=0.8;
+  for(let i=0;i<segs;i++){
+    const a=fb.angle+i*Math.PI/segs,ax=fb.cx+Math.cos(a)*(r*i/segs),ay=fb.cy+Math.sin(a)*(r*i/segs);
+    const c=i<segs-2?'#FFD700':i<segs-1?'#FFA000':'#E53935';ctx.fillStyle=c;ctx.fillRect(ax-8,ay-8,16,16);
+  }ctx.globalAlpha=1;
+}
 function drawBrick(x,y,item){
   ctx.fillStyle='#8B6914';ctx.fillRect(x,y,64,32);ctx.fillStyle='#A0782C';
   for(let bx=0;bx<64;bx+=16)for(let by=0;by<32;by+=8)ctx.fillRect(x+bx+2,y+by+2,12,4);
@@ -429,13 +437,16 @@ function updatePhysics(){
   // Enemies
   enemies.forEach(e=>{
     if(e.y>GROUND+50)return;if(e.type==='shell')return;
+    if(e.crumbled){e.reviveTimer++;if(e.reviveTimer>150){e.crumbled=false;e.reviveTimer=0;e.y=GROUND-28;e.w=28;e.h=28;e.vx=-1-Math.random()*0.5;}return;}
     if(e.type==='jellyfish'){e.y=e.baseY+Math.sin(frame*0.03+e.phase)*40;}
     else if(e.type==='pufferfish'){e.puffTimer++;e.isPuffed=(e.puffTimer%120)>70;e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
+    else if(e.type==='drybones'){e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
     else{e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
     const el={x:e.x+2,y:e.y+2,w:e.w-4,h:e.h-4};
     if(!collides(pb,el))return;
     if(player.vy>0&&pb.y+pb.h-el.y<18){
       if(e.type==='jellyfish'||(e.type==='pufferfish'&&e.isPuffed)){die();return;}
+      else if(e.type==='drybones'){e.crumbled=true;e.h=10;e.y+=18;e.vx=0;e.reviveTimer=0;spawnParticles(e.x+14,e.y,'#BDBDBD',6);coins+=5;}
       else if(e.type==='koopa'){e.type='shell';e.h=16;e.y+=12;e.vx=0;spawnParticles(e.x+14,e.y,'#FFD700',8);coins+=3;}
       else{e.y=GROUND+100;coins+=3;spawnParticles(e.x+14,e.y+14,'#FFD700',10);}
       player.vy=-5;
@@ -452,6 +463,16 @@ function updatePhysics(){
 
   // Hit items
   hitItems.forEach(h=>{if(!h.hit&&!h.active&&Math.abs(player.x+16-h.x)<20&&Math.abs(player.y-h.y)<20&&player.vy<0){h.active=true;h.hit=true;if(h.item==='coin')coins+=3;else if(h.item==='mushroom'&&!player.big){player.big=true;player.y-=24;}else if(h.item==='star')invincible=300;spawnParticles(h.x,h.y-10,'#FFD700',8);}});
+
+  // Fire bars
+  (levelData.fireBars||[]).forEach(fb=>{fb.angle+=fb.speed;});
+  if((levelData.fireBars||[]).some(fb=>{
+    const segs=5,r=fb.len;
+    for(let i=0;i<segs;i++){
+      const a=fb.angle+i*Math.PI/segs,ax=fb.cx+Math.cos(a)*(r*i/segs),ay=fb.cy+Math.sin(a)*(r*i/segs);
+      if(Math.abs(player.x+16-ax)<12&&Math.abs(player.y+24-ay)<12)return true;
+    }return false;
+  })){if(invincible>0){}else die();}
 
   // Quiz triggers
   levelData.quizzes.forEach((q,i)=>{if(!triggeredQuiz.includes(i)&&Math.abs(player.x-q.x)<40){triggeredQuiz.push(i);quizIdx=i;if(levelData.hasBoss&&i>=levelData.quizzes.length-1)activateBoss();else showWordCard();}});
@@ -575,11 +596,13 @@ function generateLevelData(world, level, words, hasBoss) {
   for (let i = 0; i < numWords + 3; i++) {
     const ex = 300 + spacing * i * 0.8;let type;
     if(world===3){type=i%3===0?'jellyfish':i%3===1?'pufferfish':'goomba';}
+    else if(world===5){const ty=['drybones','goomba','koopa','drybones','goomba'];type=ty[i%ty.length];}
     else if(world>=2&&i%3===0)type='koopa';
     else type='goomba';
     const ee={x:ex, y:GROUND-28, w:28, h:28, vx:-1 - Math.random()*0.5, sx:ex, range:100+Math.floor(Math.random()*100), type};
     if(type==='jellyfish'){ee.baseY=ee.y;ee.phase=Math.random()*Math.PI*2;ee.vx=0;}
     if(type==='pufferfish'){ee.puffTimer=Math.floor(Math.random()*90);ee.isPuffed=false;}
+    if(type==='drybones'){ee.reviveTimer=0;ee.crumbled=false;}
     enemies.push(ee);
   }
 
@@ -594,9 +617,15 @@ function generateLevelData(world, level, words, hasBoss) {
     {x:lw*0.5, y:160, w:96, h:24, type:'cloud', cloudTimer:0},
     {x:lw*0.75, y:220, w:96, h:24, type:'cloud', cloudTimer:0},
   ] : [];
+  // Fire bars for world 5
+  const fireBars = world === 5 ? [
+    {cx:lw*0.35, cy:260, len:120, angle:0, speed:0.025},
+    {cx:lw*0.6, cy:200, len:100, angle:Math.PI/2, speed:-0.03},
+    {cx:lw*0.8, cy:280, len:140, angle:Math.PI, speed:0.02},
+  ] : [];
   const allPlatforms = [...platforms, ...movePlatforms, ...cloudPlatforms];
 
-  return {w:lw, hasBoss, platforms:allPlatforms, quizzes, coins, enemies, movePlatforms, cloudPlatforms, world, worldName: ['','🌿 草地王国','🕳️ 洞穴王国','🐠 海底王国','☁️ 天空之城','🏰 库巴城堡'][world]};
+  return {w:lw, hasBoss, platforms:allPlatforms, quizzes, coins, enemies, movePlatforms, cloudPlatforms, fireBars, world, worldName: ['','🌿 草地王国','🕳️ 洞穴王国','🐠 海底王国','☁️ 天空之城','🏰 库巴城堡'][world]};
 }
 
 function initLevel(world, level){
@@ -736,8 +765,9 @@ function render(){
     ctx.fillStyle=gc[0];ctx.fillRect(0,GROUND,levelData.w,120);ctx.fillStyle=gc[1];ctx.fillRect(0,GROUND,levelData.w,16);
     levelData.platforms.forEach(p=>{if(p.y<-100)return;if(p.type==='brick')drawBrick(p.x,p.y,p.item);else if(p.type==='pipe')drawPipe(p.x,p.y);else if(p.type==='move'){ctx.fillStyle='#6D4C41';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillStyle='#A0782C';ctx.fillRect(p.x+2,p.y+2,p.w-4,4);}else if(p.type==='cloud'){const c=p.cloudTimer>120?'#E0E0E0':'#fff';ctx.fillStyle='rgba(255,255,255,'+(p.cloudTimer>120?0.5:0.8)+')';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillRect(p.x+10,p.y-8,p.w-20,12);ctx.fillRect(p.x+20,p.y-16,p.w-40,10);ctx.fillStyle=c;ctx.fillRect(p.x+4,p.y+4,p.w-8,16);if(p.cloudTimer>120){ctx.strokeStyle='#E53935';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x+8,p.y+6);ctx.lineTo(p.x+24,p.y+18);ctx.lineTo(p.x+40,p.y+6);ctx.stroke();}}});
     levelData.coins.forEach(c=>{if(c.collected)return;const g=Math.sin(frame*0.08)*0.3+0.7;ctx.fillStyle=`rgba(255,215,0,${g})`;ctx.fillRect(c.x-6,c.y-6,12,12);ctx.fillStyle='#FFD700';ctx.fillRect(c.x-4,c.y-4,8,8);});
-    enemies.forEach(e=>{if(e.y>GROUND+50)return;if(e.type==='shell')drawShell(e);else if(e.type==='koopa')drawKoopa(e);else if(e.type==='jellyfish')drawJellyfish(e);else if(e.type==='pufferfish')drawPufferfish(e);else drawGoomba(e);});
+    enemies.forEach(e=>{if(e.y>GROUND+50)return;if(e.type==='shell')drawShell(e);else if(e.type==='koopa')drawKoopa(e);else if(e.type==='jellyfish')drawJellyfish(e);else if(e.type==='pufferfish')drawPufferfish(e);else if(e.type==='drybones'){if(!e.crumbled)drawDryBones(e);else{ctx.fillStyle='#9E9E9E';ctx.fillRect(e.x+4,e.y,20,10);}}else drawGoomba(e);});
     if(shell&&shell.active)drawShell(shell);
+    (levelData.fireBars||[]).forEach(fb=>drawFireBar(fb));
     if(bossPhase){
       const bx=levelData.w-120-(bossCorrect*25)+Math.max(0,bossRetreat*0.6);
       drawBoss(bx,GROUND-140-(bossRetreat*0.3));
