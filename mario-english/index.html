@@ -24,7 +24,7 @@ canvas{display:block;border:3px solid #333;border-radius:8px;image-rendering:pix
 /* Word modal */
 #word-modal{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:20;pointer-events:none}
 #word-modal.active{pointer-events:auto}
-#word-modal .card{width:380px;background:var(--card);border:3px solid #C4A35A;border-radius:16px;padding:28px 24px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none}
+#word-modal .card{width:380px;background:var(--card);border:3px solid #C4A35A;border-radius:16px;padding:28px 24px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none;position:relative}
 #word-modal.active .card{display:block;animation:popIn .3s ease-out}
 @keyframes popIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
 .card .icon{font-size:48px;line-height:1}.card .word-title{font-size:28px;font-weight:900;color:var(--dark);margin:8px 0;letter-spacing:2px}
@@ -819,7 +819,7 @@ function render(){
     ctx.fillStyle=gc[0];ctx.fillRect(0,GROUND,levelData.w,120);ctx.fillStyle=gc[1];ctx.fillRect(0,GROUND,levelData.w,16);
     levelData.platforms.forEach(p=>{if(p.y<-100)return;if(p.type==='brick')drawBrick(p.x,p.y,p.item);else if(p.type==='pipe')drawPipe(p.x,p.y);else if(p.type==='move'){ctx.fillStyle='#6D4C41';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillStyle='#A0782C';ctx.fillRect(p.x+2,p.y+2,p.w-4,4);}else if(p.type==='cloud'){const c=p.cloudTimer>120?'#E0E0E0':'#fff';ctx.fillStyle='rgba(255,255,255,'+(p.cloudTimer>120?0.5:0.8)+')';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillRect(p.x+10,p.y-8,p.w-20,12);ctx.fillRect(p.x+20,p.y-16,p.w-40,10);ctx.fillStyle=c;ctx.fillRect(p.x+4,p.y+4,p.w-8,16);if(p.cloudTimer>120){ctx.strokeStyle='#E53935';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x+8,p.y+6);ctx.lineTo(p.x+24,p.y+18);ctx.lineTo(p.x+40,p.y+6);ctx.stroke();}}});
     levelData.coins.forEach(c=>{if(c.collected)return;const g=Math.sin(frame*0.08)*0.3+0.7;ctx.fillStyle=`rgba(255,215,0,${g})`;ctx.fillRect(c.x-6,c.y-6,12,12);ctx.fillStyle='#FFD700';ctx.fillRect(c.x-4,c.y-4,8,8);});
-    levelData.quizzes.forEach((q,i)=>{if(triggeredQuiz.includes(i))return;const b=Math.sin(frame*0.06)*2;ctx.fillStyle='#FF9800';ctx.fillRect(q.x-8,GROUND-40+b,16,28);ctx.fillStyle='#FFF';ctx.fillRect(q.x-6,GROUND-38+b,12,4);ctx.fillRect(q.x-4,GROUND-30+b,8,4);ctx.fillStyle='#FF5722';ctx.fillRect(q.x-5,GROUND-24+b,10,10);ctx.font='10px sans-serif';ctx.fillText('?',q.x-3,GROUND-17+b);});
+    levelData.quizzes.forEach((q,i)=>{if(triggeredQuiz.includes(i))return;const b=Math.sin(frame*0.06)*3;ctx.fillStyle='#FF9800';ctx.fillRect(q.x-10,GROUND-55+b,20,40);ctx.fillStyle='#FFF';ctx.fillRect(q.x-8,GROUND-52+b,16,5);ctx.fillStyle='#FF5722';ctx.fillRect(q.x-7,GROUND-38+b,14,16);ctx.fillStyle='#FFD700';ctx.font='bold 16px sans-serif';ctx.textAlign='center';ctx.fillText('📖',q.x,GROUND-22+b);});
     enemies.forEach(e=>{if(e.y>GROUND+50)return;if(e.type==='shell')drawShell(e);else if(e.type==='koopa')drawKoopa(e);else if(e.type==='jellyfish')drawJellyfish(e);else if(e.type==='pufferfish')drawPufferfish(e);else if(e.type==='drybones'){if(!e.crumbled)drawDryBones(e);else{ctx.fillStyle='#9E9E9E';ctx.fillRect(e.x+4,e.y,20,10);}}else if(e.type==='bowserjr')drawBowserJr(e);else drawGoomba(e);});
     if(shell&&shell.active)drawShell(shell);
     (levelData.fireBars||[]).forEach(fb=>drawFireBar(fb));
