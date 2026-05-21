@@ -727,11 +727,20 @@ function enterBonusRoom(){
   const total=5;
   const bricks=[];
   for(let i=0;i<total;i++)bricks.push({x:150+i*140,y:200+(i%2)*60,w:56,h:24,hit:false,letter:caps+lower});
-  bonusRoom={bricks,timer:0,maxTime:600,exitX:500,exitY:GROUND-60,totalCoins:0};
+  bonusRoom={bricks,timer:0,maxTime:600,exitX:500,exitY:GROUND-60,totalCoins:0,
+    savedPlayer:{x:player.x,y:player.y,vx:player.vx,vy:player.vy,onGround:player.onGround,facing:player.facing,big:player.big,hasFlower:player.hasFlower}};
+  player.x=400;player.y=GROUND-48;player.vx=0;player.vy=0;player.onGround=true;player.goldPipeTimer=0;
+}
+function exitBonusRoom(){
+  if(!bonusRoom)return;
+  const sp=bonusRoom.savedPlayer;
+  player.x=sp.x;player.y=sp.y;player.vx=sp.vx;player.vy=sp.vy;player.onGround=sp.onGround;
+  player.facing=sp.facing;player.big=sp.big;player.hasFlower=sp.hasFlower;
+  bonusRoom=null;
 }
 function updateBonusRoom(){
   if(!bonusRoom)return;
-  bonusRoom.timer++;if(bonusRoom.timer>bonusRoom.maxTime){bonusRoom=null;return;}
+  bonusRoom.timer++;if(bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();return;}
   if(keys['ArrowLeft']||keys['a']){player.vx=-3;player.facing=-1;}
   else if(keys['ArrowRight']||keys['d']){player.vx=3;player.facing=1;}
   else player.vx*=0.7;
@@ -750,7 +759,7 @@ function updateBonusRoom(){
     }
   });
   const allHit=bonusRoom.bricks.every(b=>b.hit);
-  if(allHit||(bonusRoom.timer>bonusRoom.maxTime-60&&player.y+player.h>=GROUND-10&&player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40)){bonusRoom=null;}
+  if(allHit||(bonusRoom.timer>bonusRoom.maxTime-60&&player.y+player.h>=GROUND-10&&player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40)){exitBonusRoom();}
 }
 function drawBonusRoom(){
   if(!bonusRoom)return;
