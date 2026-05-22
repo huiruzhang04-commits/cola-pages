@@ -729,7 +729,7 @@ function enterBonusRoom(){
   const total=5;
   const bricks=[];
   for(let i=0;i<total;i++)bricks.push({x:150+i*140,y:200+(i%2)*60,w:56,h:24,hit:false,letter:caps+lower});
-  bonusRoom={bricks,timer:0,maxTime:600,exitX:500,exitY:GROUND-60,totalCoins:0,exitTimer:0,
+  bonusRoom={bricks,timer:0,maxTime:600,exitX:750,exitY:GROUND-60,totalCoins:0,exitTimer:0,lastJump:false,
     savedPlayer:{x:player.x,y:player.y,vx:player.vx,vy:player.vy,onGround:player.onGround,facing:player.facing,big:player.big,hasFlower:player.hasFlower}};
   // Clear all movement keys so Mario doesn't jump on entry
   keys[' ']=false;keys['ArrowUp']=false;keys['ArrowLeft']=false;keys['ArrowRight']=false;keys['w']=false;keys['a']=false;keys['d']=false;
@@ -746,13 +746,21 @@ function exitBonusRoom(){
 function updateBonusRoom(){
   if(!bonusRoom)return;
   bonusRoom.timer++;if(bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();return;}
+  // Movement (same as game world)
   if(keys['ArrowLeft']||keys['a']){player.vx=-3;player.facing=-1;}
   else if(keys['ArrowRight']||keys['d']){player.vx=3;player.facing=1;}
   else player.vx*=0.7;
-  if((keys[' ']||keys['ArrowUp']||keys['w'])&&player.onGround){player.vy=-10;player.onGround=false;}
+  // Jump: only on new press, not held from before entering room
+  const jp=keys[' ']||keys['ArrowUp']||keys['w'];
+  if(!bonusRoom.lastJump&&jp&&player.onGround){player.vy=-11;player.onGround=false;}
+  bonusRoom.lastJump=jp;
+  // Variable jump height: release jump key = cut velocity
+  if(!jp&&player.vy<-3)player.vy*=(player.vy<-7?0.45:0.65);
+  // Physics
   player.vy+=0.5;player.x+=player.vx;player.y+=player.vy;
   if(player.y>=GROUND){player.y=GROUND-48;player.vy=0;player.onGround=true;}
   if(player.x<0)player.x=0;if(player.x>800)player.x=800;
+  // Brick collision
   const pb={x:player.x,y:player.y,w:32,h:48};
   bonusRoom.bricks.forEach(b=>{
     if(b.hit)return;
@@ -762,10 +770,11 @@ function updateBonusRoom(){
       speak(b.letter.substring(0,1)+', '+b.letter.substring(1)+'... '+b.letter.toLowerCase(),0.6);
     }
   });
+  // Exit: stand on right exit pipe → auto after 0.7s. Tighter range (pipe is 48px wide)
+  const ex=bonusRoom.exitX;
+  const nearExit=player.x>ex-20&&player.x<ex+48&&player.y+48>=GROUND-8&&player.y+48<=GROUND+8;
+  if(nearExit){bonusRoom.exitTimer=(bonusRoom.exitTimer||0)+1;if(bonusRoom.exitTimer>42)exitBonusRoom();}else{bonusRoom.exitTimer=0;}
   const allHit=bonusRoom.bricks.every(b=>b.hit);
-  // Exit: walk to right exit pipe (auto-trigger on touch), or time/all bricks done
-  const nearExit=player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40&&player.y+48>=GROUND-10;
-  if(nearExit){bonusRoom.exitTimer=(bonusRoom.exitTimer||0)+1;if(bonusRoom.exitTimer>30){exitBonusRoom();return;}}else{bonusRoom.exitTimer=0;}
   if(allHit||bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();}
 }
 function drawBonusRoom(){
@@ -789,8 +798,8 @@ function drawBonusRoom(){
   ctx.fillStyle='#4CAF50';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,60);ctx.fillStyle='#2E7D32';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,12);
   ctx.fillStyle='#1B5E20';ctx.fillRect(bonusRoom.exitX-2,GROUND-60,6,60);ctx.fillRect(bonusRoom.exitX+44,GROUND-60,6,60);
   ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('EXIT',bonusRoom.exitX+24,GROUND-25);
-  // Exit prompt
-  const near=player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40&&player.y+48>=GROUND-10;
+  // Exit prompt (match updateBonusRoom range: ex-20 to ex+48)
+  const near=player.x>bonusRoom.exitX-20&&player.x<bonusRoom.exitX+48&&player.y+48>=GROUND-8;
   if(near){ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='13px sans-serif';ctx.fillText('↓ 离开',bonusRoom.exitX+24,GROUND-75);}
   // Player
   drawPixelChar(player.x,player.y,player.facing,player.big);
