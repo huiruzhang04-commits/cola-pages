@@ -533,6 +533,8 @@ body{
 .action-btn:active{background:var(--tag-bg)}
 .action-btn.active{color:var(--gold)}
 .action-btn.recited{color:var(--success)}
+.action-btn.recording{color:#e53e3e;animation:pulse .8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* Vocab Popover */
 .vocab-popover{
@@ -731,6 +733,8 @@ body.dark .translate-btn{color:#1a1e2e}
     <div class="calendar-container" id="calendar-container"></div>
   </div>
   <div style="height:12px"></div>
+  <div class="card-plain" id="custom-cards-section"></div>
+  <div style="height:12px"></div>
   <div class="settings-section">
     <div class="settings-item" id="dark-mode-toggle-item">
       <span class="settings-label"><span class="settings-icon">◐</span> 明亮模式</span>
@@ -770,6 +774,7 @@ body.dark .translate-btn{color:#1a1e2e}
   <div class="overlay-card" id="detail-content"></div>
   <div class="action-bar" id="action-bar" style="display:none">
     <button class="action-btn" id="btn-tts"><span class="btn-icon">♪</span>朗读</button>
+    <button class="action-btn" id="btn-record"><span class="btn-icon">●</span>录音</button>
     <button class="action-btn" id="btn-fav"><span class="btn-icon">☆</span>收藏</button>
     <button class="action-btn" id="btn-recited"><span class="btn-icon">✓</span>已背</button>
     <button class="action-btn" id="btn-share"><span class="btn-icon">↗</span>分享</button>
@@ -1609,15 +1614,6 @@ function openArticle(articleId) {
   content.scrollTop = 0;
 }
 
-function closeDetail() {
-  document.getElementById('detail-overlay').classList.remove('active');
-  document.getElementById('action-bar').style.display = 'none';
-  stopTTS();
-  isTTSPlaying = false;
-  currentArticleId = null;
-  document.getElementById('vocab-popover').style.display = 'none';
-}
-
 function showVocabPopover(e, word, def) {
   const popover = document.getElementById('vocab-popover');
   popover.innerHTML = `<div class="pop-word">${word}</div><div class="pop-def">${def}</div>`;
@@ -1721,6 +1717,56 @@ function markRecited() {
   const si = getStreakIcon(streak);
   showToast(`${si.icon} 已背诵！连续 ${streak} 天`);
   renderHome();
+}
+
+// ==================== VOICE RECORDING ====================
+let mediaRecorder = null, audioChunks = [], isRecording = false, recordAudio = null;
+
+async function toggleRecording() {
+  const btn = document.getElementById('btn-record');
+  if (isRecording) {
+    mediaRecorder.stop();
+    btn.classList.remove('recording');
+    btn.querySelector('.btn-icon').textContent = '●';
+    isRecording = false;
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(audioChunks, {type:'audio/webm'});
+      const url = URL.createObjectURL(blob);
+      if (recordAudio) { recordAudio.pause(); URL.revokeObjectURL(recordAudio.src); recordAudio.remove(); }
+      recordAudio = new Audio(url);
+      recordAudio.controls = true;
+      recordAudio.style.cssText = 'width:100%;margin-top:8px;border-radius:4px';
+      const actionBar = document.getElementById('action-bar');
+      actionBar.parentNode.insertBefore(recordAudio, actionBar.nextSibling);
+      recordAudio.play();
+      showToast('🔊 录音完成，正在回听');
+    };
+    mediaRecorder.start();
+    btn.classList.add('recording');
+    btn.querySelector('.btn-icon').textContent = '■';
+    isRecording = true;
+    showToast('🎤 正在录音...');
+  } catch(e) {
+    showToast('⚠️ 无法访问麦克风，请检查权限');
+  }
+}
+
+function closeDetail() {
+  if (recordAudio) { recordAudio.pause(); recordAudio.remove(); recordAudio = null; }
+  stopTTS(); isTTSPlaying = false;
+  currentArticleId = null;
+  document.getElementById('detail-overlay').classList.remove('active');
+  document.getElementById('action-bar').style.display = 'none';
+  document.getElementById('vocab-popover').style.display = 'none';
+  if (mediaRecorder && isRecording) { mediaRecorder.stop(); isRecording = false; }
 }
 
 // Share Card
@@ -2006,7 +2052,28 @@ function renderProfile() {
 
   renderCalendar();
 
+  // Custom word cards from quick translate
+  const cards = getCustomCards();
+  const ccSection = document.getElementById('custom-cards-section');
+  if (cards.length === 0) {
+    ccSection.innerHTML = '<div style="padding:14px;color:var(--text-muted);font-size:12px;text-align:center;border:1px dashed var(--gold-dim);border-radius:4px">📌 随手译中保存的词汇卡片会出现在这里</div>';
+  } else {
+    ccSection.innerHTML = '<h2 style="font-size:14px;color:var(--gold);margin-bottom:8px">📌 我的生词卡</h2>' +
+      cards.slice().reverse().map((c, i) => `
+        <div class="stat-card" style="text-align:left;margin-bottom:6px;position:relative">
+          <div style="font-size:13px;font-family:var(--font-serif);color:var(--text);margin-bottom:4px">${c.text}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${c.date}</div>
+          <button onclick="deleteCustomCard(${cards.length-1-i});renderProfile();" style="position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px">✕</button>
+        </div>`).join('');
+  }
+
   document.getElementById('dark-mode-checkbox').checked = getNightMode();
+}
+
+function deleteCustomCard(idx) {
+  const cards = getCustomCards();
+  cards.splice(idx, 1);
+  setCustomCards(cards);
 }
 
 let calendarMonth = new Date().getMonth();
@@ -2132,6 +2199,7 @@ function init() {
 
   // Detail actions
   document.getElementById('btn-tts').addEventListener('click', toggleTTS);
+  document.getElementById('btn-record').addEventListener('click', toggleRecording);
   document.getElementById('btn-fav').addEventListener('click', toggleFavorite);
   document.getElementById('btn-recited').addEventListener('click', markRecited);
   document.getElementById('btn-share').addEventListener('click', generateShareCard);
