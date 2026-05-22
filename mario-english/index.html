@@ -648,8 +648,8 @@ function generateLevelData(world, level, words, hasBoss) {
   // Pipes
   platforms.push({x: lw*0.25, y:360, w:64, h:60, type:'pipe'});
   platforms.push({x: lw*0.65, y:360, w:64, h:60, type:'pipe'});
-  // Gold pipe (bonus room)
-  platforms.push({x: lw*0.15, y:360, w:64, h:60, type:'goldpipe'});
+  // Gold pipe (bonus room) - hidden in middle of level
+  platforms.push({x: lw*0.55, y:360, w:64, h:60, type:'goldpipe'});
 
   // Quiz triggers
   const quizzes = words.map((_, i) => ({x: spacing * (i + 1) + 100}));
@@ -729,7 +729,7 @@ function enterBonusRoom(){
   const total=5;
   const bricks=[];
   for(let i=0;i<total;i++)bricks.push({x:150+i*140,y:200+(i%2)*60,w:56,h:24,hit:false,letter:caps+lower});
-  bonusRoom={bricks,timer:0,maxTime:600,exitX:500,exitY:GROUND-60,totalCoins:0,
+  bonusRoom={bricks,timer:0,maxTime:600,exitX:500,exitY:GROUND-60,totalCoins:0,exitTimer:0,
     savedPlayer:{x:player.x,y:player.y,vx:player.vx,vy:player.vy,onGround:player.onGround,facing:player.facing,big:player.big,hasFlower:player.hasFlower}};
   // Clear all movement keys so Mario doesn't jump on entry
   keys[' ']=false;keys['ArrowUp']=false;keys['ArrowLeft']=false;keys['ArrowRight']=false;keys['w']=false;keys['a']=false;keys['d']=false;
@@ -757,14 +757,16 @@ function updateBonusRoom(){
   bonusRoom.bricks.forEach(b=>{
     if(b.hit)return;
     if(player.vy<0&&collides(pb,{x:b.x,y:b.y,w:b.w,h:b.h})&&pb.y+pb.h-b.y<20){
-      b.hit=true;bonusRoom.totalCoins+=3;coins+=3;
+      b.hit=true;player.vy=-5;player.onGround=false;bonusRoom.totalCoins+=3;coins+=3;
       spawnParticles(b.x+28,b.y-10,'#FFD700',10);
       speak(b.letter.substring(0,1)+', '+b.letter.substring(1)+'... '+b.letter.toLowerCase(),0.6);
-      player.vy=-5;
     }
   });
   const allHit=bonusRoom.bricks.every(b=>b.hit);
-  if(allHit||(bonusRoom.timer>bonusRoom.maxTime-60&&player.y+player.h>=GROUND-10&&player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40)){exitBonusRoom();}
+  // Exit: walk to right exit pipe (auto-trigger on touch), or time/all bricks done
+  const nearExit=player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40&&player.y+48>=GROUND-10;
+  if(nearExit){bonusRoom.exitTimer=(bonusRoom.exitTimer||0)+1;if(bonusRoom.exitTimer>30){exitBonusRoom();return;}}else{bonusRoom.exitTimer=0;}
+  if(allHit||bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();}
 }
 function drawBonusRoom(){
   if(!bonusRoom)return;
@@ -787,11 +789,15 @@ function drawBonusRoom(){
   ctx.fillStyle='#4CAF50';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,60);ctx.fillStyle='#2E7D32';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,12);
   ctx.fillStyle='#1B5E20';ctx.fillRect(bonusRoom.exitX-2,GROUND-60,6,60);ctx.fillRect(bonusRoom.exitX+44,GROUND-60,6,60);
   ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('EXIT',bonusRoom.exitX+24,GROUND-25);
+  // Exit prompt
+  const near=player.x>bonusRoom.exitX-40&&player.x<bonusRoom.exitX+40&&player.y+48>=GROUND-10;
+  if(near){ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='13px sans-serif';ctx.fillText('↓ 离开',bonusRoom.exitX+24,GROUND-75);}
   // Player
   drawPixelChar(player.x,player.y,player.facing,player.big);
-  // Timer
+  // Timer (flashes red in last 3 seconds)
   const left=Math.ceil((bonusRoom.maxTime-bonusRoom.timer)/60);
-  ctx.fillStyle='#FFD700';ctx.font='20px "Courier New",monospace';ctx.textAlign='left';
+  const urgent=left<=3&&frame%30<15;
+  ctx.fillStyle=urgent?'#E53935':'#FFD700';ctx.font='20px "Courier New",monospace';ctx.textAlign='left';
   ctx.fillText('⏱ '+left+'s · 🪙 +'+bonusRoom.totalCoins,20,140);
   if(bonusRoom.bricks.every(b=>b.hit)){ctx.fillStyle='#4CAF50';ctx.font='bold 24px "Courier New",monospace';ctx.textAlign='center';ctx.fillText('✅ 全部完成！走向出口',W/2,H-40);}
 }
