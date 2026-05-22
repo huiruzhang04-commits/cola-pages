@@ -8,51 +8,52 @@
 <title>每日美文 — Daily Recitation</title>
 <style>
 :root {
-  --bg: #fffaf0;
-  --bg-card: #ffffff;
-  --text: #2d3748;
-  --text-secondary: #718096;
-  --text-muted: #a0aec0;
-  --border: #e2e8f0;
-  --shadow: 0 2px 12px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.10);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --nav-bg: #ffffff;
-  --nav-border: #e2e8f0;
-  --accent: #d4a574;
-  --accent-text: #1a365d;
-  --overlay-bg: rgba(0,0,0,0.5);
-  --popover-bg: #ffffff;
-  --popover-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  --divider: #edf2f7;
-  --tag-bg: #edf2f7;
-  --tag-text: #4a5568;
-  --success: #48bb78;
-  --danger: #fc8181;
-  --fire-color: #ed8936;
-  --font: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-  --font-serif: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+  --bg: #1a1e2e;
+  --card-bg: #F5F5F0;
+  --card-active: #efeae0;
+  --gold: #C4A35A;
+  --gold-dim: rgba(196,163,90,0.4);
+  --text: #2C2C2C;
+  --text-secondary: #8b8378;
+  --text-muted: #9a9488;
+  --border: #C4A35A;
+  --nav-bg: #151928;
+  --nav-border: #252a3a;
+  --overlay-bg: rgba(0,0,0,0.75);
+  --popover-bg: #F5F5F0;
+  --popover-border: #C4A35A;
+  --divider-gold: #C4A35A;
+  --tag-bg: #efeae0;
+  --tag-text: #2C2C2C;
+  --success: #5b8f5b;
+  --fire-color: #c4843a;
+  --vocab-color: #c4843a;
+  --font: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-serif: 'Georgia', 'Times New Roman', serif;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --nav-height: 56px;
 }
 body.dark {
-  --bg: #1a1a2e;
-  --bg-card: #16213e;
+  --bg: #F5F5F0;
+  --card-bg: #1a1e2e;
+  --card-active: #22273a;
+  --gold: #C4A35A;
+  --gold-dim: rgba(196,163,90,0.4);
   --text: #e8d5b7;
   --text-secondary: #b0a090;
   --text-muted: #7a7060;
-  --border: #2a2a4a;
-  --shadow: 0 2px 12px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
-  --nav-bg: #16213e;
-  --nav-border: #2a2a4a;
-  --overlay-bg: rgba(0,0,0,0.7);
-  --popover-bg: #1e2a4a;
-  --popover-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  --divider: #2a2a4a;
-  --tag-bg: #2a2a4a;
+  --border: #C4A35A;
+  --nav-bg: #f0ede6;
+  --nav-border: #d4cbb8;
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popover-bg: #1a1e2e;
+  --popover-border: #C4A35A;
+  --divider-gold: #C4A35A;
+  --tag-bg: #252a3a;
   --tag-text: #b0a090;
+  --success: #5b8f5b;
+  --fire-color: #c4843a;
+  --vocab-color: #c4843a;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;-webkit-tap-highlight-color:transparent}
@@ -70,6 +71,46 @@ body{
 }
 #app{max-width:480px;margin:0 auto;padding:16px 16px 0}
 
+/* Gold divider */
+.gold-rule{
+  border:none;
+  border-top:1px solid var(--gold-dim);
+  margin:14px 0;
+  width:100%;
+  opacity:0.7;
+}
+
+/* Section label */
+.section-label{
+  font-size:11px;
+  color:var(--gold);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-weight:600;
+  margin-bottom:10px;
+  font-family:var(--font);
+}
+
+/* Cards */
+.card{
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:20px;
+  margin-bottom:12px;
+  transition:background .2s;
+  cursor:pointer;
+}
+.card:active{background:var(--card-active)}
+.card-plain{
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:20px;
+  margin-bottom:12px;
+  transition:background .2s;
+}
+
 /* Bottom Nav */
 #bottom-nav{
   position:fixed;bottom:0;left:0;right:0;
@@ -80,148 +121,163 @@ body{
   padding-bottom:var(--safe-bottom);
   z-index:100;
   transition:background .3s,border-color .3s;
+  max-width:480px;margin:0 auto;
 }
 #bottom-nav .nav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border:none;background:none;color:var(--text-muted);font-size:10px;
-  cursor:pointer;padding:4px 0;gap:2px;transition:color .2s;
+  border:none;background:none;color:#6b7394;font-size:10px;
+  cursor:pointer;padding:4px 0;gap:3px;transition:color .2s;
   font-family:var(--font);
   -webkit-tap-highlight-color:transparent;
   min-height:44px;
 }
-#bottom-nav .nav-btn .nav-icon{font-size:22px;line-height:1}
-#bottom-nav .nav-btn.active{color:var(--accent-text);font-weight:600}
-body.dark #bottom-nav .nav-btn.active{color:var(--accent)}
+#bottom-nav .nav-btn .nav-icon{font-size:18px;line-height:1}
+#bottom-nav .nav-btn.active{color:var(--gold);font-weight:600}
 
 /* Panels */
 .panel{display:none;animation:fadeIn .25s ease}
 .panel.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* Streak Bar */
-.streak-bar{
-  display:flex;align-items:center;gap:8px;padding:10px 16px;
-  background:var(--bg-card);border-radius:var(--radius);
-  box-shadow:var(--shadow);margin-bottom:16px;
-  transition:background .3s;
+/* Home header */
+.home-header{
+  text-align:center;
+  padding:8px 0 16px 0;
 }
-.streak-bar .fire-icon{font-size:28px;line-height:1}
-.streak-bar .fire-icon.glow{animation:fireGlow 1.5s ease-in-out infinite}
-.streak-bar .streak-info{flex:1}
-.streak-bar .streak-count{font-size:22px;font-weight:700;color:var(--fire-color)}
-.streak-bar .streak-label{font-size:12px;color:var(--text-secondary)}
-.streak-bar .streak-date{font-size:12px;color:var(--text-muted)}
-@keyframes fireGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(237,137,54,0.6))}50%{filter:drop-shadow(0 0 14px rgba(237,137,54,1))}}
+.home-header .header-star{
+  color:var(--gold);
+  font-size:14px;
+  letter-spacing:4px;
+  font-weight:400;
+  font-family:var(--font);
+}
 
-/* Cards */
-.card{
-  background:var(--bg-card);border-radius:var(--radius);
-  box-shadow:var(--shadow);padding:16px;margin-bottom:12px;
-  transition:background .3s,box-shadow .3s;
+/* Featured daily */
+.featured-card{
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:24px 20px;
+  margin-bottom:0;
   cursor:pointer;
+  transition:background .2s;
+  position:relative;
+  overflow:hidden;
 }
-.card:active{transform:scale(0.98)}
+.featured-card:active{background:var(--card-active)}
+.featured-card .feat-title{
+  font-family:var(--font-serif);
+  font-size:24px;
+  font-weight:700;
+  line-height:1.3;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.featured-card .feat-author{
+  font-size:13px;
+  color:var(--text-secondary);
+  margin-bottom:12px;
+}
+.featured-card .feat-excerpt{
+  font-family:var(--font-serif);
+  font-size:14px;
+  color:var(--text-secondary);
+  line-height:1.6;
+  margin-bottom:8px;
+}
+.featured-card .feat-star{
+  position:absolute;
+  bottom:16px;
+  right:20px;
+  color:var(--gold-dim);
+  font-size:16px;
+}
 
-/* Daily Rec Card */
-.daily-rec-card{
-  background:linear-gradient(135deg,#1a365d,#2a4a7f);
-  color:#fff;border-radius:var(--radius);padding:20px;
-  box-shadow:var(--shadow-lg);margin-bottom:16px;position:relative;overflow:hidden;
+/* Streak bar */
+.streak-card{
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:14px 20px;
+  margin-bottom:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:background .2s;
 }
-body.dark .daily-rec-card{background:linear-gradient(135deg,#0f1f3d,#1a365d)}
-.daily-rec-card .rec-label{
-  font-size:11px;text-transform:uppercase;letter-spacing:2px;
-  opacity:.7;margin-bottom:4px;
-}
-.daily-rec-card .rec-title{font-size:20px;font-weight:700;margin-bottom:4px}
-.daily-rec-card .rec-author{font-size:13px;opacity:.8;margin-bottom:8px}
-.daily-rec-card .rec-badge{
-  display:inline-block;background:rgba(255,255,255,.2);
-  padding:2px 10px;border-radius:20px;font-size:11px;
-}
-.daily-rec-card .rec-preview{font-size:13px;opacity:.85;margin-top:8px;line-height:1.5}
-.daily-rec-card::after{
-  content:'';position:absolute;top:-30px;right:-30px;
-  width:100px;height:100px;border-radius:50%;
-  background:rgba(255,255,255,0.05);
-}
+.streak-card .streak-icon{font-size:22px;line-height:1}
+.streak-card .streak-icon.glow{animation:fireGlow 1.5s ease-in-out infinite}
+.streak-card .streak-info{flex:1;display:flex;align-items:center;gap:6px}
+.streak-card .streak-count{font-size:18px;font-weight:700;color:var(--fire-color)}
+.streak-card .streak-label{font-size:12px;color:var(--text-secondary)}
+.streak-card .streak-date{font-size:12px;color:var(--text-muted)}
+@keyframes fireGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(196,132,58,0.6))}50%{filter:drop-shadow(0 0 14px rgba(196,132,58,1))}}
 
-/* Category Badge */
-.cat-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 10px;border-radius:20px;font-size:11px;
-  font-weight:600;white-space:nowrap;
-}
-
-/* Section header */
-.section-header{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:10px;
-}
-.section-header h2{font-size:16px;font-weight:700}
-
-/* Horizontal scroll */
-.h-scroll{
-  display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;
-  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-}
-.h-scroll::-webkit-scrollbar{display:none}
-.h-scroll .h-card{
-  flex:0 0 140px;scroll-snap-align:start;
-  background:var(--bg-card);border-radius:var(--radius);
-  box-shadow:var(--shadow);padding:12px;cursor:pointer;
-  transition:background .3s;
-}
-.h-scroll .h-card:active{transform:scale(0.96)}
-.h-scroll .h-card .h-title{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.3;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.h-scroll .h-card .h-meta{font-size:11px;color:var(--text-muted)}
-
-/* Category Grid */
+/* Category grid 2x3 */
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cat-card{
-  background:var(--bg-card);border-radius:var(--radius);padding:16px;
-  box-shadow:var(--shadow);cursor:pointer;transition:background .3s,transform .15s;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:18px 14px;
+  cursor:pointer;
+  transition:background .2s;
   display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
+  position:relative;
 }
-.cat-card:active{transform:scale(0.96)}
-.cat-card .cat-icon{font-size:32px}
-.cat-card .cat-name{font-size:14px;font-weight:600}
+.cat-card:active{background:var(--card-active)}
+.cat-card .cat-left-border{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px}
+.cat-card .cat-icon{font-size:28px;line-height:1}
+.cat-card .cat-name{font-size:14px;font-weight:600;color:var(--text)}
 .cat-card .cat-count{font-size:11px;color:var(--text-muted)}
-.cat-card:nth-child(7){grid-column:1/-1}
 
-/* Article List */
-.article-list{margin-top:12px}
-.article-list .back-btn{
+/* Article list items */
+.article-list-card{
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:16px 18px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:background .2s;
+  display:flex;align-items:center;gap:12px;
+}
+.article-list-card:active{background:var(--card-active)}
+.article-list-card .al-info{flex:1;min-width:0}
+.article-list-card .al-title{font-family:var(--font-serif);font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.article-list-card .al-meta{font-size:12px;color:var(--text-secondary);display:flex;gap:10px;align-items:center}
+.article-list-card .al-stars{color:var(--gold);font-size:11px;letter-spacing:1px}
+.article-list-card .al-arrow{color:var(--text-muted);font-size:16px;flex-shrink:0}
+
+/* Back button */
+.back-btn{
   display:inline-flex;align-items:center;gap:4px;
   background:none;border:none;color:var(--text-secondary);font-size:13px;
   cursor:pointer;padding:8px 0;margin-bottom:8px;font-family:var(--font);
 }
-.article-list-item{
-  display:flex;align-items:center;gap:12px;padding:14px 12px;
-  border-bottom:1px solid var(--divider);cursor:pointer;
-  transition:background .15s;
+.back-btn:hover{color:var(--gold)}
+
+/* Category badge */
+.cat-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:3px;font-size:11px;
+  font-weight:600;white-space:nowrap;
 }
-.article-list-item:active{background:var(--tag-bg)}
-.article-list-item .item-info{flex:1;min-width:0}
-.article-list-item .item-title{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.article-list-item .item-author{font-size:12px;color:var(--text-secondary)}
-.article-list-item .item-meta{display:flex;gap:8px;align-items:center;margin-top:2px}
-.article-list-item .item-stars{color:#ecc94b;font-size:12px;letter-spacing:1px}
-.article-list-item .item-duration{font-size:11px;color:var(--text-muted)}
-.article-list-item .item-arrow{color:var(--text-muted);font-size:14px}
 
 /* Favorites */
 .fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fav-card{
-  background:var(--bg-card);border-radius:var(--radius);padding:14px;
-  box-shadow:var(--shadow);cursor:pointer;transition:background .3s;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:16px;
+  cursor:pointer;
+  transition:background .2s;
 }
-.fav-card:active{transform:scale(0.96)}
-.fav-card .fav-title{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3}
+.fav-card:active{background:var(--card-active)}
+.fav-card .fav-title{font-family:var(--font-serif);font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.3}
 .fav-card .fav-author{font-size:11px;color:var(--text-secondary)}
-.fav-card .fav-cat{font-size:10px;margin-top:4px}
+.fav-card .fav-cat{margin-top:6px}
 .empty-state{
   text-align:center;padding:60px 20px;color:var(--text-muted);
 }
@@ -231,24 +287,39 @@ body.dark .daily-rec-card{background:linear-gradient(135deg,#0f1f3d,#1a365d)}
 /* Profile */
 .profile-header{text-align:center;padding:20px 0}
 .profile-avatar{
-  width:64px;height:64px;border-radius:50%;
-  background:linear-gradient(135deg,#d4a574,#1a365d);
+  width:56px;height:56px;border-radius:4px;
+  background:var(--card-bg);
+  border:1.5px solid var(--gold);
   display:inline-flex;align-items:center;justify-content:center;
-  font-size:30px;margin-bottom:8px;
+  font-size:24px;margin-bottom:8px;
 }
-.profile-name{font-size:18px;font-weight:700}
+.profile-name{font-size:18px;font-weight:700;color:var(--text)}
 .profile-sub{font-size:12px;color:var(--text-secondary)}
 
+/* Stats */
+.stats-row{display:flex;gap:10px;margin-bottom:16px}
+.stat-card{
+  flex:1;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:16px;
+  text-align:center;
+  transition:background .2s;
+}
+.stat-card .stat-value{font-size:26px;font-weight:700;color:var(--text);font-family:var(--font-serif)}
+.stat-card .stat-label{font-size:11px;color:var(--text-secondary);margin-top:4px}
+
 /* Calendar */
-.calendar-container{margin-bottom:16px}
+.calendar-container{margin-bottom:0}
 .calendar-header{
   display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
-.calendar-header .month-label{font-size:14px;font-weight:600}
+.calendar-header .month-label{font-size:14px;font-weight:600;color:var(--text)}
 .calendar-header .month-nav{display:flex;gap:4px}
 .calendar-header .month-nav button{
-  background:none;border:1px solid var(--border);border-radius:6px;
+  background:none;border:1.5px solid var(--gold-dim);border-radius:3px;
   width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;
   font-size:14px;cursor:pointer;color:var(--text);
 }
@@ -256,140 +327,232 @@ body.dark .daily-rec-card{background:linear-gradient(135deg,#0f1f3d,#1a365d)}
 .calendar-grid .day-header{font-size:10px;color:var(--text-muted);padding:4px 0}
 .calendar-grid .day-cell{
   aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-size:12px;border-radius:50%;position:relative;cursor:default;
+  font-size:12px;position:relative;cursor:default;border-radius:3px;
 }
-.calendar-grid .day-cell.today{font-weight:700;color:#c53030}
-.calendar-grid .day-cell.other-month{color:var(--text-muted);opacity:.3}
+.calendar-grid .day-cell.today{font-weight:700;color:#c4843a}
+.calendar-grid .day-cell.other-month{color:var(--text-muted);opacity:.25}
 .calendar-grid .day-cell.recited::after{
   content:'';width:5px;height:5px;border-radius:50%;
   background:var(--success);position:absolute;bottom:2px;
 }
 
-/* Stats */
-.stats-row{display:flex;gap:10px;margin-bottom:16px}
-.stat-card{
-  flex:1;background:var(--bg-card);border-radius:var(--radius);
-  padding:14px;text-align:center;box-shadow:var(--shadow);
-  transition:background .3s;
-}
-.stat-card .stat-value{font-size:26px;font-weight:700;color:var(--accent-text)}
-body.dark .stat-card .stat-value{color:var(--accent)}
-.stat-card .stat-label{font-size:11px;color:var(--text-secondary);margin-top:2px}
-
 /* Settings */
 .settings-section{margin-bottom:16px}
 .settings-item{
   display:flex;justify-content:space-between;align-items:center;
-  padding:14px 16px;background:var(--bg-card);border-radius:var(--radius);
-  box-shadow:var(--shadow);margin-bottom:8px;cursor:pointer;
-  transition:background .3s;
+  padding:16px;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  margin-bottom:8px;cursor:pointer;
+  transition:background .2s;
 }
-.settings-item .settings-label{font-size:14px;display:flex;align-items:center;gap:8px}
+.settings-item:active{background:var(--card-active)}
+.settings-item .settings-label{font-size:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
 .settings-item .settings-icon{font-size:18px}
 
-/* Toggle Switch */
-.toggle-switch{
-  position:relative;width:48px;height:28px;flex-shrink:0;
-}
+/* Toggle */
+.toggle-switch{position:relative;width:48px;height:28px;flex-shrink:0}
 .toggle-switch input{opacity:0;width:0;height:0}
 .toggle-slider{
   position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
-  background:#cbd5e0;border-radius:28px;transition:.3s;
+  background:#949eb0;border-radius:28px;transition:.3s;
 }
 .toggle-slider::before{
   content:'';position:absolute;height:22px;width:22px;left:3px;bottom:3px;
   background:#fff;border-radius:50%;transition:.3s;
 }
-.toggle-switch input:checked+.toggle-slider{background:var(--accent-text)}
-body.dark .toggle-switch input:checked+.toggle-slider{background:var(--accent)}
+.toggle-switch input:checked+.toggle-slider{background:var(--gold)}
 .toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px)}
 
 .about-section{
-  background:var(--bg-card);border-radius:var(--radius);
-  box-shadow:var(--shadow);padding:16px;transition:background .3s;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:20px;
+  transition:background .2s;
 }
-.about-section h3{font-size:14px;margin-bottom:6px}
-.about-section p{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.about-section h3{font-size:14px;margin-bottom:6px;color:var(--text);font-family:var(--font-serif)}
+.about-section p{font-size:12px;color:var(--text-secondary);line-height:1.7}
 
 /* Overlay */
 .overlay{
   position:fixed;inset:0;background:var(--overlay-bg);
-  z-index:200;display:none;align-items:flex-end;
+  z-index:200;display:none;flex-direction:column;align-items:center;
 }
 .overlay.active{display:flex}
-.overlay-content{
-  background:var(--bg);width:100%;max-width:480px;margin:0 auto;
-  max-height:92vh;max-height:92dvh;border-radius:var(--radius) var(--radius) 0 0;
-  overflow-y:auto;animation:slideUp .3s ease;
-  padding:20px 16px calc(var(--safe-bottom) + 80px);
-  transition:background .3s;
+.overlay-card{
+  width:calc(100% - 24px);
+  max-width:480px;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  margin:12px 12px 0 12px;
+  flex:1;
+  overflow-y:auto;
+  padding:24px 20px;
+  position:relative;
+  animation:slideUp .3s ease;
 }
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.overlay-close{
-  position:sticky;top:0;z-index:10;float:right;
-  width:36px;height:36px;border-radius:50%;border:none;
-  background:var(--tag-bg);font-size:18px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--text);margin-bottom:-36px;
-}
 
-/* Article Detail */
-.detail-cat{margin-bottom:8px}
-.detail-title{font-size:24px;font-weight:700;line-height:1.3;margin-bottom:4px}
-.detail-author{font-size:14px;color:var(--text-secondary);margin-bottom:16px}
-.detail-meta{display:flex;gap:12px;align-items:center;margin-bottom:16px;font-size:12px;color:var(--text-muted)}
-.detail-text{font-size:16px;line-height:1.8;margin-bottom:12px}
-.detail-text p{margin-bottom:12px}
-.detail-text .vocab-word{
-  background:rgba(212,165,116,0.2);padding:1px 4px;border-radius:3px;
-  cursor:pointer;border-bottom:1px dashed var(--accent);position:relative;
+.overlay-close{
+  position:absolute;
+  top:16px;right:16px;
+  z-index:10;
+  width:32px;height:32px;
+  border:1.5px solid var(--gold-dim);
+  background:var(--card-bg);
+  border-radius:3px;
+  font-size:16px;color:var(--gold);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
   transition:background .15s;
 }
-.detail-text .vocab-word:active{background:rgba(212,165,116,0.4)}
+.overlay-close:active{background:var(--card-active)}
 
-/* Vocab Popover */
-.vocab-popover{
-  position:fixed;z-index:300;background:var(--popover-bg);
-  border-radius:var(--radius-sm);padding:12px 16px;
-  box-shadow:var(--popover-shadow);max-width:260px;
-  animation:popIn .2s ease;pointer-events:none;
+/* Article Detail */
+.detail-cat{margin-bottom:12px;padding-right:40px}
+.detail-title{
+  font-family:var(--font-serif);
+  font-size:26px;
+  font-weight:700;
+  line-height:1.3;
+  color:var(--text);
+  margin-bottom:4px;
 }
-.vocab-popover .pop-word{font-size:16px;font-weight:700;margin-bottom:4px}
-.vocab-popover .pop-def{font-size:13px;color:var(--text-secondary)}
-@keyframes popIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.detail-author{font-size:14px;color:var(--text-secondary);margin-bottom:12px}
+.detail-meta{display:flex;gap:14px;align-items:center;margin-bottom:0;font-size:12px;color:var(--text-muted)}
 
-/* Chinese Toggle */
-.zh-toggle{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--tag-bg);border:none;border-radius:20px;
-  padding:8px 16px;font-size:13px;color:var(--text);cursor:pointer;
-  font-family:var(--font);margin:12px 0;transition:background .15s;
+/* Gold rule in detail */
+.detail-gold-rule{
+  border:none;
+  border-top:1px solid var(--gold-dim);
+  margin:14px 0 18px 0;
+  opacity:0.7;
 }
-.zh-toggle:active{background:var(--border)}
-.detail-zh{display:none;font-size:15px;line-height:1.8;color:var(--text-secondary);margin-bottom:12px}
-.detail-zh.show{display:block}
-.detail-zh p{margin-bottom:10px}
+
+/* English body */
+.detail-text{font-family:var(--font-serif);font-size:17px;line-height:1.8;color:var(--text);margin-bottom:0}
+.detail-text p{margin-bottom:14px}
+
+/* Vocab words */
+.detail-text .vocab-word{
+  font-weight:700;
+  color:var(--vocab-color);
+  text-decoration:underline;
+  text-decoration-color:var(--vocab-color);
+  text-underline-offset:3px;
+  cursor:pointer;
+  transition:opacity .15s;
+}
+.detail-text .vocab-word:active{opacity:.6}
+
+/* Chinese translation - inline */
+.detail-zh-block{
+  font-family:var(--font);
+  font-size:14px;
+  line-height:1.7;
+  color:var(--text-secondary);
+  padding-left:14px;
+  border-left:2px solid var(--gold-dim);
+  margin-top:14px;
+  margin-bottom:20px;
+}
+.detail-zh-block p{margin-bottom:8px}
+.detail-zh-block p:last-child{margin-bottom:0}
+
+/* 仅英文 toggle */
+.zh-toggle-row{
+  display:flex;align-items:center;gap:6px;
+  margin-bottom:14px;
+}
+.zh-toggle-row .zh-toggle-label{
+  font-size:12px;
+  color:var(--text-muted);
+  font-family:var(--font);
+  cursor:pointer;
+  user-select:none;
+}
+
+/* Vocab card */
+.vocab-card{
+  background:var(--card-active);
+  border:1.5px solid var(--gold-dim);
+  border-radius:4px;
+  padding:16px 18px;
+  margin-top:20px;
+}
+.vocab-card .vocab-card-title{
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:10px;
+}
+.vocab-card .vocab-row{
+  display:flex;gap:8px;padding:4px 0;
+  font-size:13px;line-height:1.5;
+}
+.vocab-card .vocab-word-item{
+  font-weight:700;
+  color:var(--vocab-color);
+  min-width:90px;
+  font-family:var(--font-serif);
+}
+.vocab-card .vocab-def-item{color:var(--text-secondary)}
+
+/* Bottom star */
+.detail-bottom-star{
+  text-align:center;
+  padding:20px 0 4px 0;
+  color:var(--gold-dim);
+  font-size:14px;
+}
 
 /* Action Bar */
 .action-bar{
-  position:fixed;bottom:calc(var(--nav-height) + var(--safe-bottom));
-  left:0;right:0;background:var(--nav-bg);border-top:1px solid var(--nav-border);
+  width:calc(100% - 24px);
+  max-width:480px;
+  background:var(--nav-bg);
+  border-top:1px solid var(--nav-border);
   display:flex;justify-content:space-around;align-items:center;
-  padding:8px 16px;z-index:210;transition:background .3s;
-  max-width:480px;margin:0 auto;
+  padding:6px 0;
+  z-index:210;
+  transition:background .3s;
+  padding-bottom:var(--safe-bottom);
 }
 .action-btn{
   display:flex;flex-direction:column;align-items:center;gap:2px;
   background:none;border:none;color:var(--text-secondary);font-size:10px;
-  cursor:pointer;padding:6px 12px;border-radius:var(--radius-sm);
+  cursor:pointer;padding:6px 12px;border-radius:3px;
   transition:color .15s,background .15s;font-family:var(--font);
   min-height:44px;justify-content:center;
 }
-.action-btn .btn-icon{font-size:22px}
+.action-btn .btn-icon{font-size:20px}
 .action-btn:active{background:var(--tag-bg)}
-.action-btn.active{color:var(--accent-text)}
-body.dark .action-btn.active{color:var(--accent)}
+.action-btn.active{color:var(--gold)}
 .action-btn.recited{color:var(--success)}
+
+/* Vocab Popover */
+.vocab-popover{
+  position:fixed;z-index:300;
+  background:var(--popover-bg);
+  border:1.5px solid var(--popover-border);
+  border-radius:4px;
+  padding:12px 16px;
+  max-width:240px;
+  animation:popIn .2s ease;
+  pointer-events:none;
+}
+.vocab-popover .pop-word{
+  font-family:var(--font-serif);
+  font-size:16px;font-weight:700;
+  color:var(--text);
+  margin-bottom:4px;
+}
+.vocab-popover .pop-def{font-size:13px;color:var(--text-secondary)}
+@keyframes popIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
 
 /* Share Modal */
 .share-modal{
@@ -399,20 +562,26 @@ body.dark .action-btn.active{color:var(--accent)}
 }
 .share-modal.active{display:flex}
 .share-modal-inner{
-  background:var(--bg-card);border-radius:var(--radius);padding:20px;
-  max-width:340px;width:90%;text-align:center;transition:background .3s;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:4px;
+  padding:20px;
+  max-width:340px;width:90%;text-align:center;
+  transition:background .3s;
 }
-.share-modal-inner canvas{width:100%;border-radius:var(--radius-sm);margin-bottom:12px}
+.share-modal-inner canvas{width:100%;border-radius:2px;margin-bottom:12px}
 .share-save-btn{
-  display:inline-block;background:var(--accent-text);color:#fff;
-  border:none;border-radius:20px;padding:10px 28px;
+  display:inline-block;
+  background:var(--gold);color:#1a1e2e;
+  border:none;border-radius:3px;padding:10px 28px;
   font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;
   font-family:var(--font);
 }
-body.dark .share-save-btn{background:var(--accent);color:#1a1a2e}
+body.dark .share-save-btn{color:#1a1e2e}
 .share-close-btn{
-  display:inline-block;background:var(--tag-bg);color:var(--text);
-  border:none;border-radius:20px;padding:10px 28px;
+  display:inline-block;
+  background:none;color:var(--text-secondary);
+  border:1.5px solid var(--gold-dim);border-radius:3px;padding:10px 28px;
   font-size:14px;cursor:pointer;font-family:var(--font);
 }
 
@@ -423,58 +592,78 @@ body.dark .share-save-btn{background:var(--accent);color:#1a1a2e}
 }
 .translate-panel.active{display:flex}
 .translate-inner{
-  background:var(--bg);width:100%;max-width:480px;margin:0 auto;
-  max-height:80vh;max-height:80dvh;border-radius:var(--radius) var(--radius) 0 0;
+  background:var(--bg);
+  width:100%;max-width:480px;margin:0 auto;
+  max-height:80vh;max-height:80dvh;
+  border-radius:4px 4px 0 0;
   overflow-y:auto;animation:slideUp .3s ease;
   padding:20px 16px calc(var(--safe-bottom) + 20px);
+  border-top:1.5px solid var(--gold-dim);
   transition:background .3s;
 }
 .translate-inner textarea{
-  width:100%;height:100px;border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:12px;font-size:14px;
-  font-family:var(--font);resize:none;background:var(--bg-card);
-  color:var(--text);transition:background .3s,color .3s;
+  width:100%;height:100px;
+  border:1.5px solid var(--gold-dim);border-radius:4px;
+  padding:12px;font-size:14px;
+  font-family:var(--font);resize:none;
+  background:var(--card-bg);color:var(--text);
+  transition:background .3s,color .3s;
 }
-.translate-inner textarea:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.translate-inner textarea:focus{outline:2px solid var(--gold);outline-offset:-2px}
 .translate-btn{
   display:block;width:100%;margin-top:10px;padding:12px;
-  background:var(--accent-text);color:#fff;border:none;
-  border-radius:var(--radius-sm);font-size:15px;font-weight:600;
-  cursor:pointer;font-family:var(--font);
+  background:var(--gold);color:#1a1e2e;
+  border:none;border-radius:4px;
+  font-size:15px;font-weight:600;cursor:pointer;
+  font-family:var(--font);
 }
-body.dark .translate-btn{background:var(--accent);color:#1a1a2e}
+body.dark .translate-btn{color:#1a1e2e}
 .translate-result{margin-top:16px}
-.translate-result .src-text{font-size:14px;margin-bottom:12px;padding:10px;background:var(--tag-bg);border-radius:var(--radius-sm)}
+.translate-result .src-text{
+  font-size:14px;margin-bottom:12px;padding:12px;
+  background:var(--card-bg);border-radius:4px;
+  color:var(--text);
+}
 .translate-result table{width:100%;font-size:12px;border-collapse:collapse}
-.translate-result td{padding:6px 8px;border-bottom:1px solid var(--divider)}
-.translate-result .word-col{font-weight:600}
+.translate-result td{padding:6px 8px;border-bottom:1px solid var(--gold-dim)}
+.translate-result .word-col{font-weight:600;color:var(--text);font-family:var(--font-serif)}
 .translate-result .def-col{color:var(--text-secondary)}
 .translate-result .save-card-btn{
-  margin-top:12px;padding:8px 20px;background:var(--success);color:#fff;
-  border:none;border-radius:20px;font-size:13px;cursor:pointer;
-  font-family:var(--font);
+  margin-top:12px;padding:8px 20px;
+  background:var(--gold);color:#1a1e2e;
+  border:none;border-radius:3px;
+  font-size:13px;cursor:pointer;font-family:var(--font);
 }
 
 /* FAB */
 .fab{
   position:fixed;bottom:calc(var(--nav-height) + var(--safe-bottom) + 20px);
-  right:20px;width:50px;height:50px;border-radius:50%;
-  background:var(--accent-text);color:#fff;border:none;
-  font-size:26px;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;
-  z-index:90;transition:transform .2s,background .3s;
+  right:20px;width:44px;height:44px;border-radius:3px;
+  background:var(--gold);color:#1a1e2e;
+  border:1.5px solid var(--gold);font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:90;transition:background .2s;
 }
-body.dark .fab{background:var(--accent);color:#1a1a2e}
-.fab:active{transform:scale(0.9)}
+.fab:active{background:#b08f4a}
 
 /* Toast */
 .toast{
   position:fixed;top:20px;left:50%;transform:translateX(-50%);
-  background:#2d3748;color:#fff;padding:10px 24px;border-radius:20px;
+  background:#2d3748;color:#F5F5F0;padding:10px 24px;border-radius:3px;
   font-size:13px;z-index:500;animation:toastIn .3s ease;pointer-events:none;
+  border:1px solid var(--gold-dim);
 }
-body.dark .toast{background:#e8d5b7;color:#1a1a2e}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* Translate toggle in detail */
+.toggle-mini{
+  display:inline-flex;align-items:center;gap:4px;
+  background:none;border:1.5px solid var(--gold-dim);
+  border-radius:3px;padding:4px 12px;
+  font-size:11px;color:var(--text-secondary);
+  cursor:pointer;font-family:var(--font);
+}
+.toggle-mini:active{background:var(--card-active)}
 </style>
 </head>
 <body>
@@ -482,37 +671,46 @@ body.dark .toast{background:#e8d5b7;color:#1a1a2e}
 
 <!-- Home Panel -->
 <div id="home-panel" class="panel active">
-  <div class="streak-bar" id="streak-bar">
-    <span class="fire-icon" id="streak-icon">📖</span>
+  <div class="home-header">
+    <div class="header-star">✧ 每日美文 ✧</div>
+  </div>
+
+  <div class="featured-card" id="daily-rec-card">
+    <div class="feat-title" id="rec-title"></div>
+    <div class="feat-author" id="rec-author"></div>
+    <span class="cat-badge" id="rec-badge" style="font-size:10px"></span>
+    <div class="feat-excerpt" id="rec-preview"></div>
+    <div class="feat-star">✧</div>
+  </div>
+
+  <hr class="gold-rule">
+
+  <div class="streak-card" id="streak-bar">
+    <span class="streak-icon" id="streak-icon">📖</span>
     <div class="streak-info">
-      <div class="streak-count" id="streak-count">0 天</div>
-      <div class="streak-label">连续背诵</div>
+      <span class="streak-count" id="streak-count">0 天</span>
+      <span class="streak-label">连续背诵</span>
     </div>
-    <div class="streak-date" id="streak-date"></div>
+    <span class="streak-date" id="streak-date"></span>
   </div>
 
-  <div class="daily-rec-card" id="daily-rec-card">
-    <div class="rec-label">📌 今日推荐</div>
-    <div class="rec-title" id="rec-title"></div>
-    <div class="rec-author" id="rec-author"></div>
-    <span class="rec-badge" id="rec-badge"></span>
-    <div class="rec-preview" id="rec-preview"></div>
-  </div>
+  <hr class="gold-rule">
+  <div class="section-label">探索</div>
+  <div class="cat-grid" id="cat-grid"></div>
 
-  <div class="section-header">
-    <h2>🕐 最近背诵</h2>
-  </div>
-  <div class="h-scroll" id="recent-scroll"></div>
+  <hr class="gold-rule">
+  <div class="section-label">最近更新</div>
+  <div id="recent-list"></div>
 </div>
 
 <!-- Category Panel -->
 <div id="category-panel" class="panel">
   <div id="cat-grid-view">
-    <div class="cat-grid" id="cat-grid"></div>
+    <div class="cat-grid" id="cat-grid-category"></div>
   </div>
   <div id="cat-list-view" style="display:none">
     <button class="back-btn" id="cat-back-btn">← 返回分类</button>
-    <div class="article-list" id="cat-article-list"></div>
+    <div id="cat-article-list"></div>
   </div>
 </div>
 
@@ -524,22 +722,25 @@ body.dark .toast{background:#e8d5b7;color:#1a1a2e}
 <!-- Profile Panel -->
 <div id="profile-panel" class="panel">
   <div class="profile-header">
-    <div class="profile-avatar">📚</div>
+    <div class="profile-avatar">✧</div>
     <div class="profile-name">背书人</div>
     <div class="profile-sub">每日美文，积少成多</div>
   </div>
   <div class="stats-row" id="stats-row"></div>
-  <div class="calendar-container" id="calendar-container"></div>
+  <div class="card-plain">
+    <div class="calendar-container" id="calendar-container"></div>
+  </div>
+  <div style="height:12px"></div>
   <div class="settings-section">
     <div class="settings-item" id="dark-mode-toggle-item">
-      <span class="settings-label"><span class="settings-icon">🌙</span>夜间模式</span>
+      <span class="settings-label"><span class="settings-icon">◐</span> 明亮模式</span>
       <label class="toggle-switch"><input type="checkbox" id="dark-mode-checkbox"><span class="toggle-slider"></span></label>
     </div>
   </div>
   <div class="about-section">
-    <h3>📖 关于每日美文</h3>
+    <h3>关于每日美文</h3>
     <p>每日美文是一款英文背诵辅助工具，精选30+篇经典短文，涵盖职场、文学、演讲、旅行、中国文化、生活感悟等多个类别。每天背诵一篇，积累词汇，提升语感。所有数据存储在本地，无需网络。</p>
-    <p style="margin-top:8px">v1.0 · Made with ❤️</p>
+    <p style="margin-top:8px">v1.0 · Made with ✧</p>
   </div>
 </div>
 
@@ -548,30 +749,30 @@ body.dark .toast{background:#e8d5b7;color:#1a1a2e}
 <!-- Bottom Nav -->
 <nav id="bottom-nav">
   <button class="nav-btn active" data-tab="home">
-    <span class="nav-icon">🏠</span>今日
+    <span class="nav-icon">✦</span>今日
   </button>
   <button class="nav-btn" data-tab="category">
-    <span class="nav-icon">📂</span>分类
+    <span class="nav-icon">✦</span>分类
   </button>
   <button class="nav-btn" data-tab="favorites">
-    <span class="nav-icon">⭐</span>收藏
+    <span class="nav-icon">✦</span>收藏
   </button>
   <button class="nav-btn" data-tab="profile">
-    <span class="nav-icon">👤</span>我的
+    <span class="nav-icon">✦</span>我的
   </button>
 </nav>
 
 <!-- FAB -->
-<button class="fab" id="fab-btn" title="随手译">✏️</button>
+<button class="fab" id="fab-btn" title="随手译">✎</button>
 
 <!-- Article Detail Overlay -->
 <div class="overlay" id="detail-overlay">
-  <div class="overlay-content" id="detail-content"></div>
+  <div class="overlay-card" id="detail-content"></div>
   <div class="action-bar" id="action-bar" style="display:none">
-    <button class="action-btn" id="btn-tts"><span class="btn-icon">🔊</span>朗读</button>
-    <button class="action-btn" id="btn-fav"><span class="btn-icon">⭐</span>收藏</button>
-    <button class="action-btn" id="btn-recited"><span class="btn-icon">✅</span>已背</button>
-    <button class="action-btn" id="btn-share"><span class="btn-icon">📤</span>分享</button>
+    <button class="action-btn" id="btn-tts"><span class="btn-icon">♪</span>朗读</button>
+    <button class="action-btn" id="btn-fav"><span class="btn-icon">☆</span>收藏</button>
+    <button class="action-btn" id="btn-recited"><span class="btn-icon">✓</span>已背</button>
+    <button class="action-btn" id="btn-share"><span class="btn-icon">↗</span>分享</button>
   </div>
 </div>
 
@@ -579,7 +780,7 @@ body.dark .toast{background:#e8d5b7;color:#1a1a2e}
 <div class="share-modal" id="share-modal">
   <div class="share-modal-inner">
     <canvas id="share-canvas" width="600" height="800"></canvas>
-    <button class="share-save-btn" id="share-save-btn">💾 保存图片</button>
+    <button class="share-save-btn" id="share-save-btn">保存图片</button>
     <button class="share-close-btn" id="share-close-btn">关闭</button>
   </div>
 </div>
@@ -588,12 +789,12 @@ body.dark .toast{background:#e8d5b7;color:#1a1a2e}
 <div class="translate-panel" id="translate-panel">
   <div class="translate-inner">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <h3 style="font-size:16px">✏️ 随手译</h3>
-      <button style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text)" id="translate-close-btn">✕</button>
+      <h3 style="font-size:16px;color:var(--gold)">✎ 随手译</h3>
+      <button style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-secondary)" id="translate-close-btn">✕</button>
     </div>
     <textarea id="translate-input" placeholder="粘贴英文句子，查看词汇解析..."></textarea>
-    <button class="translate-btn" id="translate-do-btn">🔍 解析词汇</button>
-    <button class="translate-btn" id="translate-ai-btn" style="background:var(--accent);margin-top:6px;display:none">🤖 AI 翻译</button>
+    <button class="translate-btn" id="translate-do-btn">解析词汇</button>
+    <button class="translate-btn" id="translate-ai-btn" style="background:var(--gold-dim);margin-top:6px;display:none">AI 翻译</button>
     <div class="translate-result" id="translate-result"></div>
   </div>
 </div>
@@ -607,12 +808,12 @@ body.dark .toast{background:#e8d5b7;color:#1a1a2e}
 <script>
 // ==================== DATA ====================
 const CATEGORIES = [
-  {id:'workplace',name:'职场英语',icon:'💼',color:'#1a365d',accent:'#d4a574',cssColor:'#1a365d',pattern:'diagonal'},
-  {id:'travel',name:'旅行英语',icon:'✈️',color:'#3182ce',accent:'#ffffff',cssColor:'#3182ce',pattern:'dots'},
-  {id:'chinese-culture',name:'中国文化',icon:'🏮',color:'#c53030',accent:'#f6ad55',cssColor:'#c53030',pattern:'waves'},
-  {id:'literature',name:'文学经典',icon:'📖',color:'#eaddcf',accent:'#276749',cssColor:'#276749',pattern:'crosshatch'},
-  {id:'daily',name:'生活感悟',icon:'🌿',color:'#718096',accent:'#48bb78',cssColor:'#48bb78',pattern:'circles'},
-  {id:'speeches',name:'经典演讲',icon:'🎤',color:'#553c9a',accent:'#faf5ed',cssColor:'#553c9a',pattern:'radial'}
+  {id:'workplace',name:'职场英语',icon:'💼',color:'#5b8fbf',borderColor:'#5b8fbf',accent:'#d4a574',cssColor:'#5b8fbf',pattern:'diagonal'},
+  {id:'travel',name:'旅行英语',icon:'✈️',color:'#6da87b',borderColor:'#6da87b',accent:'#ffffff',cssColor:'#6da87b',pattern:'dots'},
+  {id:'chinese-culture',name:'中国文化',icon:'🏮',color:'#c48080',borderColor:'#c48080',accent:'#f6ad55',cssColor:'#c48080',pattern:'waves'},
+  {id:'literature',name:'文学经典',icon:'📖',color:'#9d82b8',borderColor:'#9d82b8',accent:'#276749',cssColor:'#9d82b8',pattern:'crosshatch'},
+  {id:'daily',name:'生活感悟',icon:'🌿',color:'#c4a45b',borderColor:'#c4a45b',accent:'#48bb78',cssColor:'#c4a45b',pattern:'circles'},
+  {id:'speeches',name:'经典演讲',icon:'🎤',color:'#c46e8c',borderColor:'#c46e8c',accent:'#faf5ed',cssColor:'#c46e8c',pattern:'radial'}
 ];
 
 const ARTICLES = [
@@ -809,7 +1010,7 @@ Then lower it, and think of home so soon.
 
 This short poem by Li Bai, written over 1,200 years ago, is one of the most famous poems in Chinese literature. Every Chinese schoolchild can recite it from memory. Its beauty lies in its simplicity — a moment of quiet reflection, a universal feeling of homesickness captured in just four lines.
 
-In English translation, we lose the rhythm and rhyme of the original, but the emotion remains unmistakable. The moon has always been a symbol of longing and reunion in Chinese poetry — a silent witness to countless nights of思念 (longing) across centuries.`,
+In English translation, we lose the rhythm and rhyme of the original, but the emotion remains unmistakable. The moon has always been a symbol of longing and reunion in Chinese poetry — a silent witness to countless nights of longing across centuries.`,
     translation:`床前明月光，疑是地上霜。
 举头望明月，低头思故乡。
 
@@ -865,7 +1066,6 @@ Emily Dickinson wrote this poem in 1861, comparing hope to a bird that lives wit
 
 艾米莉·狄金森于1861年写下这首诗，将希望比作一只住在我们内心的小鸟。它对我们一无所求，却支撑我们度过最猛烈的风暴。仅用十二行，她捕捉了人类精神安静的韧性。`,
     vocab:[{word:'perches',definition:'栖息'},{word:'gale',definition:'狂风'},{word:'abash',definition:'使难堪'},{word:'extremity',definition:'极端'},{word:'crumb',definition:'碎屑'}]},
-
   {id:'lit2',title:'The Road Not Taken (Excerpt)',category:'literature',author:'Robert Frost',difficulty:2,duration:3,
     text:`Two roads diverged in a yellow wood,
 And sorry I could not travel both
@@ -906,7 +1106,6 @@ Frost's most famous poem is often misunderstood. It is not simply a celebration 
 
 弗罗斯特最著名的诗常被误解。它不只是对个人主义的赞美，更是对选择、记忆以及我们如何讲述自己人生故事的沉思。`,
     vocab:[{word:'diverged',definition:'分叉'},{word:'undergrowth',definition:'灌木丛'},{word:'hence',definition:'从此以后'},{word:'meditation',definition:'沉思'},{word:'individualism',definition:'个人主义'}]},
-
   {id:'lit3',title:'Sonnet 18: Shall I Compare Thee',category:'literature',author:'William Shakespeare',difficulty:3,duration:3,
     text:`Shall I compare thee to a summer's day?
 Thou art more lovely and more temperate:
@@ -935,7 +1134,6 @@ Shakespeare's most beloved sonnet makes a bold claim: his poetry can grant immor
 
 莎士比亚最受喜爱的十四行诗做出了一个大胆的宣称：他的诗歌能赋予不朽。400多年后，我们仍然在读它——也许他是对的。`,
     vocab:[{word:'thee',definition:'你（古英语）'},{word:'temperate',definition:'温和的'},{word:'lease',definition:'租期'},{word:'eternal',definition:'永恒的'},{word:'immortality',definition:'不朽'}]},
-
   {id:'lit4',title:'I Wandered Lonely as a Cloud',category:'literature',author:'William Wordsworth',difficulty:2,duration:3,
     text:`I wandered lonely as a cloud
 That floats on high o'er vales and hills,
@@ -968,7 +1166,6 @@ Wordsworth reminds us that nature's beauty, once witnessed, becomes a permanent 
 
 华兹华斯提醒我们，大自然的美丽一旦被见证，就成为记忆中永久的宝藏。即使在孤独的时刻，我们心中仍带着曾经看到在微风中跳舞的水仙花。`,
     vocab:[{word:'daffodils',definition:'水仙花'},{word:'fluttering',definition:'翩翩飞舞'},{word:'pensive',definition:'沉思的'},{word:'bliss',definition:'极乐'},{word:'solitude',definition:'孤独'}]},
-
   {id:'lit5',title:'On Being Yourself',category:'literature',author:'Oscar Wilde',difficulty:2,duration:3,
     text:`Be yourself; everyone else is already taken.
 
@@ -981,7 +1178,6 @@ This famous quip by Oscar Wilde contains profound wisdom in just seven words. Wi
 
 "爱自己是终身浪漫的开始，"他也写道。王尔德暗示，自我接纳不是虚荣——而是真实人生的基础。在社交媒体和不断比较的时代，他的话比以往任何时候都更加真实。世界不需要另一个复制品。它需要你，完完全全的你。`,
     vocab:[{word:'quip',definition:'俏皮话'},{word:'paradox',definition:'悖论'},{word:'vanity',definition:'虚荣'},{word:'authentic',definition:'真实的'},{word:'rigid',definition:'刻板的'}]},
-
   {id:'lit6',title:'A Truth Universally Acknowledged',category:'literature',author:'Jane Austen',difficulty:3,duration:3,
     text:`It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.
 
@@ -1008,7 +1204,6 @@ What you do every morning matters more than what you do once in a while. Over we
 
 你每天早上做的事比你偶尔做的事更重要。经过数周数月，这些小仪式会累积成深刻的东西：一种有意图而非被动反应的人生。`,
     vocab:[{word:'ritual',definition:'仪式'},{word:'anchor',definition:'稳住；锚定'},{word:'elaborate',definition:'复杂的'},{word:'persistently',definition:'坚持地'},{word:'intention',definition:'意图'}]},
-
   {id:'dl2',title:'On Gratitude',category:'daily',author:'Gentle Philosophy',difficulty:1,duration:3,
     text:`Gratitude is not about pretending everything is perfect. It is about noticing what is good even when things are hard. Research shows that people who regularly practice gratitude sleep better, feel more optimistic, and build stronger relationships.
 
@@ -1021,7 +1216,6 @@ Gratitude turns what we have into enough. It doesn't change the world around us,
 
 感恩把我们拥有的变成足够。它不改变我们周围的世界，但改变我们看待世界的方式——而这改变了一切。`,
     vocab:[{word:'gratitude',definition:'感恩'},{word:'optimistic',definition:'乐观的'},{word:'spectacular',definition:'壮观的'},{word:'ordinary',definition:'平凡的'}]},
-
   {id:'dl3',title:'The Beauty of Small Things',category:'daily',author:'Everyday Wonder',difficulty:1,duration:3,
     text:`We spend so much time chasing big moments that we miss the small ones. The way steam rises from a cup of tea. Raindrops racing down a window pane. A stranger holding the door open. The sound of pages turning in a quiet room. These moments are not interruptions in our day — they are our day.
 
@@ -1034,7 +1228,6 @@ Learning to notice small beauties is a skill. Like any skill, it improves with p
 
 学会注意小美是一种技能。像任何技能一样，练习越多越精进。你越看，发现越多。充满小快乐的人生是真正富有的人生。`,
     vocab:[{word:'chasing',definition:'追逐'},{word:'profound',definition:'深刻的'},{word:'spectacles',definition:'壮观场面'},{word:'subtle',definition:'微妙的'},{word:'dusk',definition:'黄昏'}]},
-
   {id:'dl4',title:'The Art of Letting Go',category:'daily',author:'Minimalist Wisdom',difficulty:2,duration:4,
     text:`We hold on to so much — grudges, expectations, outdated versions of ourselves. Each thing we cling to takes up space, not just in our homes but in our minds. Letting go is not giving up; it is making room for what matters.
 
@@ -1047,7 +1240,6 @@ The hardest things to let go of are not physical. Old resentments. Regrets. The 
 
 最难放下的不是物理的。旧的怨恨。遗憾。你告诉自己的关于你是谁的故事。但你不是你的过去。你是你选择成为的样子，从现在开始。放手是一种信念——相信接下来会更好。`,
     vocab:[{word:'grudges',definition:'怨恨'},{word:'decluttering',definition:'清理杂物'},{word:'resentments',definition:'怨恨'},{word:'outdated',definition:'过时的'}]},
-
   {id:'dl5',title:'A Quiet Evening',category:'daily',author:'Slow Living',difficulty:1,duration:3,
     text:`There is a particular kind of peace that comes with a quiet evening. The noise of the day fades. The light softens from gold to blue. In these hours, we are allowed to simply be — not productive, not efficient, just present.
 
@@ -1074,7 +1266,6 @@ The presidency doesn't change who you are — it reveals who you are. We need a 
 
 总统职位不改变你是谁——它揭示你是谁。我们需要一位理解总统面临的问题不是黑白分明、不能简化为140个字符的总统。因为当你指尖有核密码、军队听你指挥时，你不能做仓促的决定。`,
     vocab:[{word:'stoop',definition:'降低（身份）'},{word:'motto',definition:'座右铭'},{word:'reveals',definition:'揭示'},{word:'snap',definition:'仓促的'},{word:'command',definition:'指挥'}]},
-
   {id:'sp2',title:'One Child, One Teacher, One Pen',category:'speeches',author:'Malala Yousafzai',difficulty:2,duration:4,
     text:`One child, one teacher, one book, and one pen can change the world. Education is the only solution. Education first.
 
@@ -1087,7 +1278,6 @@ The terrorists thought that they would change my aims and stop my ambitions, but
 
 恐怖分子以为他们会改变我的目标、阻止我的雄心，但我的生命中除了这一点什么也没变：软弱、恐惧和绝望死去了。力量、能力和勇气诞生了。让我们发起一场反对文盲、贫困和恐怖主义的全球斗争。让我们拿起我们的书和笔。它们是我们最强大的武器。`,
     vocab:[{word:'extremist',definition:'极端分子'},{word:'ambition',definition:'雄心'},{word:'wage',definition:'发动（斗争）'},{word:'illiteracy',definition:'文盲'},{word:'revenge',definition:'复仇'}]},
-
   {id:'sp3',title:'We Should All Be Feminists',category:'speeches',author:'Chimamanda Ngozi Adichie',difficulty:2,duration:4,
     text:`We teach girls to shrink themselves, to make themselves smaller. We say to girls: "You can have ambition, but not too much. You should aim to be successful, but not too successful. Otherwise, you will threaten the man."
 
@@ -1104,7 +1294,6 @@ My own definition of a feminist is a man or a woman who says, "Yes, there's a pr
 
 我自己对女权主义者的定义是，一个男人或女人说："是的，今天的性别状况有问题，我们必须解决它，我们必须做得更好。"我们所有人，女人和男人，都必须做得更好。`,
     vocab:[{word:'shrink',definition:'缩小'},{word:'feminist',definition:'女权主义者'},{word:'equality',definition:'平等'},{word:'accomplishment',definition:'成就'},{word:'competitor',definition:'竞争者'}]},
-
   {id:'sp4',title:'Lean In: Sit at the Table',category:'speeches',author:'Sheryl Sandberg',difficulty:2,duration:4,
     text:`I want to tell you a story that I tell to illustrate a point about how women sometimes hold themselves back. I gave a talk at a very large company, and during the Q&A, I noticed that the women were sitting in chairs around the edges of the room, while the men were sitting at the table.
 
@@ -1117,7 +1306,6 @@ So my message today is: sit at the table. Raise your hand. Speak up. Don't leave
 
 所以我今天的信息是：坐到桌子旁。举起你的手。说出你的想法。不要提前退出。最重要的是，相信自己的价值。你比你以为的更有能力。`,
     vocab:[{word:'illustrate',definition:'说明；阐释'},{word:'metaphor',definition:'比喻'},{word:'underestimate',definition:'低估'},{word:'attribute',definition:'归因于'},{word:'merit',definition:'才能；价值'}]},
-
   {id:'sp5',title:'If Not Me, Who? If Not Now, When?',category:'speeches',author:'Emma Watson',difficulty:2,duration:4,
     text:`I was appointed as a UN Women Goodwill Ambassador six months ago, and the more I have spoken about feminism, the more I have realized that fighting for women's rights has too often become synonymous with man-hating. This has to stop.
 
@@ -1130,7 +1318,6 @@ Men — I would like to take this opportunity to extend your formal invitation. 
 
 男士们——我想借此机会向你发出正式邀请。性别平等也是你们的问题。我们不常谈论男性被性别刻板印象所囚禁，但我能看到他们确实被囚禁。如果男性不必为了被接受而具有攻击性，女性就不会感到被迫顺从。如果男性不必控制，女性就不必被控制。`,
     vocab:[{word:'ambassador',definition:'大使'},{word:'synonymous',definition:'同义的'},{word:'assumption',definition:'假设'},{word:'stereotype',definition:'刻板印象'},{word:'submissive',definition:'顺从的'}]},
-
   {id:'sp6',title:'Speaking Your Truth',category:'speeches',author:'Oprah Winfrey',difficulty:2,duration:4,
     text:`What I know for sure is that speaking your truth is the most powerful tool we all have. And I'm especially proud, and inspired by all the women who have felt strong enough and empowered enough to speak up and share their personal stories.
 
@@ -1143,7 +1330,6 @@ So I want all the girls watching here and now to know that a new day is on the h
 
 所以我希望所有现在正在观看的女孩们知道，新的一天即将到来。当那一天终于破晓时，那将是因为许多了不起的女性和一些相当非凡的男性，努力奋斗，确保他们成为领导者，带领我们走向一个再没有人需要说"我也是"的时代。`,
     vocab:[{word:'empowered',definition:'被赋权的'},{word:'horizon',definition:'地平线'},{word:'magnificent',definition:'了不起的'},{word:'phenomenal',definition:'非凡的'},{word:'dawn',definition:'破晓'}]},
-
   {id:'sp7',title:'Stay Hungry, Stay Foolish',category:'speeches',author:'Steve Jobs',difficulty:2,duration:4,
     text:`Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma — which is living with the results of other people's thinking. Don't let the noise of others' opinions drown out your own inner voice.
 
@@ -1156,7 +1342,6 @@ When I was young, there was an amazing publication called The Whole Earth Catalo
 
 我年轻时，有一本了不起的出版物叫《全球概览》，是我们那一代人的圣经之一。他们最后一期的封底是一张清晨乡间道路的照片。下面写着："求知若饥，虚心若愚。"这是他们停刊时的告别信息。求知若饥，虚心若愚。我一直希望自己如此。`,
     vocab:[{word:'dogma',definition:'教条'},{word:'intuition',definition:'直觉'},{word:'secondary',definition:'次要的'},{word:'farewell',definition:'告别'}]},
-
   {id:'sp8',title:'Ask Not What Your Country Can Do',category:'speeches',author:'John F. Kennedy',difficulty:3,duration:3,
     text:`In the long history of the world, only a few generations have been granted the role of defending freedom in its hour of maximum danger. I do not shrink from this responsibility — I welcome it.
 
@@ -1169,7 +1354,6 @@ Finally, whether you are citizens of America or citizens of the world, ask of us
 
 最后，无论你是美国公民还是世界公民，请以我们要求你们的高标准力量和牺牲来要求我们。以无愧的良心作为我们唯一确定的回报，以历史作为我们行为的最终裁判，让我们前进，引领我们所爱的这片土地。`,
     vocab:[{word:'shrink',definition:'退缩'},{word:'sacrifice',definition:'牺牲'},{word:'conscience',definition:'良心'},{word:'deeds',definition:'行为'},{word:'granted',definition:'被赋予'}]},
-
   {id:'sp9',title:'I Have a Dream (Excerpt)',category:'speeches',author:'Martin Luther King Jr.',difficulty:2,duration:4,
     text:`I have a dream that one day this nation will rise up and live out the true meaning of its creed: "We hold these truths to be self-evident, that all men are created equal."
 
@@ -1188,7 +1372,7 @@ And when this happens, we will be able to speed up that day when all of God's ch
     vocab:[{word:'creed',definition:'信条'},{word:'self-evident',definition:'不言而喻的'},{word:'brotherhood',definition:'兄弟情谊'},{word:'content',definition:'内涵'},{word:'almighty',definition:'全能的'}]}
 ];
 
-// ==================== DICTIONARY (for Quick Translate) ====================
+// ==================== DICTIONARY ====================
 const MINI_DICT = {
   'the':'这个；那个','a':'一个','an':'一个','is':'是','are':'是','was':'是','were':'是',
   'be':'是；成为','have':'有','has':'有','had':'有','do':'做','does':'做','did':'做',
@@ -1329,21 +1513,39 @@ function openArticle(articleId) {
   const content = document.getElementById('detail-content');
   const actionBar = document.getElementById('action-bar');
 
-  let textHtml = article.text.split('\n\n').map(para => {
-    let html = para.replace(/\n/g, '<br>');
+  const enParagraphs = article.text.split('\n\n');
+  const zhParagraphs = article.translation.split('\n\n');
+
+  let combinedHtml = '';
+  for (let i = 0; i < enParagraphs.length; i++) {
+    let enHtml = enParagraphs[i].replace(/\n/g, '<br>');
     article.vocab.forEach(v => {
       const regex = new RegExp(`\\b(${v.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})\\b`, 'gi');
-      html = html.replace(regex, (match) => {
+      enHtml = enHtml.replace(regex, (match) => {
         return `<span class="vocab-word" data-word="${v.word}" data-def="${v.definition}">${match}</span>`;
       });
     });
-    return `<p>${html}</p>`;
-  }).join('');
-
-  let zhHtml = article.translation.split('\n\n').map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+    combinedHtml += `<p>${enHtml}</p>`;
+    if (zhParagraphs[i]) {
+      combinedHtml += `<div class="detail-zh-block" id="zh-block-${i}"><p>${zhParagraphs[i].replace(/\n/g,'<br>')}</p></div>`;
+    }
+  }
 
   const recited = getRecitedIds().includes(articleId);
   const favorited = getFavoriteIds().includes(articleId);
+
+  let vocabCardHtml = '';
+  if (article.vocab && article.vocab.length > 0) {
+    vocabCardHtml = `
+    <div class="vocab-card">
+      <div class="vocab-card-title">📖 本课生词</div>
+      ${article.vocab.map(v => `
+        <div class="vocab-row">
+          <span class="vocab-word-item">${v.word}</span>
+          <span class="vocab-def-item">${v.definition}</span>
+        </div>`).join('')}
+    </div>`;
+  }
 
   content.innerHTML = `
     <button class="overlay-close" id="detail-close">✕</button>
@@ -1351,12 +1553,16 @@ function openArticle(articleId) {
     <div class="detail-title">${article.title}</div>
     <div class="detail-author">${article.author}</div>
     <div class="detail-meta">
-      <span>难度：${'⭐'.repeat(article.difficulty)}</span>
+      <span>${'★'.repeat(article.difficulty)}${'☆'.repeat(5-article.difficulty)}</span>
       <span>⏱ ${article.duration} 分钟</span>
     </div>
-    <div class="detail-text" id="detail-text">${textHtml}</div>
-    <button class="zh-toggle" id="zh-toggle-btn">📝 显示中文</button>
-    <div class="detail-zh" id="detail-zh">${zhHtml}</div>
+    <hr class="detail-gold-rule">
+    <div class="zh-toggle-row">
+      <span class="zh-toggle-label" id="zh-toggle-btn" style="cursor:pointer">👁 隐藏中文</span>
+    </div>
+    <div class="detail-text" id="detail-text">${combinedHtml}</div>
+    ${vocabCardHtml}
+    <div class="detail-bottom-star">✧</div>
   `;
 
   overlay.classList.add('active');
@@ -1364,20 +1570,19 @@ function openArticle(articleId) {
 
   if (recited) {
     document.getElementById('btn-recited').classList.add('recited');
-    document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '✅';
+    document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '✓';
   } else {
     document.getElementById('btn-recited').classList.remove('recited');
-    document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '⬜';
+    document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '○';
   }
   if (favorited) {
     document.getElementById('btn-fav').classList.add('active');
-    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '⭐';
+    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '★';
   } else {
     document.getElementById('btn-fav').classList.remove('active');
     document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '☆';
   }
 
-  // Vocab click
   document.querySelectorAll('#detail-text .vocab-word').forEach(el => {
     el.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -1385,22 +1590,23 @@ function openArticle(articleId) {
     });
   });
 
-  // Chinese toggle
+  let zhVisible = true;
   document.getElementById('zh-toggle-btn').addEventListener('click', function() {
-    const zh = document.getElementById('detail-zh');
-    zh.classList.toggle('show');
-    this.textContent = zh.classList.contains('show') ? '📝 隐藏中文' : '📝 显示中文';
+    zhVisible = !zhVisible;
+    const blocks = document.querySelectorAll('.detail-zh-block');
+    blocks.forEach(b => b.style.display = zhVisible ? 'block' : 'none');
+    this.textContent = zhVisible ? '👁 隐藏中文' : '👁 显示中文';
   });
 
-  // Close
   document.getElementById('detail-close').addEventListener('click', closeDetail);
 
   stopTTS();
-  document.getElementById('btn-tts').querySelector('.btn-icon').textContent = '🔊';
+  document.getElementById('btn-tts').querySelector('.btn-icon').textContent = '♪';
   document.getElementById('btn-tts').querySelector('span:last-child').textContent = '朗读';
   isTTSPlaying = false;
 
   overlay.scrollTop = 0;
+  content.scrollTop = 0;
 }
 
 function closeDetail() {
@@ -1461,7 +1667,7 @@ function stopTTS() {
 function updateTTSButton() {
   const btn = document.getElementById('btn-tts');
   if (!btn) return;
-  btn.querySelector('.btn-icon').textContent = isTTSPlaying ? '⏸️' : '🔊';
+  btn.querySelector('.btn-icon').textContent = isTTSPlaying ? '⏸' : '♪';
   btn.querySelector('span:last-child').textContent = isTTSPlaying ? '暂停' : '朗读';
 }
 
@@ -1478,8 +1684,8 @@ function toggleFavorite() {
   } else {
     favs.push(currentArticleId);
     document.getElementById('btn-fav').classList.add('active');
-    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '⭐';
-    showToast('已收藏 ⭐');
+    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '★';
+    showToast('已收藏');
   }
   setFavoriteIds(favs);
 }
@@ -1509,7 +1715,7 @@ function markRecited() {
   }
 
   document.getElementById('btn-recited').classList.add('recited');
-  document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '✅';
+  document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '✓';
 
   const streak = calcStreak();
   const si = getStreakIcon(streak);
@@ -1528,7 +1734,6 @@ function generateShareCard() {
   canvas.height = 800;
   const ctx = canvas.getContext('2d');
 
-  // Polyfill for ctx.roundRect
   if (!ctx.roundRect) {
     ctx.roundRect = function(x,y,w,h,r) {
       if (typeof r==='number') r={tl:r,tr:r,br:r,bl:r};
@@ -1541,14 +1746,14 @@ function generateShareCard() {
     };
   }
 
-  // Background
-  ctx.fillStyle = cat.color;
+  // Dark academia background
+  ctx.fillStyle = '#1a1e2e';
   ctx.fillRect(0, 0, 600, 800);
 
-  // Pattern
-  ctx.globalAlpha = 0.08;
-  ctx.strokeStyle = '#ffffff';
-  ctx.fillStyle = '#ffffff';
+  // Subtle pattern
+  ctx.globalAlpha = 0.04;
+  ctx.strokeStyle = '#C4A35A';
+  ctx.fillStyle = '#C4A35A';
   switch(cat.pattern) {
     case 'diagonal':
       ctx.lineWidth = 1;
@@ -1575,49 +1780,68 @@ function generateShareCard() {
   }
   ctx.globalAlpha = 1;
 
-  // Category badge
-  ctx.fillStyle = 'rgba(255,255,255,0.2)';
-  ctx.beginPath(); ctx.roundRect(200, 50, 200, 40, 20); ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '16px ' + getComputedStyle(document.body).fontFamily;
-  ctx.textAlign = 'center';
-  ctx.fillText(cat.icon + ' ' + cat.name, 300, 77);
+  // Card area
+  ctx.fillStyle = '#F5F5F0';
+  ctx.beginPath(); ctx.roundRect(40, 50, 520, 700, 4); ctx.fill();
+  ctx.strokeStyle = '#C4A35A';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(40, 50, 520, 700, 4); ctx.stroke();
 
-  // Quote
+  // Star
+  ctx.fillStyle = '#C4A35A';
+  ctx.font = '16px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('✧', 300, 100);
+
+  // Category badge
+  ctx.fillStyle = cat.color;
+  ctx.beginPath(); ctx.roundRect(220, 120, 160, 36, 3); ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '14px sans-serif';
+  ctx.fillText(cat.icon + ' ' + cat.name, 300, 145);
+
+  // Title
+  ctx.fillStyle = '#2C2C2C';
+  ctx.font = 'bold 24px Georgia, "Times New Roman", serif';
+  const titleLines = wrapText(ctx, article.title, 440);
+  titleLines.forEach((line, i) => {
+    ctx.fillText(line, 300, 260 + i * 36);
+  });
+
+  // Author
+  ctx.fillStyle = '#8b8378';
+  ctx.font = '14px serif';
+  ctx.fillText(article.author, 300, 260 + titleLines.length * 36 + 30);
+
+  // Divider
+  ctx.strokeStyle = 'rgba(196,163,90,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(120, 260 + titleLines.length * 36 + 60); ctx.lineTo(480, 260 + titleLines.length * 36 + 60); ctx.stroke();
+
+  // Quote excerpt
   const lines = article.text.split('\n')[0];
   const words = lines.split(' ');
   let quote = '';
-  for (const w of words) { if ((quote + ' ' + w).length < 120) quote += (quote?' ':'') + w; else break; }
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 28px Georgia, "Noto Serif SC", "STSong", serif';
-  ctx.textAlign = 'center';
-  const quoteLines = wrapText(ctx, quote, 480);
+  for (const w of words) { if ((quote + ' ' + w).length < 100) quote += (quote?' ':'') + w; else break; }
+  ctx.fillStyle = '#2C2C2C';
+  ctx.font = '16px Georgia, "Times New Roman", serif';
+  const quoteLines = wrapText(ctx, quote, 420);
   quoteLines.forEach((line, i) => {
-    ctx.fillText(line, 300, 300 + i * 40);
+    ctx.fillText(line, 300, 260 + titleLines.length * 36 + 110 + i * 28);
   });
-
-  // Divider
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(150, 420); ctx.lineTo(450, 420); ctx.stroke();
-
-  // Title
-  ctx.fillStyle = 'rgba(255,255,255,0.9)';
-  ctx.font = '18px ' + getComputedStyle(document.body).fontFamily;
-  ctx.fillText(article.title, 300, 470);
-
-  // Author
-  ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.font = '14px ' + getComputedStyle(document.body).fontFamily;
-  ctx.fillText('— ' + article.author, 300, 500);
 
   // Bottom info
   const streak = calcStreak();
   const si = getStreakIcon(streak);
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.font = '13px ' + getComputedStyle(document.body).fontFamily;
-  ctx.fillText(formatDate(new Date()) + '  ' + si.icon + ' 连续第' + streak + '天', 300, 720);
-  ctx.fillText('「每日美文」每日英文背诵助手', 300, 750);
+  ctx.fillStyle = '#8b8378';
+  ctx.font = '13px sans-serif';
+  ctx.fillText(formatDate(new Date()) + '  ' + si.icon + ' 连续第' + streak + '天', 300, 700);
+  ctx.fillText('「每日美文」每日英文背诵助手', 300, 725);
+
+  // Bottom star
+  ctx.fillStyle = '#C4A35A';
+  ctx.font = '14px serif';
+  ctx.fillText('✧', 300, 745);
 
   document.getElementById('share-modal').classList.add('active');
 }
@@ -1641,15 +1865,16 @@ function saveShareCard() {
   link.download = '每日美文-分享卡.png';
   link.href = canvas.toDataURL('image/png');
   link.click();
-  showToast('图片已保存 📸');
+  showToast('图片已保存');
 }
 
 // ==================== RENDER HOME ====================
 function renderHome() {
   const streak = calcStreak();
   const si = getStreakIcon(streak);
-  document.getElementById('streak-icon').textContent = si.icon;
-  if (si.cls) { document.getElementById('streak-icon').classList.add(si.cls); } else { document.getElementById('streak-icon').className = 'fire-icon'; }
+  const streakIcon = document.getElementById('streak-icon');
+  streakIcon.textContent = si.icon;
+  if (si.cls) { streakIcon.classList.add(si.cls); } else { streakIcon.className = 'streak-icon'; }
   document.getElementById('streak-count').textContent = streak + ' 天';
   document.getElementById('streak-date').textContent = formatDate(new Date());
 
@@ -1665,33 +1890,57 @@ function renderHome() {
   document.getElementById('rec-title').textContent = rec.title;
   document.getElementById('rec-author').textContent = rec.author;
   document.getElementById('rec-badge').textContent = recCat.icon + ' ' + recCat.name;
+  document.getElementById('rec-badge').style.background = recCat.color;
   document.getElementById('rec-preview').textContent = rec.text.split('\n')[0].substring(0, 80) + '...';
   document.getElementById('daily-rec-card').onclick = () => openArticle(rec.id);
 
-  // Recent
+  // Category grid on home
+  const catGrid = document.getElementById('cat-grid');
+  catGrid.innerHTML = CATEGORIES.map(cat => {
+    const count = ARTICLES.filter(a => a.category === cat.id).length;
+    return `<div class="cat-card" onclick="switchTab('category');setTimeout(()=>showCategoryArticles('${cat.id}'),100)">
+      <div class="cat-left-border" style="background:${cat.borderColor}"></div>
+      <div class="cat-icon">${cat.icon}</div>
+      <div class="cat-name">${cat.name}</div>
+      <div class="cat-count">${count} 篇</div>
+    </div>`;
+  }).join('');
+
+  // Recent articles
   const recitedIds = getRecitedIds();
-  const recentScroll = document.getElementById('recent-scroll');
+  const recentList = document.getElementById('recent-list');
   if (recitedIds.length === 0) {
-    recentScroll.innerHTML = '<div style="padding:20px;color:var(--text-muted);font-size:13px;text-align:center;width:100%">还没有背诵记录，开始今天的第一篇吧 ✨</div>';
+    recentList.innerHTML = '<div style="padding:20px;color:var(--text-muted);font-size:13px;text-align:center">还没有背诵记录，开始今天的第一篇吧 ✧</div>';
   } else {
-    const recent = recitedIds.slice().reverse().slice(0, 10);
-    recentScroll.innerHTML = recent.map(id => {
+    const recent = recitedIds.slice().reverse().slice(0, 8);
+    recentList.innerHTML = recent.map(id => {
       const a = ARTICLES.find(ar => ar.id === id);
       if (!a) return '';
-      return `<div class="h-card" onclick="openArticle('${a.id}')"><div class="h-title">${a.title}</div><div class="h-meta">${a.author} · ${a.duration}分钟</div></div>`;
+      const rcat = CATEGORIES.find(c => c.id === a.category);
+      return `<div class="article-list-card" onclick="openArticle('${a.id}')">
+        <div class="al-info">
+          <div class="al-title">${a.title}</div>
+          <div class="al-meta">
+            <span>${a.author}</span>
+            <span class="al-stars">${'★'.repeat(a.difficulty)}${'☆'.repeat(5-a.difficulty)}</span>
+          </div>
+        </div>
+        <span class="al-arrow">›</span>
+      </div>`;
     }).join('');
   }
 }
 
 // ==================== RENDER CATEGORIES ====================
 function renderCategories() {
-  const grid = document.getElementById('cat-grid');
+  const grid = document.getElementById('cat-grid-category');
   grid.innerHTML = CATEGORIES.map(cat => {
     const count = ARTICLES.filter(a => a.category === cat.id).length;
     return `<div class="cat-card" onclick="showCategoryArticles('${cat.id}')">
+      <div class="cat-left-border" style="background:${cat.borderColor}"></div>
       <div class="cat-icon">${cat.icon}</div>
       <div class="cat-name">${cat.name}</div>
-      <div class="cat-count">${count} 篇文章</div>
+      <div class="cat-count">${count} 篇</div>
     </div>`;
   }).join('');
 }
@@ -1703,18 +1952,17 @@ function showCategoryArticles(catId) {
   document.getElementById('cat-list-view').style.display = 'block';
   const articles = ARTICLES.filter(a => a.category === catId);
   const list = document.getElementById('cat-article-list');
-  list.innerHTML = `<h3 style="margin-bottom:8px;font-size:16px">${cat.icon} ${cat.name}</h3>` +
+  list.innerHTML = `<h3 style="margin-bottom:10px;font-size:16px;color:var(--gold)">${cat.icon} ${cat.name}</h3>` +
     articles.map(a => `
-      <div class="article-list-item" onclick="openArticle('${a.id}')">
-        <div class="item-info">
-          <div class="item-title">${a.title}</div>
-          <div class="item-author">${a.author}</div>
-          <div class="item-meta">
-            <span class="item-stars">${'⭐'.repeat(a.difficulty)}</span>
-            <span class="item-duration">⏱ ${a.duration}分钟</span>
+      <div class="article-list-card" onclick="openArticle('${a.id}')">
+        <div class="al-info">
+          <div class="al-title">${a.title}</div>
+          <div class="al-meta">
+            <span>${a.author}</span>
+            <span class="al-stars">${'★'.repeat(a.difficulty)}${'☆'.repeat(5-a.difficulty)}</span>
           </div>
         </div>
-        <span class="item-arrow">›</span>
+        <span class="al-arrow">›</span>
       </div>
     `).join('');
 }
@@ -1725,7 +1973,7 @@ function renderFavorites() {
   const container = document.getElementById('fav-content');
   if (favs.length === 0) {
     container.innerHTML = `<div class="empty-state">
-      <div class="empty-icon">⭐</div>
+      <div class="empty-icon">☆</div>
       <div class="empty-text">还没有收藏，去发现好文章吧</div>
     </div>`;
   } else {
@@ -1777,18 +2025,15 @@ function renderCalendar() {
   const daysInPrevMonth = new Date(calendarYear, calendarMonth, 0).getDate();
 
   let cells = '';
-  // Previous month
   for (let i = firstDay - 1; i >= 0; i--) {
     cells += `<div class="day-cell other-month">${daysInPrevMonth - i}</div>`;
   }
-  // Current month
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = `${calendarYear}-${String(calendarMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday = ds === today;
     const isRecited = !!recitedDates[ds];
     cells += `<div class="day-cell${isToday?' today':''}${isRecited?' recited':''}">${d}</div>`;
   }
-  // Next month
   const totalCells = firstDay + daysInMonth;
   const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
   for (let d = 1; d <= remaining; d++) {
@@ -1845,7 +2090,7 @@ function doQuickTranslate() {
     const cards = getCustomCards();
     cards.push({text:input, date:formatDate(new Date())});
     setCustomCards(cards);
-    showToast('已加入卡片 📌');
+    showToast('已加入卡片');
   });
 }
 
@@ -1862,7 +2107,6 @@ function toggleDarkMode() {
 
 // ==================== INIT ====================
 function init() {
-  // Dark mode
   if (localStorage.getItem('night_mode') === null) {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setNightMode(prefersDark);
