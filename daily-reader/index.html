@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>每日美文 — Daily Recitation</title>
+<style>
+:root {
+  --bg: #fffaf0;
+  --bg-card: #ffffff;
+  --text: #2d3748;
+  --text-secondary: #718096;
+  --text-muted: #a0aec0;
+  --border: #e2e8f0;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.10);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --nav-bg: #ffffff;
+  --nav-border: #e2e8f0;
+  --accent: #d4a574;
+  --accent-text: #1a365d;
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popover-bg: #ffffff;
+  --popover-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  --divider: #edf2f7;
+  --tag-bg: #edf2f7;
+  --tag-text: #4a5568;
+  --success: #48bb78;
+  --danger: #fc8181;
+  --fire-color: #ed8936;
+  --font: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-serif: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-height: 56px;
+}
+body.dark {
+  --bg: #1a1a2e;
+  --bg-card: #16213e;
+  --text: #e8d5b7;
+  --text-secondary: #b0a090;
+  --text-muted: #7a7060;
+  --border: #2a2a4a;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+  --nav-bg: #16213e;
+  --nav-border: #2a2a4a;
+  --overlay-bg: rgba(0,0,0,0.7);
+  --popover-bg: #1e2a4a;
+  --popover-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  --divider: #2a2a4a;
+  --tag-bg: #2a2a4a;
+  --tag-text: #b0a090;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  transition:background .3s,color .3s;
+  padding-bottom:calc(var(--nav-height) + var(--safe-bottom) + 16px);
+  min-height:100vh;
+  min-height:100dvh;
+}
+#app{max-width:480px;margin:0 auto;padding:16px 16px 0}
+
+/* Bottom Nav */
+#bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--nav-bg);
+  border-top:1px solid var(--nav-border);
+  display:flex;justify-content:space-around;align-items:center;
+  height:var(--nav-height);
+  padding-bottom:var(--safe-bottom);
+  z-index:100;
+  transition:background .3s,border-color .3s;
+}
+#bottom-nav .nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:none;background:none;color:var(--text-muted);font-size:10px;
+  cursor:pointer;padding:4px 0;gap:2px;transition:color .2s;
+  font-family:var(--font);
+  -webkit-tap-highlight-color:transparent;
+  min-height:44px;
+}
+#bottom-nav .nav-btn .nav-icon{font-size:22px;line-height:1}
+#bottom-nav .nav-btn.active{color:var(--accent-text);font-weight:600}
+body.dark #bottom-nav .nav-btn.active{color:var(--accent)}
+
+/* Panels */
+.panel{display:none;animation:fadeIn .25s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Streak Bar */
+.streak-bar{
+  display:flex;align-items:center;gap:8px;padding:10px 16px;
+  background:var(--bg-card);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:16px;
+  transition:background .3s;
+}
+.streak-bar .fire-icon{font-size:28px;line-height:1}
+.streak-bar .fire-icon.glow{animation:fireGlow 1.5s ease-in-out infinite}
+.streak-bar .streak-info{flex:1}
+.streak-bar .streak-count{font-size:22px;font-weight:700;color:var(--fire-color)}
+.streak-bar .streak-label{font-size:12px;color:var(--text-secondary)}
+.streak-bar .streak-date{font-size:12px;color:var(--text-muted)}
+@keyframes fireGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(237,137,54,0.6))}50%{filter:drop-shadow(0 0 14px rgba(237,137,54,1))}}
+
+/* Cards */
+.card{
+  background:var(--bg-card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px;margin-bottom:12px;
+  transition:background .3s,box-shadow .3s;
+  cursor:pointer;
+}
+.card:active{transform:scale(0.98)}
+
+/* Daily Rec Card */
+.daily-rec-card{
+  background:linear-gradient(135deg,#1a365d,#2a4a7f);
+  color:#fff;border-radius:var(--radius);padding:20px;
+  box-shadow:var(--shadow-lg);margin-bottom:16px;position:relative;overflow:hidden;
+}
+body.dark .daily-rec-card{background:linear-gradient(135deg,#0f1f3d,#1a365d)}
+.daily-rec-card .rec-label{
+  font-size:11px;text-transform:uppercase;letter-spacing:2px;
+  opacity:.7;margin-bottom:4px;
+}
+.daily-rec-card .rec-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.daily-rec-card .rec-author{font-size:13px;opacity:.8;margin-bottom:8px}
+.daily-rec-card .rec-badge{
+  display:inline-block;background:rgba(255,255,255,.2);
+  padding:2px 10px;border-radius:20px;font-size:11px;
+}
+.daily-rec-card .rec-preview{font-size:13px;opacity:.85;margin-top:8px;line-height:1.5}
+.daily-rec-card::after{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+
+/* Category Badge */
+.cat-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:11px;
+  font-weight:600;white-space:nowrap;
+}
+
+/* Section header */
+.section-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;
+}
+.section-header h2{font-size:16px;font-weight:700}
+
+/* Horizontal scroll */
+.h-scroll{
+  display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.h-scroll::-webkit-scrollbar{display:none}
+.h-scroll .h-card{
+  flex:0 0 140px;scroll-snap-align:start;
+  background:var(--bg-card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:12px;cursor:pointer;
+  transition:background .3s;
+}
+.h-scroll .h-card:active{transform:scale(0.96)}
+.h-scroll .h-card .h-title{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.h-scroll .h-card .h-meta{font-size:11px;color:var(--text-muted)}
+
+/* Category Grid */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat-card{
+  background:var(--bg-card);border-radius:var(--radius);padding:16px;
+  box-shadow:var(--shadow);cursor:pointer;transition:background .3s,transform .15s;
+  display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
+}
+.cat-card:active{transform:scale(0.96)}
+.cat-card .cat-icon{font-size:32px}
+.cat-card .cat-name{font-size:14px;font-weight:600}
+.cat-card .cat-count{font-size:11px;color:var(--text-muted)}
+.cat-card:nth-child(7){grid-column:1/-1}
+
+/* Article List */
+.article-list{margin-top:12px}
+.article-list .back-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  background:none;border:none;color:var(--text-secondary);font-size:13px;
+  cursor:pointer;padding:8px 0;margin-bottom:8px;font-family:var(--font);
+}
+.article-list-item{
+  display:flex;align-items:center;gap:12px;padding:14px 12px;
+  border-bottom:1px solid var(--divider);cursor:pointer;
+  transition:background .15s;
+}
+.article-list-item:active{background:var(--tag-bg)}
+.article-list-item .item-info{flex:1;min-width:0}
+.article-list-item .item-title{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.article-list-item .item-author{font-size:12px;color:var(--text-secondary)}
+.article-list-item .item-meta{display:flex;gap:8px;align-items:center;margin-top:2px}
+.article-list-item .item-stars{color:#ecc94b;font-size:12px;letter-spacing:1px}
+.article-list-item .item-duration{font-size:11px;color:var(--text-muted)}
+.article-list-item .item-arrow{color:var(--text-muted);font-size:14px}
+
+/* Favorites */
+.fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fav-card{
+  background:var(--bg-card);border-radius:var(--radius);padding:14px;
+  box-shadow:var(--shadow);cursor:pointer;transition:background .3s;
+}
+.fav-card:active{transform:scale(0.96)}
+.fav-card .fav-title{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3}
+.fav-card .fav-author{font-size:11px;color:var(--text-secondary)}
+.fav-card .fav-cat{font-size:10px;margin-top:4px}
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--text-muted);
+}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px}
+.empty-state .empty-text{font-size:14px}
+
+/* Profile */
+.profile-header{text-align:center;padding:20px 0}
+.profile-avatar{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#d4a574,#1a365d);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:30px;margin-bottom:8px;
+}
+.profile-name{font-size:18px;font-weight:700}
+.profile-sub{font-size:12px;color:var(--text-secondary)}
+
+/* Calendar */
+.calendar-container{margin-bottom:16px}
+.calendar-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:8px;
+}
+.calendar-header .month-label{font-size:14px;font-weight:600}
+.calendar-header .month-nav{display:flex;gap:4px}
+.calendar-header .month-nav button{
+  background:none;border:1px solid var(--border);border-radius:6px;
+  width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;color:var(--text);
+}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.calendar-grid .day-header{font-size:10px;color:var(--text-muted);padding:4px 0}
+.calendar-grid .day-cell{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:12px;border-radius:50%;position:relative;cursor:default;
+}
+.calendar-grid .day-cell.today{font-weight:700;color:#c53030}
+.calendar-grid .day-cell.other-month{color:var(--text-muted);opacity:.3}
+.calendar-grid .day-cell.recited::after{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--success);position:absolute;bottom:2px;
+}
+
+/* Stats */
+.stats-row{display:flex;gap:10px;margin-bottom:16px}
+.stat-card{
+  flex:1;background:var(--bg-card);border-radius:var(--radius);
+  padding:14px;text-align:center;box-shadow:var(--shadow);
+  transition:background .3s;
+}
+.stat-card .stat-value{font-size:26px;font-weight:700;color:var(--accent-text)}
+body.dark .stat-card .stat-value{color:var(--accent)}
+.stat-card .stat-label{font-size:11px;color:var(--text-secondary);margin-top:2px}
+
+/* Settings */
+.settings-section{margin-bottom:16px}
+.settings-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px;background:var(--bg-card);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:8px;cursor:pointer;
+  transition:background .3s;
+}
+.settings-item .settings-label{font-size:14px;display:flex;align-items:center;gap:8px}
+.settings-item .settings-icon{font-size:18px}
+
+/* Toggle Switch */
+.toggle-switch{
+  position:relative;width:48px;height:28px;flex-shrink:0;
+}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{
+  position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+  background:#cbd5e0;border-radius:28px;transition:.3s;
+}
+.toggle-slider::before{
+  content:'';position:absolute;height:22px;width:22px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.3s;
+}
+.toggle-switch input:checked+.toggle-slider{background:var(--accent-text)}
+body.dark .toggle-switch input:checked+.toggle-slider{background:var(--accent)}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px)}
+
+.about-section{
+  background:var(--bg-card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px;transition:background .3s;
+}
+.about-section h3{font-size:14px;margin-bottom:6px}
+.about-section p{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+/* Overlay */
+.overlay{
+  position:fixed;inset:0;background:var(--overlay-bg);
+  z-index:200;display:none;align-items:flex-end;
+}
+.overlay.active{display:flex}
+.overlay-content{
+  background:var(--bg);width:100%;max-width:480px;margin:0 auto;
+  max-height:92vh;max-height:92dvh;border-radius:var(--radius) var(--radius) 0 0;
+  overflow-y:auto;animation:slideUp .3s ease;
+  padding:20px 16px calc(var(--safe-bottom) + 80px);
+  transition:background .3s;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.overlay-close{
+  position:sticky;top:0;z-index:10;float:right;
+  width:36px;height:36px;border-radius:50%;border:none;
+  background:var(--tag-bg);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text);margin-bottom:-36px;
+}
+
+/* Article Detail */
+.detail-cat{margin-bottom:8px}
+.detail-title{font-size:24px;font-weight:700;line-height:1.3;margin-bottom:4px}
+.detail-author{font-size:14px;color:var(--text-secondary);margin-bottom:16px}
+.detail-meta{display:flex;gap:12px;align-items:center;margin-bottom:16px;font-size:12px;color:var(--text-muted)}
+.detail-text{font-size:16px;line-height:1.8;margin-bottom:12px}
+.detail-text p{margin-bottom:12px}
+.detail-text .vocab-word{
+  background:rgba(212,165,116,0.2);padding:1px 4px;border-radius:3px;
+  cursor:pointer;border-bottom:1px dashed var(--accent);position:relative;
+  transition:background .15s;
+}
+.detail-text .vocab-word:active{background:rgba(212,165,116,0.4)}
+
+/* Vocab Popover */
+.vocab-popover{
+  position:fixed;z-index:300;background:var(--popover-bg);
+  border-radius:var(--radius-sm);padding:12px 16px;
+  box-shadow:var(--popover-shadow);max-width:260px;
+  animation:popIn .2s ease;pointer-events:none;
+}
+.vocab-popover .pop-word{font-size:16px;font-weight:700;margin-bottom:4px}
+.vocab-popover .pop-def{font-size:13px;color:var(--text-secondary)}
+@keyframes popIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+
+/* Chinese Toggle */
+.zh-toggle{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--tag-bg);border:none;border-radius:20px;
+  padding:8px 16px;font-size:13px;color:var(--text);cursor:pointer;
+  font-family:var(--font);margin:12px 0;transition:background .15s;
+}
+.zh-toggle:active{background:var(--border)}
+.detail-zh{display:none;font-size:15px;line-height:1.8;color:var(--text-secondary);margin-bottom:12px}
+.detail-zh.show{display:block}
+.detail-zh p{margin-bottom:10px}
+
+/* Action Bar */
+.action-bar{
+  position:fixed;bottom:calc(var(--nav-height) + var(--safe-bottom));
+  left:0;right:0;background:var(--nav-bg);border-top:1px solid var(--nav-border);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:8px 16px;z-index:210;transition:background .3s;
+  max-width:480px;margin:0 auto;
+}
+.action-btn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;color:var(--text-secondary);font-size:10px;
+  cursor:pointer;padding:6px 12px;border-radius:var(--radius-sm);
+  transition:color .15s,background .15s;font-family:var(--font);
+  min-height:44px;justify-content:center;
+}
+.action-btn .btn-icon{font-size:22px}
+.action-btn:active{background:var(--tag-bg)}
+.action-btn.active{color:var(--accent-text)}
+body.dark .action-btn.active{color:var(--accent)}
+.action-btn.recited{color:var(--success)}
+
+/* Share Modal */
+.share-modal{
+  position:fixed;inset:0;z-index:400;display:none;
+  align-items:center;justify-content:center;
+  background:var(--overlay-bg);
+}
+.share-modal.active{display:flex}
+.share-modal-inner{
+  background:var(--bg-card);border-radius:var(--radius);padding:20px;
+  max-width:340px;width:90%;text-align:center;transition:background .3s;
+}
+.share-modal-inner canvas{width:100%;border-radius:var(--radius-sm);margin-bottom:12px}
+.share-save-btn{
+  display:inline-block;background:var(--accent-text);color:#fff;
+  border:none;border-radius:20px;padding:10px 28px;
+  font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;
+  font-family:var(--font);
+}
+body.dark .share-save-btn{background:var(--accent);color:#1a1a2e}
+.share-close-btn{
+  display:inline-block;background:var(--tag-bg);color:var(--text);
+  border:none;border-radius:20px;padding:10px 28px;
+  font-size:14px;cursor:pointer;font-family:var(--font);
+}
+
+/* Translate Panel */
+.translate-panel{
+  position:fixed;inset:0;z-index:250;display:none;
+  align-items:flex-end;
+}
+.translate-panel.active{display:flex}
+.translate-inner{
+  background:var(--bg);width:100%;max-width:480px;margin:0 auto;
+  max-height:80vh;max-height:80dvh;border-radius:var(--radius) var(--radius) 0 0;
+  overflow-y:auto;animation:slideUp .3s ease;
+  padding:20px 16px calc(var(--safe-bottom) + 20px);
+  transition:background .3s;
+}
+.translate-inner textarea{
+  width:100%;height:100px;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px;font-size:14px;
+  font-family:var(--font);resize:none;background:var(--bg-card);
+  color:var(--text);transition:background .3s,color .3s;
+}
+.translate-inner textarea:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.translate-btn{
+  display:block;width:100%;margin-top:10px;padding:12px;
+  background:var(--accent-text);color:#fff;border:none;
+  border-radius:var(--radius-sm);font-size:15px;font-weight:600;
+  cursor:pointer;font-family:var(--font);
+}
+body.dark .translate-btn{background:var(--accent);color:#1a1a2e}
+.translate-result{margin-top:16px}
+.translate-result .src-text{font-size:14px;margin-bottom:12px;padding:10px;background:var(--tag-bg);border-radius:var(--radius-sm)}
+.translate-result table{width:100%;font-size:12px;border-collapse:collapse}
+.translate-result td{padding:6px 8px;border-bottom:1px solid var(--divider)}
+.translate-result .word-col{font-weight:600}
+.translate-result .def-col{color:var(--text-secondary)}
+.translate-result .save-card-btn{
+  margin-top:12px;padding:8px 20px;background:var(--success);color:#fff;
+  border:none;border-radius:20px;font-size:13px;cursor:pointer;
+  font-family:var(--font);
+}
+
+/* FAB */
+.fab{
+  position:fixed;bottom:calc(var(--nav-height) + var(--safe-bottom) + 20px);
+  right:20px;width:50px;height:50px;border-radius:50%;
+  background:var(--accent-text);color:#fff;border:none;
+  font-size:26px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;
+  z-index:90;transition:transform .2s,background .3s;
+}
+body.dark .fab{background:var(--accent);color:#1a1a2e}
+.fab:active{transform:scale(0.9)}
+
+/* Toast */
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  background:#2d3748;color:#fff;padding:10px 24px;border-radius:20px;
+  font-size:13px;z-index:500;animation:toastIn .3s ease;pointer-events:none;
+}
+body.dark .toast{background:#e8d5b7;color:#1a1a2e}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Home Panel -->
+<div id="home-panel" class="panel active">
+  <div class="streak-bar" id="streak-bar">
+    <span class="fire-icon" id="streak-icon">📖</span>
+    <div class="streak-info">
+      <div class="streak-count" id="streak-count">0 天</div>
+      <div class="streak-label">连续背诵</div>
+    </div>
+    <div class="streak-date" id="streak-date"></div>
+  </div>
+
+  <div class="daily-rec-card" id="daily-rec-card">
+    <div class="rec-label">📌 今日推荐</div>
+    <div class="rec-title" id="rec-title"></div>
+    <div class="rec-author" id="rec-author"></div>
+    <span class="rec-badge" id="rec-badge"></span>
+    <div class="rec-preview" id="rec-preview"></div>
+  </div>
+
+  <div class="section-header">
+    <h2>🕐 最近背诵</h2>
+  </div>
+  <div class="h-scroll" id="recent-scroll"></div>
+</div>
+
+<!-- Category Panel -->
+<div id="category-panel" class="panel">
+  <div id="cat-grid-view">
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+  <div id="cat-list-view" style="display:none">
+    <button class="back-btn" id="cat-back-btn">← 返回分类</button>
+    <div class="article-list" id="cat-article-list"></div>
+  </div>
+</div>
+
+<!-- Favorites Panel -->
+<div id="favorites-panel" class="panel">
+  <div id="fav-content"></div>
+</div>
+
+<!-- Profile Panel -->
+<div id="profile-panel" class="panel">
+  <div class="profile-header">
+    <div class="profile-avatar">📚</div>
+    <div class="profile-name">背书人</div>
+    <div class="profile-sub">每日美文，积少成多</div>
+  </div>
+  <div class="stats-row" id="stats-row"></div>
+  <div class="calendar-container" id="calendar-container"></div>
+  <div class="settings-section">
+    <div class="settings-item" id="dark-mode-toggle-item">
+      <span class="settings-label"><span class="settings-icon">🌙</span>夜间模式</span>
+      <label class="toggle-switch"><input type="checkbox" id="dark-mode-checkbox"><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+  <div class="about-section">
+    <h3>📖 关于每日美文</h3>
+    <p>每日美文是一款英文背诵辅助工具，精选30+篇经典短文，涵盖职场、文学、演讲、旅行、中国文化、生活感悟等多个类别。每天背诵一篇，积累词汇，提升语感。所有数据存储在本地，无需网络。</p>
+    <p style="margin-top:8px">v1.0 · Made with ❤️</p>
+  </div>
+</div>
+
+</div>
+
+<!-- Bottom Nav -->
+<nav id="bottom-nav">
+  <button class="nav-btn active" data-tab="home">
+    <span class="nav-icon">🏠</span>今日
+  </button>
+  <button class="nav-btn" data-tab="category">
+    <span class="nav-icon">📂</span>分类
+  </button>
+  <button class="nav-btn" data-tab="favorites">
+    <span class="nav-icon">⭐</span>收藏
+  </button>
+  <button class="nav-btn" data-tab="profile">
+    <span class="nav-icon">👤</span>我的
+  </button>
+</nav>
+
+<!-- FAB -->
+<button class="fab" id="fab-btn" title="随手译">✏️</button>
+
+<!-- Article Detail Overlay -->
+<div class="overlay" id="detail-overlay">
+  <div class="overlay-content" id="detail-content"></div>
+  <div class="action-bar" id="action-bar" style="display:none">
+    <button class="action-btn" id="btn-tts"><span class="btn-icon">🔊</span>朗读</button>
+    <button class="action-btn" id="btn-fav"><span class="btn-icon">⭐</span>收藏</button>
+    <button class="action-btn" id="btn-recited"><span class="btn-icon">✅</span>已背</button>
+    <button class="action-btn" id="btn-share"><span class="btn-icon">📤</span>分享</button>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div class="share-modal" id="share-modal">
+  <div class="share-modal-inner">
+    <canvas id="share-canvas" width="600" height="800"></canvas>
+    <button class="share-save-btn" id="share-save-btn">💾 保存图片</button>
+    <button class="share-close-btn" id="share-close-btn">关闭</button>
+  </div>
+</div>
+
+<!-- Translate Panel -->
+<div class="translate-panel" id="translate-panel">
+  <div class="translate-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="font-size:16px">✏️ 随手译</h3>
+      <button style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text)" id="translate-close-btn">✕</button>
+    </div>
+    <textarea id="translate-input" placeholder="粘贴英文句子，查看词汇解析..."></textarea>
+    <button class="translate-btn" id="translate-do-btn">🔍 解析词汇</button>
+    <button class="translate-btn" id="translate-ai-btn" style="background:var(--accent);margin-top:6px;display:none">🤖 AI 翻译</button>
+    <div class="translate-result" id="translate-result"></div>
+  </div>
+</div>
+
+<!-- Vocab Popover -->
+<div class="vocab-popover" id="vocab-popover" style="display:none"></div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<script>
+// ==================== DATA ====================
+const CATEGORIES = [
+  {id:'workplace',name:'职场英语',icon:'💼',color:'#1a365d',accent:'#d4a574',cssColor:'#1a365d',pattern:'diagonal'},
+  {id:'travel',name:'旅行英语',icon:'✈️',color:'#3182ce',accent:'#ffffff',cssColor:'#3182ce',pattern:'dots'},
+  {id:'chinese-culture',name:'中国文化',icon:'🏮',color:'#c53030',accent:'#f6ad55',cssColor:'#c53030',pattern:'waves'},
+  {id:'literature',name:'文学经典',icon:'📖',color:'#eaddcf',accent:'#276749',cssColor:'#276749',pattern:'crosshatch'},
+  {id:'daily',name:'生活感悟',icon:'🌿',color:'#718096',accent:'#48bb78',cssColor:'#48bb78',pattern:'circles'},
+  {id:'speeches',name:'经典演讲',icon:'🎤',color:'#553c9a',accent:'#faf5ed',cssColor:'#553c9a',pattern:'radial'}
+];
+
+const ARTICLES = [
+  // === WORKPLACE (6) ===
+  {id:'wp1',title:'How to Run Effective Meetings',category:'workplace',author:'Harvard Business Review',difficulty:2,duration:4,
+    text:`Meetings don't have to be a waste of time. The most productive meetings start with a clear agenda distributed at least 24 hours in advance. Every participant should know exactly why they are in the room and what is expected of them.
+
+Begin on time, regardless of who is missing. This simple habit signals that you respect everyone's time. Assign a note-taker and a timekeeper for longer sessions. The facilitator's role is not to dominate the conversation but to guide it — ensuring every voice is heard and the discussion stays on track.
+
+End every meeting with clear action items. Who will do what by when? Send a follow-up email within two hours summarizing decisions and next steps. A meeting without actionable outcomes is just a conversation.`,
+    translation:`会议不一定是浪费时间。最高效的会议始于提前至少24小时分发的清晰议程。每位与会者都应确切知道他们为什么在会议室里，以及他们需要做什么。
+
+准时开始，无论谁还没到。这个简单的习惯表明你尊重每个人的时间。长时间会议应指定一名记录员和一名计时员。主持人的角色不是主导对话，而是引导对话——确保每个人的声音都被听到，讨论保持在正轨上。
+
+每次会议结束时要有明确的行动事项。谁在什么时候做什么？在两小时内发送跟进邮件，总结决定和下一步行动。没有可执行结果的会议只是一场谈话。`,
+    vocab:[{word:'agenda',definition:'议程'},{word:'facilitator',definition:'主持人；引导者'},{word:'actionable',definition:'可执行的'},{word:'dominate',definition:'主导；支配'},{word:'distributed',definition:'分发'}]},
+  {id:'wp2',title:'Writing Emails That Get Replies',category:'workplace',author:'Business Writing Guide',difficulty:1,duration:3,
+    text:`The average office worker receives over 120 emails per day. To stand out, your email must be clear, concise, and compelling. Start with a specific subject line — vague subjects get ignored.
+
+Keep your message to five sentences or fewer when possible. State your purpose in the first line. Use bullet points for multiple items. Always end with a clear call to action: what do you need from the recipient, and by when?
+
+Proofread before sending. A typo in a professional email can undermine your credibility. And remember: if a conversation requires more than three back-and-forth emails, pick up the phone.`,
+    translation:`普通上班族每天收到超过120封邮件。要脱颖而出，你的邮件必须清晰、简洁、有说服力。使用具体的主题行——模糊的主题会被忽略。
+
+尽可能将信息控制在五句话以内。第一行就说明目的。多项内容使用项目符号。始终以明确的行动呼吁结尾：你需要收件人做什么，什么时候之前完成？
+
+发送前校对。专业邮件中的错别字会损害你的可信度。记住：如果一次对话需要超过三封来回邮件，拿起电话。`,
+    vocab:[{word:'concise',definition:'简洁的'},{word:'compelling',definition:'有说服力的'},{word:'proofread',definition:'校对'},{word:'credibility',definition:'可信度'},{word:'recipient',definition:'收件人'}]},
+  {id:'wp3',title:'The Negotiator\'s Mindset',category:'workplace',author:'Negotiation Expert',difficulty:3,duration:5,
+    text:`Great negotiators don't see negotiation as a battle. They see it as a collaborative problem-solving exercise. The goal is not to defeat the other side but to find a solution that satisfies both parties' core interests.
+
+Prepare thoroughly before any negotiation. Know your BATNA — your Best Alternative to a Negotiated Agreement. Understand what you can concede and what is non-negotiable. Listen more than you speak. The most powerful negotiation tool is not a clever argument but a well-timed question.
+
+Silence is your ally. After making an offer, stop talking. Let the other side fill the silence. Often, they will reveal more than they intended.`,
+    translation:`优秀的谈判者不把谈判视为战斗。他们将其视为协作解决问题的练习。目标不是击败对方，而是找到满足双方核心利益的解决方案。
+
+任何谈判前都要充分准备。了解你的BATNA——谈判协议的最佳替代方案。清楚你能让步什么，什么是不可妥协的。多听少说。最强大的谈判工具不是巧妙的论点，而是适时的提问。
+
+沉默是你的盟友。提出报价后，停止说话。让对方填补沉默。通常，他们会透露比预期更多的信息。`,
+    vocab:[{word:'collaborative',definition:'协作的'},{word:'concede',definition:'让步'},{word:'BATNA',definition:'最佳替代方案'},{word:'non-negotiable',definition:'不可协商的'},{word:'ally',definition:'盟友'}]},
+  {id:'wp4',title:'Stand and Deliver: Presentation Tips',category:'workplace',author:'Presentation Coach',difficulty:2,duration:4,
+    text:`The fear of public speaking is one of the most common phobias. Yet the ability to present effectively is a career superpower. The secret is not to eliminate nerves but to channel them into energy.
+
+Open with a story, not a slide. Human brains are wired for narrative. A personal anecdote creates an instant connection with your audience. Structure your talk around three key points — the rule of three is timeless because it works.
+
+Design slides that support your message, not replace it. If your audience is reading your slides, they are not listening to you. Use images over text whenever possible. And practice out loud, standing up, at least three times before the real thing.`,
+    translation:`公众演讲恐惧是最常见的恐惧症之一。然而，有效演讲的能力是职业超能力。秘诀不是消除紧张，而是将其转化为能量。
+
+用一个故事开场，而不是幻灯片。人类大脑天生适合叙事。一个个人轶事能与听众建立即时联系。围绕三个关键点组织你的演讲——三的法则经久不衰，因为它确实有效。
+
+设计支持你信息的幻灯片，而不是替代它。如果听众在读你的幻灯片，他们就没在听你说话。尽可能用图片代替文字。在正式演讲前，站着大声练习至少三遍。`,
+    vocab:[{word:'phobia',definition:'恐惧症'},{word:'channel',definition:'引导；输送'},{word:'anecdote',definition:'轶事；趣闻'},{word:'narrative',definition:'叙事'},{word:'timeless',definition:'永恒的'}]},
+  {id:'wp5',title:'Small Talk, Big Impact',category:'workplace',author:'Communication Skills Guide',difficulty:1,duration:3,
+    text:`Small talk is not small at all. It is the social lubricant that opens doors to deeper relationships. The best networkers are not the ones who hand out the most business cards — they are the ones who make people feel heard.
+
+Start with open-ended questions. Instead of "Do you like your job?" ask "What's the most interesting project you're working on?" Listen actively, and follow up on what the other person says. People remember how you made them feel long after they forget what you said.
+
+Find common ground. Weather, travel, and shared experiences are safe starting points. Avoid controversial topics. And always have an exit strategy — a graceful way to end a conversation without awkwardness.`,
+    translation:`闲聊一点也不"小"。它是打开深层关系之门的社会润滑剂。最好的社交者不是发出最多名片的人——而是让人感到被倾听的人。
+
+从开放式问题开始。与其问"你喜欢你的工作吗？"不如问"你正在做的最有趣的项目是什么？"积极倾听，并根据对方说的话进行追问。人们会忘记你说过的话，但很久以后仍记得你给他们的感觉。
+
+寻找共同点。天气、旅行和共同经历是安全的话题切入点。避免争议性话题。永远准备好退场策略——一种优雅结束对话而不尴尬的方式。`,
+    vocab:[{word:'lubricant',definition:'润滑剂'},{word:'networker',definition:'社交者'},{word:'open-ended',definition:'开放式的'},{word:'controversial',definition:'有争议的'},{word:'graceful',definition:'优雅的'}]},
+  {id:'wp6',title:'Leadership Is Listening',category:'workplace',author:'Management Wisdom',difficulty:2,duration:4,
+    text:`The best leaders are not the loudest voices in the room. They are the ones who listen most carefully. Leadership is not about having all the answers — it is about asking the right questions and creating an environment where others can thrive.
+
+When a team member brings you a problem, resist the urge to solve it immediately. Ask: "What do you think we should do?" This simple shift empowers your team and develops their problem-solving skills. Your job as a leader is to build more leaders, not more followers.
+
+Trust is the currency of leadership. It is earned through consistency, transparency, and genuine care for your people. A leader who listens builds loyalty that no bonus can buy.`,
+    translation:`最好的领导者不是房间里声音最大的人。他们是听得最仔细的人。领导力不是拥有所有答案——而是提出正确的问题，创造让他人茁壮成长的环境。
+
+当团队成员带着问题来找你时，克制立即解决的冲动。问："你觉得我们应该怎么做？"这个简单的转变能赋能你的团队，培养他们解决问题的能力。你作为领导者的工作是培养更多的领导者，而不是更多的追随者。
+
+信任是领导力的货币。它通过一致性、透明度和对员工的真诚关怀来获得。一个善于倾听的领导者建立起的忠诚，是任何奖金都买不到的。`,
+    vocab:[{word:'thrive',definition:'茁壮成长'},{word:'empower',definition:'赋能；授权'},{word:'currency',definition:'货币'},{word:'transparency',definition:'透明度'},{word:'consistency',definition:'一致性'}]},
+
+  // === TRAVEL (5) ===
+  {id:'tr1',title:'At the Airport',category:'travel',author:'Travel Guide',difficulty:1,duration:3,
+    text:`Checking in at the airport can be stressful, but a few key phrases make everything smoother. "I'd like to check in for flight 837 to London, please." Hand over your passport and booking reference. The agent will ask: "Do you have any checked luggage?" and "Would you prefer a window or aisle seat?"
+
+At security, listen for instructions: "Please remove your laptop from your bag and place it in a separate tray. Empty your pockets. Take off your belt and shoes if required." Stay calm and follow the signs — airports are designed to be navigated even when you don't speak the local language.
+
+Once through security, check the departure board for your gate number. "Which gate for flight 837?" Gates can change, so keep an eye on the screen. Arrive at your gate at least 30 minutes before departure.`,
+    translation:`在机场办理登机手续可能会让人紧张，但几个关键短语能让一切顺利得多。"我想办理837航班去伦敦的登机手续。"递上你的护照和预订号。工作人员会问："您有托运行李吗？"以及"您想要靠窗还是靠过道的座位？"
+
+在安检处，注意听指示："请从包里取出笔记本电脑，放在单独的托盘里。清空口袋。如有需要，取下皮带和鞋子。"保持冷静，跟着指示牌走——机场的设计就是让即使不会说当地语言的人也能顺利通行。
+
+通过安检后，查看出发显示屏找到你的登机口号。"837航班在哪个登机口？"登机口可能会变，所以要留意屏幕。至少在起飞前30分钟到达登机口。`,
+    vocab:[{word:'aisle',definition:'过道'},{word:'tray',definition:'托盘'},{word:'departure',definition:'出发'},{word:'navigate',definition:'导航；通行'},{word:'reference',definition:'参考号；编号'}]},
+  {id:'tr2',title:'Checking Into Your Hotel',category:'travel',author:'Travel Guide',difficulty:1,duration:3,
+    text:`"Good evening, I have a reservation under the name Chen." The front desk clerk will find your booking and may ask for a credit card for incidentals. "Here is your key card. You're in room 412 on the fourth floor. The elevator is to your left. Breakfast is served from 6:30 to 10:00 in the restaurant on the ground floor."
+
+If something is wrong with your room, don't hesitate to speak up. "Excuse me, there seems to be a problem with the air conditioning. Could you send someone to take a look?" Or: "I'm afraid the room is a bit noisy. Would it be possible to change to a quieter room?"
+
+When checking out: "I'd like to check out, please. Could I have a receipt?" Review your bill carefully before signing. A polite smile goes a long way in any language.`,
+    translation:`"晚上好，我用陈的名字预订了房间。"前台工作人员会找到你的预订，可能会要一张信用卡用于杂费。"这是你的房卡。你在四楼412房间。电梯在你左边。早餐从6:30到10:00在一楼餐厅供应。"
+
+如果房间有问题，不要犹豫提出来。"不好意思，空调好像有问题。能派人来看一下吗？"或者："恐怕房间有点吵。能换一间安静点的房间吗？"
+
+退房时："我想退房。能给我一张收据吗？"签字前仔细查看账单。在任何语言中，礼貌的微笑都能起到很大作用。`,
+    vocab:[{word:'reservation',definition:'预订'},{word:'incidentals',definition:'杂费'},{word:'receipt',definition:'收据'},{word:'elevator',definition:'电梯'}]},
+  {id:'tr3',title:'The Menu, Please',category:'travel',author:'Dining Abroad',difficulty:1,duration:3,
+    text:`Dining in a foreign country is one of travel's greatest pleasures — and occasional challenges. Start with: "A table for two, please." If you have dietary restrictions, learn to say them: "I'm vegetarian." "I'm allergic to nuts." "Does this contain dairy?"
+
+When the menu arrives, don't be shy about asking questions. "What do you recommend?" "What's the local specialty?" "Could you tell me more about this dish?" Waiters often appreciate genuine curiosity about their cuisine.
+
+To get the bill: "Could I have the check, please?" In some countries, you need to ask — they won't bring it automatically. Tipping customs vary widely, so check local norms before you travel. And remember: "That was delicious!" is a compliment understood everywhere.`,
+    translation:`在国外用餐是旅行最大的乐趣之一——有时也是挑战。从"请来一张两人桌"开始。如果你有饮食限制，学会表达："我是素食者。""我对坚果过敏。""这里面有奶制品吗？"
+
+菜单上来后，不要害羞提问。"你推荐什么？""当地特色菜是什么？""能多说说这道菜吗？"服务员通常欣赏对他们菜系的真正好奇。
+
+买单时："请给我账单。"在一些国家，你需要主动要——他们不会自动拿来。小费习惯差别很大，所以在旅行前要了解当地惯例。记住："太好吃了！"是全世界都懂的赞美。`,
+    vocab:[{word:'dietary',definition:'饮食的'},{word:'allergic',definition:'过敏的'},{word:'specialty',definition:'特色菜'},{word:'cuisine',definition:'菜系；烹饪'},{word:'compliment',definition:'赞美'}]},
+  {id:'tr4',title:'Lost and Found: Asking for Directions',category:'travel',author:'Travel Survival Guide',difficulty:1,duration:3,
+    text:`Getting lost is part of the adventure, but knowing how to ask for help is essential. "Excuse me, could you tell me how to get to the train station?" "Is it within walking distance, or should I take a bus?"
+
+Key direction words: go straight, turn left, turn right, cross the street, it's on your left, it's opposite the bank, around the corner. If the directions are too complicated, ask: "Could you show me on the map?" Most people are happy to help a polite traveler.
+
+If you're really lost, look for landmarks. "Is it near the cathedral?" "Is that before or after the bridge?" And the universal backup plan: "Where can I find a taxi?" Sometimes the best direction is simply knowing when to hail a ride.`,
+    translation:`迷路是冒险的一部分，但知道如何求助至关重要。"不好意思，能告诉我怎么去火车站吗？""步行能到吗，还是需要坐公交？"
+
+关键方向词：直走、左转、右转、过马路、在你左边、在银行对面、在拐角处。如果方向太复杂，问："你能在地图上指给我看吗？"大多数人很乐意帮助有礼貌的旅行者。
+
+如果你真的迷路了，找地标。"是在大教堂附近吗？""是在桥之前还是之后？"以及通用的后备方案："哪里可以打到出租车？"有时候最好的方向就是知道什么时候叫车。`,
+    vocab:[{word:'essential',definition:'必要的'},{word:'landmark',definition:'地标'},{word:'opposite',definition:'对面'},{word:'universal',definition:'通用的'},{word:'hail',definition:'招呼（出租车）'}]},
+  {id:'tr5',title:'Hello, Stranger: Travel Small Talk',category:'travel',author:'Cultural Exchange',difficulty:1,duration:3,
+    text:`Travel is not just about seeing places — it is about meeting people. A simple "Where are you from?" can open doors to unforgettable conversations. "Is this your first time here?" "How long are you staying?" These questions are friendly and universal.
+
+Share something about yourself too. "I'm from China. It's my first time in your country." "I've always wanted to visit this place." "The food here is amazing — do you have any other recommendations?" Genuine enthusiasm is contagious.
+
+Be mindful of cultural differences. In some countries, people are more reserved; in others, strangers become friends in minutes. Read the room, respect boundaries, and always lead with kindness. A shared smile is the world's most common language.`,
+    translation:`旅行不仅是看风景——更是遇见人。一句简单的"你从哪里来？"可以为难忘的对话打开大门。"这是你第一次来这里吗？""你要待多久？"这些问题友好而通用。
+
+也分享一些关于你自己的事情。"我来自中国。这是我第一次来你们国家。""我一直想来这个地方。""这里的食物太棒了——你还有其他推荐吗？"真诚的热情是有感染力的。
+
+注意文化差异。在一些国家，人们更加含蓄；在另一些国家，陌生人几分钟就能成为朋友。察言观色，尊重边界，始终以善意出发。一个共同的微笑是世界上最通用的语言。`,
+    vocab:[{word:'unforgettable',definition:'难忘的'},{word:'enthusiasm',definition:'热情'},{word:'contagious',definition:'有感染力的'},{word:'reserved',definition:'含蓄的'},{word:'boundaries',definition:'边界'}]},
+
+  // === CHINESE CULTURE (6) ===
+  {id:'cc1',title:'Learning Without Tiring',category:'chinese-culture',author:'Confucius (孔子)',difficulty:2,duration:3,
+    text:`The Master said: "Is it not a pleasure to learn and to practice what you have learned from time to time? Is it not a joy to have friends come from afar? Is it not gentlemanly to not feel offended when others fail to recognize your worth?"
+
+These three questions, opening the Analects of Confucius, capture the essence of lifelong learning, friendship, and inner peace. Written over 2,500 years ago, they remain startlingly relevant. The joy of learning is not in the destination but in the journey itself.
+
+Confucius taught that education transforms not just the mind but the character. A true scholar is humble, curious, and always open to being wrong. In a world of information overload, this ancient wisdom reminds us to learn with purpose and practice with patience.`,
+    translation:`子曰："学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？"
+
+这三个问题开启了《论语》，捕捉了终身学习、友谊和内心平和的精髓。写于2500多年前，它们依然惊人地切合时代。学习的乐趣不在于目的地，而在于旅程本身。
+
+孔子教导说，教育不仅改变思想，更改变品格。真正的学者谦逊、好奇，并且始终愿意接受自己的错误。在信息过载的世界里，这古老的智慧提醒我们有目的地学习，耐心地实践。`,
+    vocab:[{word:'Analects',definition:'《论语》'},{word:'lifelong',definition:'终身的'},{word:'startlingly',definition:'惊人地'},{word:'scholar',definition:'学者'},{word:'humble',definition:'谦逊的'}]},
+  {id:'cc2',title:'The Twenty-Four Solar Terms',category:'chinese-culture',author:'Chinese Almanac',difficulty:2,duration:4,
+    text:`Long before weather apps, Chinese farmers relied on the Twenty-Four Solar Terms to guide their planting and harvesting. This ancient calendar system, inscribed on UNESCO's Intangible Cultural Heritage list, divides the year into 24 precise segments based on the sun's position.
+
+Each solar term has a poetic name: Start of Spring (立春), Grain Rain (谷雨), Great Heat (大暑), White Dew (白露), Frost Descent (霜降). These names paint a picture of nature's rhythm — when flowers bloom, when cicadas sing, when the first frost arrives.
+
+The solar terms reflect a profound understanding that humans are part of nature, not separate from it. They remind us to live in harmony with the seasons — to eat what is in season, to rest when nature rests, and to celebrate each turning of the year.`,
+    translation:`早在天气应用出现之前，中国农民就依靠二十四节气来指导播种和收获。这个古老的历法系统被列入联合国教科文组织非物质文化遗产名录，根据太阳位置将一年精确分为24个时段。
+
+每个节气都有一个诗意的名字：立春、谷雨、大暑、白露、霜降。这些名字描绘了大自然的韵律——何时花开，何时蝉鸣，何时初霜降临。
+
+节气反映了人类是自然的一部分而非独立于自然的深刻理解。它们提醒我们与季节和谐共处——吃当季的食物，在自然休憩时休息，庆祝每一个年轮的转动。`,
+    vocab:[{word:'almanac',definition:'历书'},{word:'inscribed',definition:'列入；题写'},{word:'intangible',definition:'无形的'},{word:'profound',definition:'深刻的'},{word:'harmony',definition:'和谐'}]},
+  {id:'cc3',title:'The Way of Tea',category:'chinese-culture',author:'Lu Yu (陆羽)',difficulty:2,duration:4,
+    text:`Tea is more than a beverage in China — it is a philosophy, an art, and a way of life. The Classic of Tea, written by Lu Yu in the 8th century, is the world's first comprehensive book on tea. It covers everything from cultivation to brewing to the spiritual dimensions of tea drinking.
+
+The perfect cup of tea requires harmony between water temperature, tea quantity, and steeping time. But the external technique is only half the story. Tea ceremony is about mindfulness — being fully present in the moment, appreciating the aroma, the color, the warmth of the cup in your hands.
+
+In the rush of modern life, the simple act of brewing tea can be a form of meditation. "A cup of tea tastes best when shared with a friend," goes an old saying. Tea connects us — to nature, to each other, and to ourselves.`,
+    translation:`茶在中国不仅是一种饮品——它是一种哲学、一门艺术、一种生活方式。《茶经》由陆羽写于8世纪，是世界上第一本关于茶的综合著作。它涵盖从种植到冲泡再到茶道精神层面的方方面面。
+
+一杯完美的茶需要水温、茶叶量和浸泡时间之间的和谐。但外在的技巧只是故事的一半。茶道关乎正念——完全活在当下，品味香气、色泽、杯子在手中的温暖。
+
+在匆忙的现代生活中，简单的泡茶动作可以是一种冥想。"茶与友共饮最佳，"老话说。茶连接我们——与自然、与彼此、与自己。`,
+    vocab:[{word:'beverage',definition:'饮品'},{word:'cultivation',definition:'种植'},{word:'steeping',definition:'浸泡'},{word:'mindfulness',definition:'正念；专注'},{word:'meditation',definition:'冥想'}]},
+  {id:'cc4',title:'The Four Treasures of the Study',category:'chinese-culture',author:'Chinese Art History',difficulty:2,duration:3,
+    text:`The brush, ink stick, ink stone, and paper — these are the Four Treasures of the Study (文房四宝), the essential tools of Chinese calligraphy and painting for thousands of years. Each treasure has its own story and craft.
+
+The brush is made of animal hair — goat, rabbit, or weasel — carefully selected for its flexibility and resilience. The ink stick is crafted from pine soot and glue, ground with water on the ink stone to produce liquid ink. The paper, Xuan paper, is handmade from tree bark and rice straw, prized for its ability to absorb ink without bleeding.
+
+Calligraphy is called "the art of the line." Every stroke carries the artist's energy and emotion. It is said that you can read a person's character from their handwriting. In practicing calligraphy, one practices patience, discipline, and the pursuit of beauty in simplicity.`,
+    translation:`笔、墨、纸、砚——这是文房四宝，数千年来中国书画的必备工具。每一宝都有自己的故事和工艺。
+
+笔由动物毛制成——山羊、兔或黄鼠狼——精心挑选其柔韧性和弹性。墨由松烟和胶制成，在砚台上与水研磨产生液墨。纸是宣纸，由树皮和稻草手工制作，因吸墨不洇而备受珍视。
+
+书法被称为"线条的艺术"。每一笔都承载着艺术家的能量和情感。据说从字迹能看出一个人的品格。练习书法，就是练习耐心、自律和在简约中追求美。`,
+    vocab:[{word:'calligraphy',definition:'书法'},{word:'resilience',definition:'韧性；弹性'},{word:'soot',definition:'烟灰'},{word:'absorb',definition:'吸收'},{word:'discipline',definition:'自律'}]},
+  {id:'cc5',title:'Quiet Night Thoughts',category:'chinese-culture',author:'Li Bai (李白)',difficulty:1,duration:2,
+    text:`Before my bed, the moonlight glows so bright,
+It seems like frost upon the ground tonight.
+I raise my head and gaze upon the moon,
+Then lower it, and think of home so soon.
+
+This short poem by Li Bai, written over 1,200 years ago, is one of the most famous poems in Chinese literature. Every Chinese schoolchild can recite it from memory. Its beauty lies in its simplicity — a moment of quiet reflection, a universal feeling of homesickness captured in just four lines.
+
+In English translation, we lose the rhythm and rhyme of the original, but the emotion remains unmistakable. The moon has always been a symbol of longing and reunion in Chinese poetry — a silent witness to countless nights of思念 (longing) across centuries.`,
+    translation:`床前明月光，疑是地上霜。
+举头望明月，低头思故乡。
+
+这首李白写于1200多年前的短诗，是中国文学中最著名的诗歌之一。每个中国学童都能背诵。它的美在于简单——片刻安静的沉思，一种普遍的思乡之情浓缩在短短四行中。
+
+英文翻译中，我们失去了原诗的韵律和节奏，但情感依然明确。月亮在中国诗歌中始终是思念和团圆的象征——一个静默的见证者，见证了千百年来无数个思念的夜晚。`,
+    vocab:[{word:'gaze',definition:'凝视'},{word:'recite',definition:'背诵'},{word:'homesickness',definition:'思乡'},{word:'unmistakable',definition:'明确的'},{word:'longing',definition:'思念'}]},
+  {id:'cc6',title:'The Spirit of the Dragon',category:'chinese-culture',author:'Cultural Symbolism',difficulty:1,duration:3,
+    text:`In Chinese culture, the dragon is not a monster to be slain but a benevolent creature symbolizing power, wisdom, and good fortune. Unlike its Western counterpart, the Chinese dragon brings rain for crops, protects the innocent, and represents the emperor's divine right to rule.
+
+The dragon is a composite of many animals: the horns of a deer, the head of a camel, the eyes of a rabbit, the neck of a snake, the scales of a carp, the claws of an eagle, and the ears of an ox. This combination suggests that greatness comes from integrating diverse strengths.
+
+Today, the dragon remains a powerful symbol of Chinese identity. "Descendants of the Dragon" (龙的传人) is how many Chinese people proudly describe themselves. The dragon teaches us that true power is not about domination but about harmony and protection.`,
+    translation:`在中国文化中，龙不是要被杀死的怪物，而是象征力量、智慧和好运的仁慈生物。与西方龙不同，中国龙为庄稼带来雨水，保护无辜者，代表皇帝统治的神圣权利。
+
+龙是多种动物的组合：鹿角、驼头、兔眼、蛇颈、鲤鳞、鹰爪、牛耳。这种组合表明，伟大来自于整合多样的优势。
+
+今天，龙仍然是中国身份的有力象征。"龙的传人"是许多中国人自豪地描述自己的方式。龙教导我们，真正的力量不在于统治，而在于和谐与守护。`,
+    vocab:[{word:'benevolent',definition:'仁慈的'},{word:'composite',definition:'复合体'},{word:'diverse',definition:'多样的'},{word:'descendant',definition:'后代'},{word:'domination',definition:'统治'}]},
+
+  // === LITERATURE (6) ===
+  {id:'lit1',title:'Hope Is the Thing with Feathers',category:'literature',author:'Emily Dickinson',difficulty:2,duration:3,
+    text:`"Hope" is the thing with feathers —
+That perches in the soul —
+And sings the tune without the words —
+And never stops — at all —
+
+And sweetest — in the Gale — is heard —
+And sore must be the storm —
+That could abash the little Bird
+That kept so many warm —
+
+I've heard it in the chillest land —
+And on the strangest Sea —
+Yet, never, in Extremity,
+It asked a crumb — of me.
+
+Emily Dickinson wrote this poem in 1861, comparing hope to a bird that lives within us. It requires nothing from us, yet it sustains us through the harshest storms. In just twelve lines, she captures the quiet resilience of the human spirit.`,
+    translation:`"希望"是长着羽毛的东西——
+栖息在灵魂里——
+唱着无词的曲调——
+永远不会——停息——
+
+在狂风中——听得最甜——
+那暴风雨该多么猛烈——
+才能让这只小鸟难堪
+它温暖了这么多心灵——
+
+我在最寒冷的地方听过它——
+在最陌生的海上——
+然而，在最极端之时，
+它从不曾向我——索要一粒碎屑。
+
+艾米莉·狄金森于1861年写下这首诗，将希望比作一只住在我们内心的小鸟。它对我们一无所求，却支撑我们度过最猛烈的风暴。仅用十二行，她捕捉了人类精神安静的韧性。`,
+    vocab:[{word:'perches',definition:'栖息'},{word:'gale',definition:'狂风'},{word:'abash',definition:'使难堪'},{word:'extremity',definition:'极端'},{word:'crumb',definition:'碎屑'}]},
+
+  {id:'lit2',title:'The Road Not Taken (Excerpt)',category:'literature',author:'Robert Frost',difficulty:2,duration:3,
+    text:`Two roads diverged in a yellow wood,
+And sorry I could not travel both
+And be one traveler, long I stood
+And looked down one as far as I could
+To where it bent in the undergrowth;
+
+Then took the other, as just as fair,
+And having perhaps the better claim,
+Because it was grassy and wanted wear;
+Though as for that the passing there
+Had worn them really about the same.
+
+I shall be telling this with a sigh
+Somewhere ages and ages hence:
+Two roads diverged in a wood, and I —
+I took the one less traveled by,
+And that has made all the difference.
+
+Frost's most famous poem is often misunderstood. It is not simply a celebration of individualism, but a meditation on choice, memory, and how we tell the story of our own lives.`,
+    translation:`黄色的树林里分出两条路，
+可惜我不能同时去涉足，
+我在那路口久久伫立，
+向着一条路极目望去，
+直到它消失在丛林深处；
+
+但我选了另外一条路，
+它荒草萋萋，十分幽寂，
+显得更诱人，更美丽；
+虽然在这条小路上，
+很少留下旅人的足迹。
+
+也许多少年后在某个地方，
+我将轻声叹息把往事回顾：
+一片树林里分出两条路——
+而我选择了人迹更少的一条，
+从此决定了我一生的道路。
+
+弗罗斯特最著名的诗常被误解。它不只是对个人主义的赞美，更是对选择、记忆以及我们如何讲述自己人生故事的沉思。`,
+    vocab:[{word:'diverged',definition:'分叉'},{word:'undergrowth',definition:'灌木丛'},{word:'hence',definition:'从此以后'},{word:'meditation',definition:'沉思'},{word:'individualism',definition:'个人主义'}]},
+
+  {id:'lit3',title:'Sonnet 18: Shall I Compare Thee',category:'literature',author:'William Shakespeare',difficulty:3,duration:3,
+    text:`Shall I compare thee to a summer's day?
+Thou art more lovely and more temperate:
+Rough winds do shake the darling buds of May,
+And summer's lease hath all too short a date.
+
+But thy eternal summer shall not fade,
+Nor lose possession of that fair thou owest;
+Nor shall death brag thou wanderest in his shade,
+When in eternal lines to time thou growest:
+So long as men can breathe or eyes can see,
+So long lives this, and this gives life to thee.
+
+Shakespeare's most beloved sonnet makes a bold claim: his poetry can grant immortality. More than 400 years later, we are still reading it — perhaps he was right.`,
+    translation:`我能把你比作夏日吗？
+你比夏日更可爱更温和：
+狂风会摇撼五月的娇蕾，
+夏天的租期又太过短暂。
+
+但你永恒的夏天不会褪色，
+也不会失去你拥有的美丽；
+死神不能夸耀你在他的阴影中徘徊，
+当你在不朽的诗行中与时同长：
+只要人类还能呼吸，眼睛还能看见，
+这首诗就将长存，并赋予你生命。
+
+莎士比亚最受喜爱的十四行诗做出了一个大胆的宣称：他的诗歌能赋予不朽。400多年后，我们仍然在读它——也许他是对的。`,
+    vocab:[{word:'thee',definition:'你（古英语）'},{word:'temperate',definition:'温和的'},{word:'lease',definition:'租期'},{word:'eternal',definition:'永恒的'},{word:'immortality',definition:'不朽'}]},
+
+  {id:'lit4',title:'I Wandered Lonely as a Cloud',category:'literature',author:'William Wordsworth',difficulty:2,duration:3,
+    text:`I wandered lonely as a cloud
+That floats on high o'er vales and hills,
+When all at once I saw a crowd,
+A host, of golden daffodils;
+Beside the lake, beneath the trees,
+Fluttering and dancing in the breeze.
+
+For oft, when on my couch I lie
+In vacant or in pensive mood,
+They flash upon that inward eye
+Which is the bliss of solitude;
+And then my heart with pleasure fills,
+And dances with the daffodils.
+
+Wordsworth reminds us that nature's beauty, once witnessed, becomes a permanent treasure in memory. Even in moments of solitude, we carry within us the daffodils we once saw dancing in the breeze.`,
+    translation:`我孤独地漫游，像一朵云
+在山丘和谷地上飘荡，
+忽然间我看见一群
+金色的水仙花迎春开放；
+在树荫下，在湖水边，
+迎着微风翩翩起舞。
+
+后来多少次我郁郁独卧，
+感到百无聊赖心灵空漠；
+这景象便在脑海中闪现，
+多少次安慰过我的寂寞；
+我的心又随水仙跳起舞来，
+又重新充满了欢乐。
+
+华兹华斯提醒我们，大自然的美丽一旦被见证，就成为记忆中永久的宝藏。即使在孤独的时刻，我们心中仍带着曾经看到在微风中跳舞的水仙花。`,
+    vocab:[{word:'daffodils',definition:'水仙花'},{word:'fluttering',definition:'翩翩飞舞'},{word:'pensive',definition:'沉思的'},{word:'bliss',definition:'极乐'},{word:'solitude',definition:'孤独'}]},
+
+  {id:'lit5',title:'On Being Yourself',category:'literature',author:'Oscar Wilde',difficulty:2,duration:3,
+    text:`Be yourself; everyone else is already taken.
+
+This famous quip by Oscar Wilde contains profound wisdom in just seven words. Wilde, the master of wit and paradox, spent his life challenging Victorian society's rigid expectations. He understood that the greatest tragedy is not being misunderstood, but living a life that is not truly your own.
+
+"To love oneself is the beginning of a lifelong romance," he also wrote. Self-acceptance, Wilde suggests, is not vanity — it is the foundation of an authentic life. In an age of social media and constant comparison, his words ring truer than ever. The world does not need another copy. It needs you, exactly as you are.`,
+    translation:`做你自己；其他人都已经有人做了。
+
+王尔德这句著名的俏皮话，在七个字中包含了深刻的智慧。作为机智和悖论的大师，王尔德一生都在挑战维多利亚社会的刻板期待。他明白，最大的悲剧不是被误解，而是过着不属于自己的人生。
+
+"爱自己是终身浪漫的开始，"他也写道。王尔德暗示，自我接纳不是虚荣——而是真实人生的基础。在社交媒体和不断比较的时代，他的话比以往任何时候都更加真实。世界不需要另一个复制品。它需要你，完完全全的你。`,
+    vocab:[{word:'quip',definition:'俏皮话'},{word:'paradox',definition:'悖论'},{word:'vanity',definition:'虚荣'},{word:'authentic',definition:'真实的'},{word:'rigid',definition:'刻板的'}]},
+
+  {id:'lit6',title:'A Truth Universally Acknowledged',category:'literature',author:'Jane Austen',difficulty:3,duration:3,
+    text:`It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.
+
+This opening line of Pride and Prejudice is one of the most famous sentences in English literature. With dry wit and perfect irony, Austen sets the stage for a story about marriage, class, and the dangerous power of first impressions.
+
+Published in 1813, the novel remains startlingly modern. Elizabeth Bennet is not a passive heroine waiting to be rescued — she is sharp-tongued, independent-minded, and willing to refuse a wealthy suitor who disrespects her. Austen teaches us that the best relationships are built on mutual respect, not convenience or social pressure — a lesson as relevant today as it was two centuries ago.`,
+    translation:`凡是有钱的单身汉，总想娶位太太，这是一条举世公认的真理。
+
+《傲慢与偏见》的这句开场白是英语文学中最著名的句子之一。奥斯汀以干涩的幽默和完美的讽刺，为一个关于婚姻、阶级和第一印象危险力量的故事拉开了序幕。
+
+出版于1813年，这部小说依然惊人地现代。伊丽莎白·班纳特不是等待被拯救的被动女主角——她言辞犀利、思想独立，愿意拒绝一个不尊重她的富有求婚者。奥斯汀教导我们，最好的关系建立在相互尊重之上，而不是便利或社会压力——这个教训在今天和两个世纪前一样切中要害。`,
+    vocab:[{word:'acknowledged',definition:'公认的'},{word:'fortune',definition:'财富'},{word:'irony',definition:'讽刺'},{word:'suitor',definition:'求婚者'},{word:'convenience',definition:'便利'}]},
+
+  // === DAILY (5) ===
+  {id:'dl1',title:'The Morning Ritual',category:'daily',author:'Life Reflections',difficulty:1,duration:3,
+    text:`How you start your morning sets the tone for your entire day. Before reaching for your phone, take three deep breaths. Feel the ground beneath your feet. Notice the quality of light coming through the window. These small moments of awareness can anchor you before the world rushes in.
+
+A morning ritual doesn't need to be elaborate. It can be as simple as making tea mindfully, reading a page of something meaningful, or sitting in silence for five minutes. The key is consistency — doing it every day, not perfectly but persistently.
+
+What you do every morning matters more than what you do once in a while. Over weeks and months, these small rituals compound into something profound: a life lived with intention rather than reaction.`,
+    translation:`你如何开始早晨，为你的一整天定下基调。在伸手拿手机之前，做三次深呼吸。感受脚下的地面。注意透过窗户的光线的质感。这些微小的觉知时刻可以在世界涌入之前稳住你。
+
+早晨的仪式不需要复杂。它可以简单到有意识地泡一壶茶，读一页有意义的东西，或者安静地坐五分钟。关键在于持续性——每天都做，不是完美而是坚持。
+
+你每天早上做的事比你偶尔做的事更重要。经过数周数月，这些小仪式会累积成深刻的东西：一种有意图而非被动反应的人生。`,
+    vocab:[{word:'ritual',definition:'仪式'},{word:'anchor',definition:'稳住；锚定'},{word:'elaborate',definition:'复杂的'},{word:'persistently',definition:'坚持地'},{word:'intention',definition:'意图'}]},
+
+  {id:'dl2',title:'On Gratitude',category:'daily',author:'Gentle Philosophy',difficulty:1,duration:3,
+    text:`Gratitude is not about pretending everything is perfect. It is about noticing what is good even when things are hard. Research shows that people who regularly practice gratitude sleep better, feel more optimistic, and build stronger relationships.
+
+Try this tonight: before you close your eyes, name three things you are grateful for. They don't have to be big. The taste of your morning coffee. A message from a friend. The warmth of sunlight on your skin. The practice is not in finding spectacular things to be grateful for — it is in training your mind to notice the ordinary gifts that are already there.
+
+Gratitude turns what we have into enough. It doesn't change the world around us, but it changes how we see it — and that changes everything.`,
+    translation:`感恩不是假装一切都很完美。而是即使在困难时也能注意到好的事情。研究表明，经常练习感恩的人睡得更好、更乐观、建立的关系更牢固。
+
+今晚试试：在闭上眼睛之前，说出三件你感激的事。不需要很大。早晨咖啡的味道。朋友的一条信息。阳光照在皮肤上的温暖。练习的目的不是找到值得感激的壮观事物——而是训练你的头脑去注意那些已经存在的平凡礼物。
+
+感恩把我们拥有的变成足够。它不改变我们周围的世界，但改变我们看待世界的方式——而这改变了一切。`,
+    vocab:[{word:'gratitude',definition:'感恩'},{word:'optimistic',definition:'乐观的'},{word:'spectacular',definition:'壮观的'},{word:'ordinary',definition:'平凡的'}]},
+
+  {id:'dl3',title:'The Beauty of Small Things',category:'daily',author:'Everyday Wonder',difficulty:1,duration:3,
+    text:`We spend so much time chasing big moments that we miss the small ones. The way steam rises from a cup of tea. Raindrops racing down a window pane. A stranger holding the door open. The sound of pages turning in a quiet room. These moments are not interruptions in our day — they are our day.
+
+There is a Japanese concept called "yūgen" — a profound awareness of the universe that evokes feelings too deep for words. It is found not in grand spectacles but in subtle moments: the shadow of a bamboo leaf on a paper screen, the sound of a distant bell at dusk.
+
+Learning to notice small beauties is a skill. Like any skill, it improves with practice. The more you look, the more you find. A life rich in small joys is a life rich indeed.`,
+    translation:`我们花太多时间追逐大时刻，以至于错过了小瞬间。茶杯上升起的水汽。雨滴在窗玻璃上的追逐。陌生人帮忙扶着门。安静房间里翻书的声音。这些时刻不是我们一天的打扰——它们就是我们的一天。
+
+有一个日语概念叫"幽玄"——对宇宙的深刻觉知，唤起难以言表的感受。它不在壮观场面中，而在微妙的时刻：竹叶在纸屏上的影子，黄昏时远方钟声的回响。
+
+学会注意小美是一种技能。像任何技能一样，练习越多越精进。你越看，发现越多。充满小快乐的人生是真正富有的人生。`,
+    vocab:[{word:'chasing',definition:'追逐'},{word:'profound',definition:'深刻的'},{word:'spectacles',definition:'壮观场面'},{word:'subtle',definition:'微妙的'},{word:'dusk',definition:'黄昏'}]},
+
+  {id:'dl4',title:'The Art of Letting Go',category:'daily',author:'Minimalist Wisdom',difficulty:2,duration:4,
+    text:`We hold on to so much — grudges, expectations, outdated versions of ourselves. Each thing we cling to takes up space, not just in our homes but in our minds. Letting go is not giving up; it is making room for what matters.
+
+Start small. Delete ten old emails. Unsubscribe from newsletters you never read. Give away clothes that no longer fit who you are becoming. Physical decluttering often leads to mental decluttering — each object released is a decision made, a weight lifted.
+
+The hardest things to let go of are not physical. Old resentments. Regrets. The story you tell yourself about who you are. But you are not your past. You are what you choose to become, starting now. Letting go is an act of faith — faith that what comes next might be even better.`,
+    translation:`我们紧抓着太多东西——怨恨、期望、过时的自我版本。我们紧抓的每一样东西都占据空间，不仅在家里，也在我们的头脑里。放手不是放弃；是为重要的事情腾出空间。
+
+从小处开始。删除十封旧邮件。取消订阅你从不看的新闻通讯。送走不再适合你正在成为的人的衣物。物理上的清理通常带来心理上的清理——每释放一个物品，就是一个决定做出，一份重量卸下。
+
+最难放下的不是物理的。旧的怨恨。遗憾。你告诉自己的关于你是谁的故事。但你不是你的过去。你是你选择成为的样子，从现在开始。放手是一种信念——相信接下来会更好。`,
+    vocab:[{word:'grudges',definition:'怨恨'},{word:'decluttering',definition:'清理杂物'},{word:'resentments',definition:'怨恨'},{word:'outdated',definition:'过时的'}]},
+
+  {id:'dl5',title:'A Quiet Evening',category:'daily',author:'Slow Living',difficulty:1,duration:3,
+    text:`There is a particular kind of peace that comes with a quiet evening. The noise of the day fades. The light softens from gold to blue. In these hours, we are allowed to simply be — not productive, not efficient, just present.
+
+Put away the devices. Light a candle or make a cup of herbal tea. Read something that has nothing to do with work or self-improvement. Listen to music without doing anything else at the same time. These are not wasted hours; they are the hours that restore us.
+
+In a culture obsessed with hustle, rest is an act of resistance. A quiet evening is not a luxury — it is essential maintenance for the soul. Tomorrow's energy comes from tonight's stillness.`,
+    translation:`安静的夜晚有一种特别的平静。白天的喧嚣褪去。光线从金色柔和成蓝色。在这些时刻，我们可以单纯地存在——不必高效，不必有用，只是活在当下。
+
+放下设备。点一支蜡烛，或者泡一杯花草茶。读一些与工作或自我提升完全无关的东西。听音乐时不要同时做别的事。这些不是浪费的时间；它们是恢复我们的时间。
+
+在一种痴迷于忙碌的文化中，休息是一种抵抗行为。安静的夜晚不是奢侈品——它是灵魂必要的维护。明天的能量来自今晚的静默。`,
+    vocab:[{word:'fades',definition:'褪去'},{word:'restore',definition:'恢复'},{word:'hustle',definition:'忙碌'},{word:'luxury',definition:'奢侈品'},{word:'stillness',definition:'静默'}]},
+
+  // === SPEECHES (9) ===
+  {id:'sp1',title:'When They Go Low, We Go High',category:'speeches',author:'Michelle Obama',difficulty:2,duration:4,
+    text:`How we explain to our children that when someone is cruel or acts like a bully, you don't stoop to their level. No, our motto is: when they go low, we go high.
+
+My daughters, who are the heart of my heart and the center of my world, are the reason I wake up every morning. And I know that every parent in this room feels the exact same way about their children. So this election is not about Republican or Democrat. It's about who will have the power to shape our children for the next four or eight years of their lives.
+
+The presidency doesn't change who you are — it reveals who you are. We need a president who understands that the issues a president faces are not black and white and cannot be boiled down to 140 characters. Because when you have the nuclear codes at your fingertips and the military at your command, you can't make snap decisions.`,
+    translation:`我们如何向孩子们解释，当有人残忍或恃强凌弱时，你不要降低到他们的水平。不，我们的座右铭是：当他们低劣时，我们要高尚。
+
+我的女儿们，我心中的心，我世界的中心，是我每天醒来的原因。我知道这个房间里每一位父母对自己孩子的感受完全一样。所以这次选举不是关于共和党或民主党。而是关于谁将有能力在未来四年或八年塑造我们孩子的人生。
+
+总统职位不改变你是谁——它揭示你是谁。我们需要一位理解总统面临的问题不是黑白分明、不能简化为140个字符的总统。因为当你指尖有核密码、军队听你指挥时，你不能做仓促的决定。`,
+    vocab:[{word:'stoop',definition:'降低（身份）'},{word:'motto',definition:'座右铭'},{word:'reveals',definition:'揭示'},{word:'snap',definition:'仓促的'},{word:'command',definition:'指挥'}]},
+
+  {id:'sp2',title:'One Child, One Teacher, One Pen',category:'speeches',author:'Malala Yousafzai',difficulty:2,duration:4,
+    text:`One child, one teacher, one book, and one pen can change the world. Education is the only solution. Education first.
+
+Dear brothers and sisters, I am not against anyone. Neither am I here to speak in terms of personal revenge against the Taliban or any other terrorist group. I am here to speak up for the right of every child to receive an education. I want education for the sons and daughters of all extremists — especially the Taliban.
+
+The terrorists thought that they would change my aims and stop my ambitions, but nothing changed in my life except this: weakness, fear and hopelessness died. Strength, power and courage was born. Let us wage a global struggle against illiteracy, poverty and terrorism. Let us pick up our books and pens. They are our most powerful weapons.`,
+    translation:`一个孩子、一位老师、一本书和一支笔可以改变世界。教育是唯一的解决方案。教育优先。
+
+亲爱的兄弟姐妹们，我不反对任何人。我也不是在这里以个人报复的名义说话，反对塔利班或任何其他恐怖组织。我在这里为每个孩子接受教育的权利发声。我希望所有极端分子的儿女都能接受教育——尤其是塔利班的儿女。
+
+恐怖分子以为他们会改变我的目标、阻止我的雄心，但我的生命中除了这一点什么也没变：软弱、恐惧和绝望死去了。力量、能力和勇气诞生了。让我们发起一场反对文盲、贫困和恐怖主义的全球斗争。让我们拿起我们的书和笔。它们是我们最强大的武器。`,
+    vocab:[{word:'extremist',definition:'极端分子'},{word:'ambition',definition:'雄心'},{word:'wage',definition:'发动（斗争）'},{word:'illiteracy',definition:'文盲'},{word:'revenge',definition:'复仇'}]},
+
+  {id:'sp3',title:'We Should All Be Feminists',category:'speeches',author:'Chimamanda Ngozi Adichie',difficulty:2,duration:4,
+    text:`We teach girls to shrink themselves, to make themselves smaller. We say to girls: "You can have ambition, but not too much. You should aim to be successful, but not too successful. Otherwise, you will threaten the man."
+
+We raise girls to see each other as competitors — not for jobs or for accomplishments, which I think can be a good thing, but for the attention of men. We teach girls that they cannot be sexual beings in the way that boys are.
+
+Feminist: a person who believes in the social, political and economic equality of the sexes.
+
+My own definition of a feminist is a man or a woman who says, "Yes, there's a problem with gender as it is today and we must fix it, we must do better." All of us, women and men, must do better.`,
+    translation:`我们教导女孩缩小自己，让自己变小。我们对女孩说："你可以有雄心，但不能太有雄心。你应该追求成功，但不能太成功。否则，你会威胁到男人。"
+
+我们培养女孩把彼此看作竞争者——不是为了工作或成就（我认为这可能是好事），而是为了男人的关注。我们教导女孩，她们不能像男孩那样是性的存在。
+
+女权主义者：一个相信性别在社会、政治和经济上平等的人。
+
+我自己对女权主义者的定义是，一个男人或女人说："是的，今天的性别状况有问题，我们必须解决它，我们必须做得更好。"我们所有人，女人和男人，都必须做得更好。`,
+    vocab:[{word:'shrink',definition:'缩小'},{word:'feminist',definition:'女权主义者'},{word:'equality',definition:'平等'},{word:'accomplishment',definition:'成就'},{word:'competitor',definition:'竞争者'}]},
+
+  {id:'sp4',title:'Lean In: Sit at the Table',category:'speeches',author:'Sheryl Sandberg',difficulty:2,duration:4,
+    text:`I want to tell you a story that I tell to illustrate a point about how women sometimes hold themselves back. I gave a talk at a very large company, and during the Q&A, I noticed that the women were sitting in chairs around the edges of the room, while the men were sitting at the table.
+
+After the talk, I asked the organizer about it, and she said the women had been invited to sit at the table but chose not to. This is not just about seating arrangements. It's a metaphor for how women often underestimate their own abilities, don't negotiate for themselves, and attribute their success to external factors rather than their own merit.
+
+So my message today is: sit at the table. Raise your hand. Speak up. Don't leave before you leave. And most importantly, believe in your own worth. You are more capable than you think.`,
+    translation:`我想给你们讲一个故事，用来说明女性有时如何阻碍自己。我在一家非常大的公司做演讲，在问答环节，我注意到女性坐在房间边缘的椅子上，而男性坐在桌子旁。
+
+演讲结束后，我问组织者，她说女性被邀请坐在桌子旁，但她们选择不坐。这不仅仅是座位安排。这是一个比喻，说明女性常常低估自己的能力，不为自己谈判，将成功归因于外部因素而非自己的才能。
+
+所以我今天的信息是：坐到桌子旁。举起你的手。说出你的想法。不要提前退出。最重要的是，相信自己的价值。你比你以为的更有能力。`,
+    vocab:[{word:'illustrate',definition:'说明；阐释'},{word:'metaphor',definition:'比喻'},{word:'underestimate',definition:'低估'},{word:'attribute',definition:'归因于'},{word:'merit',definition:'才能；价值'}]},
+
+  {id:'sp5',title:'If Not Me, Who? If Not Now, When?',category:'speeches',author:'Emma Watson',difficulty:2,duration:4,
+    text:`I was appointed as a UN Women Goodwill Ambassador six months ago, and the more I have spoken about feminism, the more I have realized that fighting for women's rights has too often become synonymous with man-hating. This has to stop.
+
+For the record, feminism, by definition, is the belief that men and women should have equal rights and opportunities. It is the theory of the political, economic and social equality of the sexes. I started questioning gender-based assumptions a long time ago.
+
+Men — I would like to take this opportunity to extend your formal invitation. Gender equality is your issue too. We don't often talk about men being imprisoned by gender stereotypes, but I can see that they are. If men don't have to be aggressive in order to be accepted, women won't feel compelled to be submissive. If men don't have to control, women won't have to be controlled.`,
+    translation:`六个月前，我被任命为联合国妇女署亲善大使。我越是谈论女权主义，就越意识到争取妇女权利常常被等同于憎恨男性。这必须停止。
+
+供参考，女权主义，根据定义，是相信男女应享有平等权利和机会。它是性别在社会、政治和经济上平等的理论。我很早就开始质疑基于性别的假设。
+
+男士们——我想借此机会向你发出正式邀请。性别平等也是你们的问题。我们不常谈论男性被性别刻板印象所囚禁，但我能看到他们确实被囚禁。如果男性不必为了被接受而具有攻击性，女性就不会感到被迫顺从。如果男性不必控制，女性就不必被控制。`,
+    vocab:[{word:'ambassador',definition:'大使'},{word:'synonymous',definition:'同义的'},{word:'assumption',definition:'假设'},{word:'stereotype',definition:'刻板印象'},{word:'submissive',definition:'顺从的'}]},
+
+  {id:'sp6',title:'Speaking Your Truth',category:'speeches',author:'Oprah Winfrey',difficulty:2,duration:4,
+    text:`What I know for sure is that speaking your truth is the most powerful tool we all have. And I'm especially proud, and inspired by all the women who have felt strong enough and empowered enough to speak up and share their personal stories.
+
+For too long, women have not been heard or believed if they dared to speak the truth to the power of those men. But their time is up. Their time is up.
+
+So I want all the girls watching here and now to know that a new day is on the horizon. And when that new day finally dawns, it will be because of a lot of magnificent women, and some pretty phenomenal men, fighting hard to make sure that they become the leaders who take us to the time when nobody ever has to say "Me too" again.`,
+    translation:`我确信的是，说出你的真相是我们所有人拥有的最强大的工具。我尤其为所有感到足够坚强、足够被赋权、敢于站出来分享个人故事的女性感到骄傲和鼓舞。
+
+太长时间以来，如果女性敢于对那些有权势的男人说出真相，她们不会被倾听或相信。但她们的时间到了。她们的时间到了。
+
+所以我希望所有现在正在观看的女孩们知道，新的一天即将到来。当那一天终于破晓时，那将是因为许多了不起的女性和一些相当非凡的男性，努力奋斗，确保他们成为领导者，带领我们走向一个再没有人需要说"我也是"的时代。`,
+    vocab:[{word:'empowered',definition:'被赋权的'},{word:'horizon',definition:'地平线'},{word:'magnificent',definition:'了不起的'},{word:'phenomenal',definition:'非凡的'},{word:'dawn',definition:'破晓'}]},
+
+  {id:'sp7',title:'Stay Hungry, Stay Foolish',category:'speeches',author:'Steve Jobs',difficulty:2,duration:4,
+    text:`Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma — which is living with the results of other people's thinking. Don't let the noise of others' opinions drown out your own inner voice.
+
+And most important, have the courage to follow your heart and intuition. They somehow already know what you truly want to become. Everything else is secondary.
+
+When I was young, there was an amazing publication called The Whole Earth Catalog, which was one of the bibles of my generation. On the back cover of their final issue was a photograph of an early morning country road. Beneath it were the words: "Stay Hungry. Stay Foolish." It was their farewell message as they signed off. Stay Hungry. Stay Foolish. And I have always wished that for myself.`,
+    translation:`你的时间有限，所以不要浪费时间过别人的生活。不要被教条困住——那是在用别人思考的结果生活。不要让别人意见的噪音淹没你自己的内心声音。
+
+最重要的是，要有勇气追随你的心和直觉。它们不知怎的已经知道你真正想成为什么。其他一切都是次要的。
+
+我年轻时，有一本了不起的出版物叫《全球概览》，是我们那一代人的圣经之一。他们最后一期的封底是一张清晨乡间道路的照片。下面写着："求知若饥，虚心若愚。"这是他们停刊时的告别信息。求知若饥，虚心若愚。我一直希望自己如此。`,
+    vocab:[{word:'dogma',definition:'教条'},{word:'intuition',definition:'直觉'},{word:'secondary',definition:'次要的'},{word:'farewell',definition:'告别'}]},
+
+  {id:'sp8',title:'Ask Not What Your Country Can Do',category:'speeches',author:'John F. Kennedy',difficulty:3,duration:3,
+    text:`In the long history of the world, only a few generations have been granted the role of defending freedom in its hour of maximum danger. I do not shrink from this responsibility — I welcome it.
+
+And so, my fellow Americans: ask not what your country can do for you — ask what you can do for your country. My fellow citizens of the world: ask not what America will do for you, but what together we can do for the freedom of man.
+
+Finally, whether you are citizens of America or citizens of the world, ask of us here the same high standards of strength and sacrifice which we ask of you. With a good conscience our only sure reward, with history the final judge of our deeds, let us go forth to lead the land we love.`,
+    translation:`在世界漫长的历史中，只有少数几代人被赋予了在自由面临最大危险的时刻捍卫自由的角色。我不回避这个责任——我欢迎它。
+
+所以，我亲爱的美国同胞们：不要问你的国家能为你做什么——问你能为你的国家做什么。我亲爱的世界公民们：不要问美国将为你做什么，而要问我们共同能为人类的自由做什么。
+
+最后，无论你是美国公民还是世界公民，请以我们要求你们的高标准力量和牺牲来要求我们。以无愧的良心作为我们唯一确定的回报，以历史作为我们行为的最终裁判，让我们前进，引领我们所爱的这片土地。`,
+    vocab:[{word:'shrink',definition:'退缩'},{word:'sacrifice',definition:'牺牲'},{word:'conscience',definition:'良心'},{word:'deeds',definition:'行为'},{word:'granted',definition:'被赋予'}]},
+
+  {id:'sp9',title:'I Have a Dream (Excerpt)',category:'speeches',author:'Martin Luther King Jr.',difficulty:2,duration:4,
+    text:`I have a dream that one day this nation will rise up and live out the true meaning of its creed: "We hold these truths to be self-evident, that all men are created equal."
+
+I have a dream that one day on the red hills of Georgia, the sons of former slaves and the sons of former slave owners will be able to sit down together at the table of brotherhood.
+
+I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character. I have a dream today.
+
+And when this happens, we will be able to speed up that day when all of God's children — black men and white men, Jews and Gentiles, Protestants and Catholics — will be able to join hands and sing in the words of the old spiritual: "Free at last! Free at last! Thank God Almighty, we are free at last!"`,
+    translation:`我有一个梦想，有一天这个国家会站起来，实践其信条的真正含义："我们认为这些真理是不言而喻的：人人生而平等。"
+
+我有一个梦想，有一天在佐治亚的红色山丘上，昔日奴隶的儿子和昔日奴隶主的儿子能够一起坐在兄弟情谊的桌旁。
+
+我有一个梦想，我的四个小孩有一天会生活在一个不以肤色而以品格内涵来评判他们的国家。我今天有一个梦想。
+
+当这一切发生时，我们将能够加速那一天的到来，那时所有上帝的孩子——黑人和白人，犹太人和外邦人，新教徒和天主教徒——将能够携手同唱那首古老的黑人灵歌："终于自由了！终于自由了！感谢全能的上帝，我们终于自由了！"`,
+    vocab:[{word:'creed',definition:'信条'},{word:'self-evident',definition:'不言而喻的'},{word:'brotherhood',definition:'兄弟情谊'},{word:'content',definition:'内涵'},{word:'almighty',definition:'全能的'}]}
+];
+
+// ==================== DICTIONARY (for Quick Translate) ====================
+const MINI_DICT = {
+  'the':'这个；那个','a':'一个','an':'一个','is':'是','are':'是','was':'是','were':'是',
+  'be':'是；成为','have':'有','has':'有','had':'有','do':'做','does':'做','did':'做',
+  'will':'将','would':'会','can':'能','could':'能','should':'应该','may':'可能','might':'可能',
+  'must':'必须','shall':'将','not':'不','no':'不','yes':'是的','but':'但是','and':'和',
+  'or':'或者','if':'如果','because':'因为','so':'所以','when':'当…时','where':'哪里',
+  'what':'什么','who':'谁','why':'为什么','how':'如何','which':'哪个','this':'这个','that':'那个',
+  'these':'这些','those':'那些','it':'它','they':'他们','we':'我们','you':'你；你们',
+  'he':'他','she':'她','I':'我','me':'我','him':'他','her':'她；她的','us':'我们',
+  'them':'他们','my':'我的','your':'你的','his':'他的','its':'它的','our':'我们的',
+  'their':'他们的','of':'…的','in':'在…里','on':'在…上','at':'在','to':'到；向',
+  'for':'为了','with':'和；用','from':'从','about':'关于','into':'进入','through':'通过',
+  'during':'在…期间','before':'在…之前','after':'在…之后','over':'超过；在…上方',
+  'between':'在…之间','without':'没有','against':'反对','within':'在…之内','along':'沿着',
+  'around':'围绕','people':'人们','time':'时间','world':'世界','life':'人生；生命',
+  'day':'天；日','way':'方式；路','thing':'东西；事情','man':'男人；人','woman':'女人',
+  'child':'孩子','children':'孩子们','work':'工作','home':'家','love':'爱',
+  'good':'好的','bad':'坏的','big':'大的','small':'小的','new':'新的','old':'旧的',
+  'important':'重要的','great':'伟大的','different':'不同的','same':'相同的','right':'正确的；右边',
+  'left':'左边','first':'第一','last':'最后','more':'更多','less':'更少','much':'很多',
+  'many':'许多','some':'一些','any':'任何','all':'所有','every':'每个','only':'只有',
+  'own':'自己的','other':'其他的','another':'另一个','such':'这样的','just':'只是；刚刚',
+  'very':'非常','too':'也；太','also':'也','well':'好地','even':'甚至','still':'仍然',
+  'already':'已经','always':'总是','never':'从不','often':'经常','sometimes':'有时',
+  'beautiful':'美丽的','strong':'强大的','power':'力量','hope':'希望','dream':'梦想',
+  'change':'改变','learn':'学习','grow':'成长','speak':'说话','listen':'倾听','think':'思考',
+  'believe':'相信','know':'知道','understand':'理解','remember':'记住','forget':'忘记',
+  'begin':'开始','start':'开始','stop':'停止','continue':'继续','become':'成为',
+  'today':'今天','tomorrow':'明天','yesterday':'昨天','morning':'早晨','evening':'傍晚',
+  'education':'教育','freedom':'自由','truth':'真相；真理','story':'故事','nothing':'没有什么',
+  'everything':'一切','everyone':'每个人','someone':'某人','anyone':'任何人','moment':'时刻',
+  'yourself':'你自己','myself':'我自己','themselves':'他们自己','ourselves':'我们自己',
+  'country':'国家','nation':'国家；民族','together':'一起','alone':'独自','better':'更好的',
+  'best':'最好的','enough':'足够','peace':'和平','war':'战争','language':'语言',
+  'honest':'诚实的','quiet':'安静的','calm':'冷静的','brave':'勇敢的','kind':'善良的',
+  'success':'成功','failure':'失败','question':'问题','answer':'答案',
+  'regardless':'不管','committed':'致力于','stint':'限制','compromise':'妥协',
+  'contribute':'贡献','establish':'建立','maintain':'保持','develop':'发展',
+  'require':'需要','consider':'考虑','suggest':'建议','support':'支持','achieve':'实现',
+  'opportunity':'机会','challenge':'挑战','experience':'经验；经历','decision':'决定',
+  'purpose':'目的','meaning':'意义','value':'价值；价值观'
+};
+
+function dictLookup(word) {
+  const lower = word.toLowerCase().replace(/[^a-z]/g,'');
+  if (MINI_DICT[lower]) return MINI_DICT[lower];
+  if (lower.endsWith('ing')) { const base = lower.slice(0,-3); if (MINI_DICT[base]) return MINI_DICT[base]+'(进行时)'; }
+  if (lower.endsWith('ed')) { const base = lower.slice(0,-2); if (MINI_DICT[base]) return MINI_DICT[base]+'(过去式)'; if (MINI_DICT[base+'e']) return MINI_DICT[base+'e']+'(过去式)'; }
+  if (lower.endsWith('s') && !lower.endsWith('ss')) { const base = lower.slice(0,-1); if (MINI_DICT[base]) return MINI_DICT[base]+'(复数/三单)'; }
+  if (lower.endsWith('ly')) { const base = lower.slice(0,-2); if (MINI_DICT[base]) return MINI_DICT[base]+'地'; }
+  return null;
+}
+
+// ==================== STATE ====================
+function getRecitedIds() { try { return JSON.parse(localStorage.getItem('recited_ids')||'[]'); } catch(e) { return []; } }
+function setRecitedIds(ids) { localStorage.setItem('recited_ids', JSON.stringify(ids)); }
+function getRecitedDates() { try { return JSON.parse(localStorage.getItem('recited_dates')||'{}'); } catch(e) { return {}; } }
+function setRecitedDates(d) { localStorage.setItem('recited_dates', JSON.stringify(d)); }
+function getStreakDates() { try { return JSON.parse(localStorage.getItem('streak_dates')||'[]'); } catch(e) { return []; } }
+function setStreakDates(d) { localStorage.setItem('streak_dates', JSON.stringify(d)); }
+function getFavoriteIds() { try { return JSON.parse(localStorage.getItem('favorite_ids')||'[]'); } catch(e) { return []; } }
+function setFavoriteIds(ids) { localStorage.setItem('favorite_ids', JSON.stringify(ids)); }
+function getNightMode() { return localStorage.getItem('night_mode') === '1'; }
+function setNightMode(v) { localStorage.setItem('night_mode', v?'1':'0'); }
+function getCustomCards() { try { return JSON.parse(localStorage.getItem('custom_cards')||'[]'); } catch(e) { return []; } }
+function setCustomCards(c) { localStorage.setItem('custom_cards', JSON.stringify(c)); }
+
+function formatDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+function calcStreak() {
+  const dates = getStreakDates();
+  if (!dates.length) return 0;
+  const today = formatDate(new Date());
+  const sorted = [...new Set(dates)].sort().reverse();
+  if (sorted[0] !== today) {
+    const yesterday = formatDate(new Date(Date.now()-86400000));
+    if (sorted[0] !== yesterday) return 0;
+  }
+  let streak = 0;
+  let check = new Date();
+  for (let i = 0; i < 400; i++) {
+    const ds = formatDate(check);
+    if (sorted.includes(ds)) { streak++; check.setDate(check.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+function getStreakIcon(streak) {
+  if (streak < 3) return {icon: '📖', cls: ''};
+  if (streak < 7) return {icon: '🔥', cls: ''};
+  if (streak < 14) return {icon: '🌟', cls: ''};
+  if (streak < 21) return {icon: '🌙', cls: ''};
+  if (streak < 30) return {icon: '🏮', cls: ''};
+  return {icon: '🔥', cls: 'glow'};
+}
+
+function showToast(msg) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 1800);
+}
+
+// ==================== NAVIGATION ====================
+let currentTab = 'home';
+let currentCategory = null;
+let currentArticleId = null;
+let isTTSPlaying = false;
+let ttsUtterance = null;
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(tab+'-panel').classList.add('active');
+  document.querySelectorAll('#bottom-nav .nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`#bottom-nav .nav-btn[data-tab="${tab}"]`).classList.add('active');
+  if (tab === 'home') renderHome();
+  if (tab === 'favorites') renderFavorites();
+  if (tab === 'profile') renderProfile();
+  document.getElementById('fab-btn').style.display = (tab === 'home') ? 'flex' : 'none';
+  if (tab === 'category') { currentCategory = null; document.getElementById('cat-grid-view').style.display = 'block'; document.getElementById('cat-list-view').style.display = 'none'; }
+}
+
+function openArticle(articleId) {
+  currentArticleId = articleId;
+  const article = ARTICLES.find(a => a.id === articleId);
+  if (!article) return;
+  const cat = CATEGORIES.find(c => c.id === article.category);
+  const overlay = document.getElementById('detail-overlay');
+  const content = document.getElementById('detail-content');
+  const actionBar = document.getElementById('action-bar');
+
+  let textHtml = article.text.split('\n\n').map(para => {
+    let html = para.replace(/\n/g, '<br>');
+    article.vocab.forEach(v => {
+      const regex = new RegExp(`\\b(${v.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})\\b`, 'gi');
+      html = html.replace(regex, (match) => {
+        return `<span class="vocab-word" data-word="${v.word}" data-def="${v.definition}">${match}</span>`;
+      });
+    });
+    return `<p>${html}</p>`;
+  }).join('');
+
+  let zhHtml = article.translation.split('\n\n').map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+
+  const recited = getRecitedIds().includes(articleId);
+  const favorited = getFavoriteIds().includes(articleId);
+
+  content.innerHTML = `
+    <button class="overlay-close" id="detail-close">✕</button>
+    <div class="detail-cat"><span class="cat-badge" style="background:${cat.color};color:#fff">${cat.icon} ${cat.name}</span></div>
+    <div class="detail-title">${article.title}</div>
+    <div class="detail-author">${article.author}</div>
+    <div class="detail-meta">
+      <span>难度：${'⭐'.repeat(article.difficulty)}</span>
+      <span>⏱ ${article.duration} 分钟</span>
+    </div>
+    <div class="detail-text" id="detail-text">${textHtml}</div>
+    <button class="zh-toggle" id="zh-toggle-btn">📝 显示中文</button>
+    <div class="detail-zh" id="detail-zh">${zhHtml}</div>
+  `;
+
+  overlay.classList.add('active');
+  actionBar.style.display = 'flex';
+
+  if (recited) {
+    document.getElementById('btn-recited').classList.add('recited');
+    document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '✅';
+  } else {
+    document.getElementById('btn-recited').classList.remove('recited');
+    document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '⬜';
+  }
+  if (favorited) {
+    document.getElementById('btn-fav').classList.add('active');
+    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '⭐';
+  } else {
+    document.getElementById('btn-fav').classList.remove('active');
+    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '☆';
+  }
+
+  // Vocab click
+  document.querySelectorAll('#detail-text .vocab-word').forEach(el => {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      showVocabPopover(e, this.dataset.word, this.dataset.def);
+    });
+  });
+
+  // Chinese toggle
+  document.getElementById('zh-toggle-btn').addEventListener('click', function() {
+    const zh = document.getElementById('detail-zh');
+    zh.classList.toggle('show');
+    this.textContent = zh.classList.contains('show') ? '📝 隐藏中文' : '📝 显示中文';
+  });
+
+  // Close
+  document.getElementById('detail-close').addEventListener('click', closeDetail);
+
+  stopTTS();
+  document.getElementById('btn-tts').querySelector('.btn-icon').textContent = '🔊';
+  document.getElementById('btn-tts').querySelector('span:last-child').textContent = '朗读';
+  isTTSPlaying = false;
+
+  overlay.scrollTop = 0;
+}
+
+function closeDetail() {
+  document.getElementById('detail-overlay').classList.remove('active');
+  document.getElementById('action-bar').style.display = 'none';
+  stopTTS();
+  isTTSPlaying = false;
+  currentArticleId = null;
+  document.getElementById('vocab-popover').style.display = 'none';
+}
+
+function showVocabPopover(e, word, def) {
+  const popover = document.getElementById('vocab-popover');
+  popover.innerHTML = `<div class="pop-word">${word}</div><div class="pop-def">${def}</div>`;
+  popover.style.display = 'block';
+  const rect = e.target.getBoundingClientRect();
+  let left = rect.left + rect.width/2;
+  let top = rect.top - 10;
+  const pw = popover.offsetWidth || 200;
+  const ph = popover.offsetHeight || 60;
+  if (left + pw/2 > window.innerWidth - 10) left = window.innerWidth - pw/2 - 10;
+  if (left - pw/2 < 10) left = pw/2 + 10;
+  if (top - ph < 10) top = rect.bottom + 10;
+  popover.style.left = left + 'px';
+  popover.style.top = top + 'px';
+  popover.style.transform = 'translate(-50%, -100%)';
+  if (top === rect.bottom + 10) popover.style.transform = 'translate(-50%, 0)';
+  setTimeout(() => {
+    const dismiss = (ev) => { if (!popover.contains(ev.target)) { popover.style.display = 'none'; document.removeEventListener('click', dismiss); } };
+    document.addEventListener('click', dismiss);
+  }, 10);
+}
+
+// TTS
+function toggleTTS() {
+  if (!('speechSynthesis' in window)) { showToast('您的浏览器不支持语音朗读'); return; }
+  if (isTTSPlaying) { stopTTS(); return; }
+  if (!currentArticleId) return;
+  const article = ARTICLES.find(a => a.id === currentArticleId);
+  if (!article) return;
+  const text = article.text.replace(/\n\n/g, '. ').replace(/\n/g, ' ');
+  ttsUtterance = new SpeechSynthesisUtterance(text);
+  ttsUtterance.lang = 'en-US';
+  ttsUtterance.rate = 0.85;
+  ttsUtterance.onend = () => { isTTSPlaying = false; updateTTSButton(); };
+  ttsUtterance.onerror = () => { isTTSPlaying = false; updateTTSButton(); };
+  speechSynthesis.speak(ttsUtterance);
+  isTTSPlaying = true;
+  updateTTSButton();
+}
+
+function stopTTS() {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  isTTSPlaying = false;
+  updateTTSButton();
+}
+
+function updateTTSButton() {
+  const btn = document.getElementById('btn-tts');
+  if (!btn) return;
+  btn.querySelector('.btn-icon').textContent = isTTSPlaying ? '⏸️' : '🔊';
+  btn.querySelector('span:last-child').textContent = isTTSPlaying ? '暂停' : '朗读';
+}
+
+// Favorites
+function toggleFavorite() {
+  if (!currentArticleId) return;
+  let favs = getFavoriteIds();
+  const idx = favs.indexOf(currentArticleId);
+  if (idx > -1) {
+    favs.splice(idx, 1);
+    document.getElementById('btn-fav').classList.remove('active');
+    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '☆';
+    showToast('已取消收藏');
+  } else {
+    favs.push(currentArticleId);
+    document.getElementById('btn-fav').classList.add('active');
+    document.getElementById('btn-fav').querySelector('.btn-icon').textContent = '⭐';
+    showToast('已收藏 ⭐');
+  }
+  setFavoriteIds(favs);
+}
+
+// Check-in
+function markRecited() {
+  if (!currentArticleId) return;
+  const recitedIds = getRecitedIds();
+  const recitedDates = getRecitedDates();
+  const streakDates = getStreakDates();
+  const todayStr = formatDate(new Date());
+
+  if (!recitedIds.includes(currentArticleId)) {
+    recitedIds.push(currentArticleId);
+    setRecitedIds(recitedIds);
+  }
+
+  if (!recitedDates[todayStr]) recitedDates[todayStr] = [];
+  if (!recitedDates[todayStr].includes(currentArticleId)) {
+    recitedDates[todayStr].push(currentArticleId);
+    setRecitedDates(recitedDates);
+  }
+
+  if (!streakDates.includes(todayStr)) {
+    streakDates.push(todayStr);
+    setStreakDates(streakDates);
+  }
+
+  document.getElementById('btn-recited').classList.add('recited');
+  document.getElementById('btn-recited').querySelector('.btn-icon').textContent = '✅';
+
+  const streak = calcStreak();
+  const si = getStreakIcon(streak);
+  showToast(`${si.icon} 已背诵！连续 ${streak} 天`);
+  renderHome();
+}
+
+// Share Card
+function generateShareCard() {
+  if (!currentArticleId) return;
+  const article = ARTICLES.find(a => a.id === currentArticleId);
+  if (!article) return;
+  const cat = CATEGORIES.find(c => c.id === article.category);
+  const canvas = document.getElementById('share-canvas');
+  canvas.width = 600;
+  canvas.height = 800;
+  const ctx = canvas.getContext('2d');
+
+  // Polyfill for ctx.roundRect
+  if (!ctx.roundRect) {
+    ctx.roundRect = function(x,y,w,h,r) {
+      if (typeof r==='number') r={tl:r,tr:r,br:r,bl:r};
+      ctx.beginPath();
+      ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);
+      ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);
+      ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);
+      ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);
+      ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath();
+    };
+  }
+
+  // Background
+  ctx.fillStyle = cat.color;
+  ctx.fillRect(0, 0, 600, 800);
+
+  // Pattern
+  ctx.globalAlpha = 0.08;
+  ctx.strokeStyle = '#ffffff';
+  ctx.fillStyle = '#ffffff';
+  switch(cat.pattern) {
+    case 'diagonal':
+      ctx.lineWidth = 1;
+      for (let i = -800; i < 1400; i += 24) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i-800,800); ctx.stroke(); }
+      break;
+    case 'dots':
+      for (let x = 20; x < 600; x += 28) { for (let y = 20; y < 800; y += 28) { ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill(); } }
+      break;
+    case 'waves':
+      ctx.lineWidth = 1.5;
+      for (let y = 0; y < 800; y += 40) { ctx.beginPath(); for (let x = 0; x < 600; x += 10) { ctx.lineTo(x, y + Math.sin(x*0.03)*12); } ctx.stroke(); }
+      break;
+    case 'crosshatch':
+      ctx.lineWidth = 0.8;
+      for (let i = -800; i < 1400; i += 30) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i-800,800); ctx.stroke(); ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i+800,800); ctx.stroke(); }
+      break;
+    case 'circles':
+      for (let x = 40; x < 600; x += 60) { for (let y = 40; y < 800; y += 60) { ctx.beginPath(); ctx.arc(x,y,18,0,Math.PI*2); ctx.stroke(); } }
+      break;
+    case 'radial':
+      ctx.lineWidth = 0.8;
+      for (let a = 0; a < Math.PI*2; a += Math.PI/12) { ctx.beginPath(); ctx.moveTo(300,400); ctx.lineTo(300+Math.cos(a)*500, 400+Math.sin(a)*500); ctx.stroke(); }
+      break;
+  }
+  ctx.globalAlpha = 1;
+
+  // Category badge
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.beginPath(); ctx.roundRect(200, 50, 200, 40, 20); ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '16px ' + getComputedStyle(document.body).fontFamily;
+  ctx.textAlign = 'center';
+  ctx.fillText(cat.icon + ' ' + cat.name, 300, 77);
+
+  // Quote
+  const lines = article.text.split('\n')[0];
+  const words = lines.split(' ');
+  let quote = '';
+  for (const w of words) { if ((quote + ' ' + w).length < 120) quote += (quote?' ':'') + w; else break; }
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 28px Georgia, "Noto Serif SC", "STSong", serif';
+  ctx.textAlign = 'center';
+  const quoteLines = wrapText(ctx, quote, 480);
+  quoteLines.forEach((line, i) => {
+    ctx.fillText(line, 300, 300 + i * 40);
+  });
+
+  // Divider
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(150, 420); ctx.lineTo(450, 420); ctx.stroke();
+
+  // Title
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = '18px ' + getComputedStyle(document.body).fontFamily;
+  ctx.fillText(article.title, 300, 470);
+
+  // Author
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '14px ' + getComputedStyle(document.body).fontFamily;
+  ctx.fillText('— ' + article.author, 300, 500);
+
+  // Bottom info
+  const streak = calcStreak();
+  const si = getStreakIcon(streak);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '13px ' + getComputedStyle(document.body).fontFamily;
+  ctx.fillText(formatDate(new Date()) + '  ' + si.icon + ' 连续第' + streak + '天', 300, 720);
+  ctx.fillText('「每日美文」每日英文背诵助手', 300, 750);
+
+  document.getElementById('share-modal').classList.add('active');
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const word of words) {
+    const test = line ? line + ' ' + word : word;
+    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = word; }
+    else { line = test; }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function saveShareCard() {
+  const canvas = document.getElementById('share-canvas');
+  const link = document.createElement('a');
+  link.download = '每日美文-分享卡.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('图片已保存 📸');
+}
+
+// ==================== RENDER HOME ====================
+function renderHome() {
+  const streak = calcStreak();
+  const si = getStreakIcon(streak);
+  document.getElementById('streak-icon').textContent = si.icon;
+  if (si.cls) { document.getElementById('streak-icon').classList.add(si.cls); } else { document.getElementById('streak-icon').className = 'fire-icon'; }
+  document.getElementById('streak-count').textContent = streak + ' 天';
+  document.getElementById('streak-date').textContent = formatDate(new Date());
+
+  // Daily recommendation
+  const today = new Date();
+  let idx = today.getDate() % ARTICLES.length;
+  const yesterday = formatDate(new Date(Date.now() - 86400000));
+  const recitedDates = getRecitedDates();
+  const yesterdayRecited = recitedDates[yesterday] || [];
+  if (yesterdayRecited.includes(ARTICLES[idx].id)) idx = (idx + 1) % ARTICLES.length;
+  const rec = ARTICLES[idx];
+  const recCat = CATEGORIES.find(c => c.id === rec.category);
+  document.getElementById('rec-title').textContent = rec.title;
+  document.getElementById('rec-author').textContent = rec.author;
+  document.getElementById('rec-badge').textContent = recCat.icon + ' ' + recCat.name;
+  document.getElementById('rec-preview').textContent = rec.text.split('\n')[0].substring(0, 80) + '...';
+  document.getElementById('daily-rec-card').onclick = () => openArticle(rec.id);
+
+  // Recent
+  const recitedIds = getRecitedIds();
+  const recentScroll = document.getElementById('recent-scroll');
+  if (recitedIds.length === 0) {
+    recentScroll.innerHTML = '<div style="padding:20px;color:var(--text-muted);font-size:13px;text-align:center;width:100%">还没有背诵记录，开始今天的第一篇吧 ✨</div>';
+  } else {
+    const recent = recitedIds.slice().reverse().slice(0, 10);
+    recentScroll.innerHTML = recent.map(id => {
+      const a = ARTICLES.find(ar => ar.id === id);
+      if (!a) return '';
+      return `<div class="h-card" onclick="openArticle('${a.id}')"><div class="h-title">${a.title}</div><div class="h-meta">${a.author} · ${a.duration}分钟</div></div>`;
+    }).join('');
+  }
+}
+
+// ==================== RENDER CATEGORIES ====================
+function renderCategories() {
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = CATEGORIES.map(cat => {
+    const count = ARTICLES.filter(a => a.category === cat.id).length;
+    return `<div class="cat-card" onclick="showCategoryArticles('${cat.id}')">
+      <div class="cat-icon">${cat.icon}</div>
+      <div class="cat-name">${cat.name}</div>
+      <div class="cat-count">${count} 篇文章</div>
+    </div>`;
+  }).join('');
+}
+
+function showCategoryArticles(catId) {
+  currentCategory = catId;
+  const cat = CATEGORIES.find(c => c.id === catId);
+  document.getElementById('cat-grid-view').style.display = 'none';
+  document.getElementById('cat-list-view').style.display = 'block';
+  const articles = ARTICLES.filter(a => a.category === catId);
+  const list = document.getElementById('cat-article-list');
+  list.innerHTML = `<h3 style="margin-bottom:8px;font-size:16px">${cat.icon} ${cat.name}</h3>` +
+    articles.map(a => `
+      <div class="article-list-item" onclick="openArticle('${a.id}')">
+        <div class="item-info">
+          <div class="item-title">${a.title}</div>
+          <div class="item-author">${a.author}</div>
+          <div class="item-meta">
+            <span class="item-stars">${'⭐'.repeat(a.difficulty)}</span>
+            <span class="item-duration">⏱ ${a.duration}分钟</span>
+          </div>
+        </div>
+        <span class="item-arrow">›</span>
+      </div>
+    `).join('');
+}
+
+// ==================== RENDER FAVORITES ====================
+function renderFavorites() {
+  const favs = getFavoriteIds();
+  const container = document.getElementById('fav-content');
+  if (favs.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">⭐</div>
+      <div class="empty-text">还没有收藏，去发现好文章吧</div>
+    </div>`;
+  } else {
+    container.innerHTML = `<div class="fav-grid">` +
+      favs.map(id => {
+        const a = ARTICLES.find(ar => ar.id === id);
+        if (!a) return '';
+        const cat = CATEGORIES.find(c => c.id === a.category);
+        return `<div class="fav-card" onclick="openArticle('${a.id}')">
+          <div class="fav-title">${a.title}</div>
+          <div class="fav-author">${a.author}</div>
+          <div class="fav-cat"><span class="cat-badge" style="background:${cat.color};color:#fff;font-size:9px">${cat.icon} ${cat.name}</span></div>
+        </div>`;
+      }).join('') +
+    `</div>`;
+  }
+}
+
+// ==================== RENDER PROFILE ====================
+function renderProfile() {
+  const streak = calcStreak();
+  const recitedIds = getRecitedIds();
+  const totalMin = recitedIds.reduce((sum, id) => { const a = ARTICLES.find(ar => ar.id === id); return sum + (a ? a.duration : 0); }, 0);
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${recitedIds.length}</div><div class="stat-label">已背诵</div></div>
+    <div class="stat-card"><div class="stat-value">${streak}</div><div class="stat-label">连续天数</div></div>
+    <div class="stat-card"><div class="stat-value">${totalMin}</div><div class="stat-label">总分钟</div></div>
+  `;
+
+  renderCalendar();
+
+  document.getElementById('dark-mode-checkbox').checked = getNightMode();
+}
+
+let calendarMonth = new Date().getMonth();
+let calendarYear = new Date().getFullYear();
+
+function renderCalendar() {
+  const container = document.getElementById('calendar-container');
+  const recitedDates = getRecitedDates();
+  const today = formatDate(new Date());
+
+  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const dayHeaders = ['日','一','二','三','四','五','六'];
+
+  const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+  const daysInMonth = new Date(calendarYear, calendarMonth+1, 0).getDate();
+  const daysInPrevMonth = new Date(calendarYear, calendarMonth, 0).getDate();
+
+  let cells = '';
+  // Previous month
+  for (let i = firstDay - 1; i >= 0; i--) {
+    cells += `<div class="day-cell other-month">${daysInPrevMonth - i}</div>`;
+  }
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${calendarYear}-${String(calendarMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = ds === today;
+    const isRecited = !!recitedDates[ds];
+    cells += `<div class="day-cell${isToday?' today':''}${isRecited?' recited':''}">${d}</div>`;
+  }
+  // Next month
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let d = 1; d <= remaining; d++) {
+    cells += `<div class="day-cell other-month">${d}</div>`;
+  }
+
+  container.innerHTML = `
+    <div class="calendar-header">
+      <span class="month-label">${calendarYear}年 ${monthNames[calendarMonth]}</span>
+      <div class="month-nav">
+        <button id="cal-prev">◀</button>
+        <button id="cal-next">▶</button>
+      </div>
+    </div>
+    <div class="calendar-grid">
+      ${dayHeaders.map(h => `<div class="day-header">${h}</div>`).join('')}
+      ${cells}
+    </div>
+  `;
+
+  document.getElementById('cal-prev').addEventListener('click', () => {
+    if (calendarMonth === 0) { calendarMonth = 11; calendarYear--; }
+    else calendarMonth--;
+    renderCalendar();
+  });
+  document.getElementById('cal-next').addEventListener('click', () => {
+    if (calendarMonth === 11) { calendarMonth = 0; calendarYear++; }
+    else calendarMonth++;
+    renderCalendar();
+  });
+}
+
+// ==================== QUICK TRANSLATE ====================
+function doQuickTranslate() {
+  const input = document.getElementById('translate-input').value.trim();
+  if (!input) return;
+  const words = input.split(/\s+/);
+  const result = document.getElementById('translate-result');
+  let found = 0;
+  let rows = '';
+  words.forEach(w => {
+    const clean = w.replace(/[^a-zA-Z'-]/g, '');
+    if (!clean) return;
+    const def = dictLookup(clean);
+    if (def) { rows += `<tr><td class="word-col">${clean}</td><td class="def-col">${def}</td></tr>`; found++; }
+    else { rows += `<tr><td class="word-col">${clean}</td><td class="def-col" style="color:var(--text-muted)">—</td></tr>`; }
+  });
+  result.innerHTML = `
+    <div class="src-text">📝 ${input}</div>
+    ${found > 0 ? `<table>${rows}</table>` : '<p style="color:var(--text-muted);font-size:13px">未找到匹配词汇，试试更常见的单词</p>'}
+    <button class="save-card-btn" id="save-translate-card-btn">📌 加入我的卡片</button>
+  `;
+  document.getElementById('save-translate-card-btn').addEventListener('click', () => {
+    const cards = getCustomCards();
+    cards.push({text:input, date:formatDate(new Date())});
+    setCustomCards(cards);
+    showToast('已加入卡片 📌');
+  });
+}
+
+// ==================== DARK MODE ====================
+function applyDarkMode() {
+  if (getNightMode()) document.body.classList.add('dark');
+  else document.body.classList.remove('dark');
+}
+
+function toggleDarkMode() {
+  setNightMode(!getNightMode());
+  applyDarkMode();
+}
+
+// ==================== INIT ====================
+function init() {
+  // Dark mode
+  if (localStorage.getItem('night_mode') === null) {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setNightMode(prefersDark);
+  }
+  applyDarkMode();
+
+  renderHome();
+  renderCategories();
+  renderFavorites();
+  renderProfile();
+
+  // Bottom nav
+  document.querySelectorAll('#bottom-nav .nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // Category back
+  document.getElementById('cat-back-btn').addEventListener('click', () => {
+    currentCategory = null;
+    document.getElementById('cat-grid-view').style.display = 'block';
+    document.getElementById('cat-list-view').style.display = 'none';
+  });
+
+  // Detail actions
+  document.getElementById('btn-tts').addEventListener('click', toggleTTS);
+  document.getElementById('btn-fav').addEventListener('click', toggleFavorite);
+  document.getElementById('btn-recited').addEventListener('click', markRecited);
+  document.getElementById('btn-share').addEventListener('click', generateShareCard);
+
+  // Share modal
+  document.getElementById('share-save-btn').addEventListener('click', saveShareCard);
+  document.getElementById('share-close-btn').addEventListener('click', () => {
+    document.getElementById('share-modal').classList.remove('active');
+  });
+
+  // FAB
+  document.getElementById('fab-btn').addEventListener('click', () => {
+    document.getElementById('translate-panel').classList.add('active');
+  });
+
+  // Translate panel
+  document.getElementById('translate-close-btn').addEventListener('click', () => {
+    document.getElementById('translate-panel').classList.remove('active');
+  });
+  document.getElementById('translate-do-btn').addEventListener('click', doQuickTranslate);
+
+  // Dark mode toggle
+  document.getElementById('dark-mode-checkbox').addEventListener('change', toggleDarkMode);
+  document.getElementById('dark-mode-toggle-item').addEventListener('click', function(e) {
+    if (e.target.tagName === 'INPUT') return;
+    const cb = document.getElementById('dark-mode-checkbox');
+    cb.checked = !cb.checked;
+    toggleDarkMode();
+  });
+
+  // Close detail on overlay click
+  document.getElementById('detail-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeDetail();
+  });
+
+  // Close translate panel on overlay click
+  document.getElementById('translate-panel').addEventListener('click', function(e) {
+    if (e.target === this) {
+      document.getElementById('translate-panel').classList.remove('active');
+    }
+  });
+
+  // Keyboard escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (document.getElementById('detail-overlay').classList.contains('active')) closeDetail();
+      if (document.getElementById('share-modal').classList.contains('active')) document.getElementById('share-modal').classList.remove('active');
+      if (document.getElementById('translate-panel').classList.contains('active')) document.getElementById('translate-panel').classList.remove('active');
+    }
+  });
+
+  // System dark mode change
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+    if (localStorage.getItem('night_mode') === null) {
+      setNightMode(e.matches);
+      applyDarkMode();
+    }
+  });
+
+  // Voice support check
+  if (!('speechSynthesis' in window)) {
+    document.getElementById('btn-tts').style.opacity = '0.5';
+    document.getElementById('btn-tts').title = '浏览器不支持语音朗读';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
