@@ -455,12 +455,14 @@ function updatePhysics(){
     const ot=pb.y+pb.h-py,ob=py+p.h-pb.y,ol=pb.x+pb.w-px,orr=px+p.w-pb.x;
     const mo=Math.min(ot,ob,ol,orr);
   // Gold pipe: stand on it to enter bonus room
-    if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer++;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}if(p.type==='goldpipe'){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}}
+    if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer++;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}if(p.type==='goldpipe'&&player.goldPipeTimer>=0){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}}
     else if(mo===ol&&player.vx>0)player.x=px-(player.big?48:32);
     else if(mo===orr&&player.vx<0)player.x=px+p.w;
   });
   if(player.y+(player.big?72:48)>=GROUND){player.y=GROUND-(player.big?72:48);player.vy=0;player.onGround=true;}
-  if(!player.onGround)player.goldPipeTimer=0;
+  if(!player.onGround)player.goldPipeTimer=Math.min(0,player.goldPipeTimer);
+  // Cool down gold pipe after exiting bonus room
+  if(player.goldPipeTimer<0)player.goldPipeTimer++;
   if(player.y>GROUND+200)die();
 
   // Moving platforms
@@ -729,6 +731,8 @@ function enterBonusRoom(){
   for(let i=0;i<total;i++)bricks.push({x:150+i*140,y:200+(i%2)*60,w:56,h:24,hit:false,letter:caps+lower});
   bonusRoom={bricks,timer:0,maxTime:600,exitX:500,exitY:GROUND-60,totalCoins:0,
     savedPlayer:{x:player.x,y:player.y,vx:player.vx,vy:player.vy,onGround:player.onGround,facing:player.facing,big:player.big,hasFlower:player.hasFlower}};
+  // Clear all movement keys so Mario doesn't jump on entry
+  keys[' ']=false;keys['ArrowUp']=false;keys['ArrowLeft']=false;keys['ArrowRight']=false;keys['w']=false;keys['a']=false;keys['d']=false;
   player.x=400;player.y=GROUND-48;player.vx=0;player.vy=0;player.onGround=true;player.goldPipeTimer=0;
 }
 function exitBonusRoom(){
@@ -736,6 +740,7 @@ function exitBonusRoom(){
   const sp=bonusRoom.savedPlayer;
   player.x=sp.x;player.y=sp.y;player.vx=sp.vx;player.vy=sp.vy;player.onGround=sp.onGround;
   player.facing=sp.facing;player.big=sp.big;player.hasFlower=sp.hasFlower;
+  player.goldPipeTimer=-180; // 3-second cooldown before gold pipe can re-trigger
   bonusRoom=null;
 }
 function updateBonusRoom(){
