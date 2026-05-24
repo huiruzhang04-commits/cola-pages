@@ -729,59 +729,57 @@ function enterBonusRoom(){
   const caps=letters[li],lower=caps.toLowerCase();
   const total=5;
   const bricks=[];
-  for(let i=0;i<total;i++)bricks.push({x:150+i*140,y:200+(i%2)*60,w:56,h:24,hit:false,letter:caps+lower});
-  bonusRoom={bricks,timer:0,maxTime:600,exitX:750,exitY:GROUND-60,totalCoins:0,exitTimer:0,lastJump:true,
+  // X positions spread across screen, Y alternates two rows
+  for(let i=0;i<total;i++)bricks.push({x:100+i*140,y:260-(i%2)*40,w:64,h:28,hit:false,letter:caps+lower});
+  bonusRoom={bricks,timer:0,maxTime:1200,totalCoins:0,lastJump:true,freezeInput:10,
     savedPlayer:{x:player.x,y:player.y,vx:player.vx,vy:player.vy,onGround:player.onGround,facing:player.facing,big:player.big,hasFlower:player.hasFlower}};
-  // Reset joystick and all keys so Mario doesn't jump/move on entry
+  // Reset joystick + force small Mario for clean start
   if(window._resetJoystick)window._resetJoystick();
   keys['w']=false;keys['a']=false;keys['d']=false;
-  const ph=player.big?72:48;
-  player.x=400;player.y=GROUND-ph;player.vx=0;player.vy=0;player.onGround=true;player.goldPipeTimer=0;
+  player.big=false;
+  player.x=400;player.y=GROUND-48;player.vx=0;player.vy=0;player.onGround=true;player.goldPipeTimer=0;
 }
 function exitBonusRoom(){
   if(!bonusRoom)return;
   const sp=bonusRoom.savedPlayer;
   player.x=sp.x;player.y=sp.y;player.vx=sp.vx;player.vy=sp.vy;player.onGround=sp.onGround;
   player.facing=sp.facing;player.big=sp.big;player.hasFlower=sp.hasFlower;
-  player.goldPipeTimer=-180; // 3-second cooldown before gold pipe can re-trigger
+  player.goldPipeTimer=-180;
   bonusRoom=null;
 }
 function updateBonusRoom(){
   if(!bonusRoom)return;
   bonusRoom.timer++;if(bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();return;}
-  // Movement (same as game world)
+  // Freeze input for first 10 frames (0.17s) to match "fresh level start" feel
+  if(bonusRoom.freezeInput>0){bonusRoom.freezeInput--;player.vx*=0.7;player.vy+=0.5;player.x+=player.vx;player.y+=player.vy;const ph=48;if(player.y+ph>=GROUND){player.y=GROUND-ph;player.vy=0;player.onGround=true;}return;}
+  // Movement
   if(keys['ArrowLeft']||keys['a']){player.vx=-3;player.facing=-1;}
   else if(keys['ArrowRight']||keys['d']){player.vx=3;player.facing=1;}
   else player.vx*=0.7;
   if(Math.abs(player.vx)<0.1)player.vx=0;
-  // Jump: only on new press, not held from before entering room
+  // Jump: require release-then-press cycle
   const jp=keys[' ']||keys['ArrowUp']||keys['w'];
-  if(!bonusRoom.lastJump&&jp&&player.onGround){player.vy=-11;player.onGround=false;}
+  if(!bonusRoom.lastJump&&jp&&player.onGround){player.vy=-14;player.onGround=false;}
   bonusRoom.lastJump=jp;
-  // Variable jump height: release jump key = cut velocity
   if(!jp&&player.vy<-3)player.vy*=(player.vy<-7?0.45:0.65);
   // Physics
   player.vy+=0.5;player.x+=player.vx;player.y+=player.vy;
   player.onGround=false;
-  const ph=player.big?72:48;
+  const ph=48;
   if(player.y+ph>=GROUND){player.y=GROUND-ph;player.vy=0;player.onGround=true;}
-  if(player.x<0)player.x=0;if(player.x>800)player.x=800;
+  if(player.x<0)player.x=0;if(player.x>W)player.x=W;
   // Brick collision
-  const pb={x:player.x,y:player.y,w:player.big?48:32,h:ph};
+  const pb={x:player.x,y:player.y,w:32,h:48};
   bonusRoom.bricks.forEach(b=>{
     if(b.hit)return;
     if(player.vy<0&&collides(pb,{x:b.x,y:b.y,w:b.w,h:b.h})&&pb.y+pb.h-b.y<20){
       b.hit=true;player.vy=-5;player.onGround=false;bonusRoom.totalCoins+=3;coins+=3;
-      spawnParticles(b.x+28,b.y-10,'#FFD700',10);
+      spawnParticles(b.x+b.w/2,b.y-10,'#FFD700',10);
       speak(b.letter.substring(0,1)+', '+b.letter.substring(1)+'... '+b.letter.toLowerCase(),0.6);
     }
   });
-  // Exit: stand on right exit pipe → auto after 0.7s. Tighter range (pipe is 48px wide)
-  const ex=bonusRoom.exitX;
-  const nearExit=player.x>ex-20&&player.x<ex+48&&player.y+ph>=GROUND-8&&player.y+ph<=GROUND+8;
-  if(nearExit){bonusRoom.exitTimer=(bonusRoom.exitTimer||0)+1;if(bonusRoom.exitTimer>42)exitBonusRoom();}else{bonusRoom.exitTimer=0;}
-  const allHit=bonusRoom.bricks.every(b=>b.hit);
-  if(allHit||bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();}
+  // All bricks hit → auto exit
+  if(bonusRoom.bricks.every(b=>b.hit)){exitBonusRoom();}
 }
 function drawBonusRoom(){
   if(!bonusRoom)return;
@@ -795,27 +793,19 @@ function drawBonusRoom(){
   bonusRoom.bricks.forEach(b=>{
     if(b.hit){ctx.fillStyle='rgba(255,215,0,0.15)';ctx.fillRect(b.x,b.y,b.w,b.h);return;}
     ctx.fillStyle='#8B6914';ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle='#A0782C';
-    for(let bx=0;bx<b.w;bx+=12)for(let by=0;by<b.h;by+=6)ctx.fillRect(b.x+bx+2,b.y+by+2,8,2);
+    for(let bx=0;bx<b.w;bx+=16)for(let by=0;by<b.h;by+=7)ctx.fillRect(b.x+bx+2,b.y+by+2,10,3);
     ctx.fillStyle='#C4A35A';ctx.fillRect(b.x,b.y,b.w,3);
-    ctx.fillStyle='#FFD700';ctx.font='bold 16px "Courier New",monospace';ctx.textAlign='center';
-    ctx.fillText(b.letter,b.x+b.w/2,b.y+17);
+    ctx.fillStyle='#FFD700';ctx.font='bold 18px "Courier New",monospace';ctx.textAlign='center';
+    ctx.fillText(b.letter,b.x+b.w/2,b.y+19);
   });
-  // Exit pipe
-  ctx.fillStyle='#4CAF50';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,60);ctx.fillStyle='#2E7D32';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,12);
-  ctx.fillStyle='#1B5E20';ctx.fillRect(bonusRoom.exitX-2,GROUND-60,6,60);ctx.fillRect(bonusRoom.exitX+44,GROUND-60,6,60);
-  ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('EXIT',bonusRoom.exitX+24,GROUND-25);
-  // Exit prompt (match updateBonusRoom range: ex-20 to ex+48)
-  const ph=player.big?72:48;
-  const near=player.x>bonusRoom.exitX-20&&player.x<bonusRoom.exitX+48&&player.y+ph>=GROUND-8;
-  if(near){ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='13px sans-serif';ctx.fillText('↓ 离开',bonusRoom.exitX+24,GROUND-75);}
   // Player
   drawPixelChar(player.x,player.y,player.facing,player.big);
-  // Timer (flashes red in last 3 seconds)
+  // Timer
   const left=Math.ceil((bonusRoom.maxTime-bonusRoom.timer)/60);
-  const urgent=left<=3&&frame%30<15;
+  const urgent=left<=5&&frame%30<15;
   ctx.fillStyle=urgent?'#E53935':'#FFD700';ctx.font='20px "Courier New",monospace';ctx.textAlign='left';
   ctx.fillText('⏱ '+left+'s · 🪙 +'+bonusRoom.totalCoins,20,140);
-  if(bonusRoom.bricks.every(b=>b.hit)){ctx.fillStyle='#4CAF50';ctx.font='bold 24px "Courier New",monospace';ctx.textAlign='center';ctx.fillText('✅ 全部完成！走向出口',W/2,H-40);}
+  if(bonusRoom.bricks.every(b=>b.hit)){ctx.fillStyle='#4CAF50';ctx.font='bold 26px "Courier New",monospace';ctx.textAlign='center';ctx.fillText('✅ 全部完成！',W/2,H-50);}
 }
 
 // ===== RENDER =====
