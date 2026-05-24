@@ -730,7 +730,7 @@ function enterBonusRoom(){
   const total=5;
   const bricks=[];
   for(let i=0;i<total;i++)bricks.push({x:150+i*140,y:200+(i%2)*60,w:56,h:24,hit:false,letter:caps+lower});
-  bonusRoom={bricks,timer:0,maxTime:600,exitX:750,exitY:GROUND-60,totalCoins:0,exitTimer:0,lastJump:false,
+  bonusRoom={bricks,timer:0,maxTime:600,exitX:750,exitY:GROUND-60,totalCoins:0,exitTimer:0,lastJump:true,
     savedPlayer:{x:player.x,y:player.y,vx:player.vx,vy:player.vy,onGround:player.onGround,facing:player.facing,big:player.big,hasFlower:player.hasFlower}};
   // Clear all movement keys so Mario doesn't jump on entry
   keys[' ']=false;keys['ArrowUp']=false;keys['ArrowLeft']=false;keys['ArrowRight']=false;keys['w']=false;keys['a']=false;keys['d']=false;
