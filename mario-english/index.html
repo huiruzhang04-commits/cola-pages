@@ -75,7 +75,7 @@ canvas{display:block;border:3px solid #333;border-radius:8px;image-rendering:pix
 #joy-base{width:clamp(80px,22vw,110px);height:clamp(80px,22vw,110px);border-radius:50%;border:3px solid rgba(255,215,0,0.2);background:rgba(255,215,0,0.03);position:relative;touch-action:none}
 #joy-stick{width:42%;height:42%;border-radius:50%;background:rgba(255,215,0,0.45);border:2px solid var(--gold);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;transition:transform .05s linear}
 #joy-jump{width:clamp(44px,13vw,56px);height:clamp(44px,13vw,56px);border-radius:50%;border:2px solid var(--gold);background:rgba(26,26,46,0.7);color:var(--gold);font-size:clamp(18px,4.5vw,24px);position:absolute;right:clamp(10px,2.5vw,28px);bottom:clamp(24px,7vw,50px);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:15;touch-action:none;-webkit-tap-highlight-color:transparent}
-@media(max-width:980px){#joystick-zone,#joy-jump{display:block}
+@media(max-width:980px){#joystick-zone,#joy-jump{display:block}}
 /* Overlays: fixed to viewport so cards don't clip inside tiny container */
 #word-modal,#boss-modal,#pause-overlay,#wordbook{position:fixed;top:0;left:0;right:0;bottom:0}
 /* Word card */#word-modal .card{width:min(86vw,360px);padding:clamp(8px,2.2vw,20px) clamp(8px,2vw,20px);overflow-y:auto;max-height:75vh}
@@ -99,7 +99,7 @@ canvas{display:block;border:3px solid #333;border-radius:8px;image-rendering:pix
 #wordbook .wb-back{font-size:clamp(13px,3vw,18px);padding:clamp(8px,2vw,12px) clamp(24px,6vw,36px)}
 /* UI bar */#ui-bar{font-size:clamp(10px,2vw,14px);padding:4px 10px}
 #pause-btn{width:clamp(28px,5vw,36px);height:clamp(28px,5vw,36px);font-size:clamp(12px,2.5vw,16px)}
-/* Touch controls */}}
+/* Touch controls */}
 </style>
 </head>
 <body>
@@ -122,7 +122,7 @@ const W=960,H=540,GROUND=420;
 
 let scene='menu'; // menu|worlds|levels|playing|quiz|win|dead
 let curLevel=null; // {world:1,level:1}
-let player,camera,coins,lives,time,frame;
+let player,camera,coins,lives,time,frame,levelStartTime,pausedTime,pauseStartTime,lastTime;
 let levelData,quizIdx,quizAnswered,quizCorrect,triggeredQuiz;
 let keys={},particles=[],invincible=0,fireballs=[];
 let bossPhase,bossQIdx,bossCorrect,bossRetreat;
@@ -130,7 +130,7 @@ let shell=null,enemies=[],hitItems=[];
 let paused=false,bonusRoom=null;
 
 // Learned words tracking
-let learnedWords=JSON.parse(localStorage.getItem('marioWords')||'[]');
+let learnedWords=function(){try{return JSON.parse(localStorage.getItem('marioWords')||'[]');}catch(e){return[];}}();
 let currentWordAudio=null; // {word, mode:'word'|'boss', bossWord}
 
 // ===== ALL WORD DATA =====
@@ -276,7 +276,7 @@ function speak(text,rate=0.7){
 // ===== DRAWING FUNCTIONS =====
 function drawPixelChar(x,y,facing,big){
   const s=big?1.5:1,ox=x,oy=y;ctx.save();
-  if(facing===-1){ctx.translate(ox+16*s,0);ctx.scale(-1,1);x=-ox-16*s;}
+  if(facing===-1){ctx.translate(ox+16*s,0);ctx.scale(-1,1);x=0;}
   // Hat
   ctx.fillStyle='#E53935';ctx.fillRect(x+5*s,oy-2*s,13*s,6*s);ctx.fillRect(x+2*s,oy+1*s,18*s,3*s);
   ctx.fillStyle='#fff';ctx.fillRect(x+8*s,oy-1*s,6*s,3*s);ctx.fillRect(x+10*s,oy-4*s,2*s,3*s);
@@ -432,20 +432,28 @@ function spawnParticles(x,y,color,n){for(let i=0;i<n;i++)particles.push({x,y,vx:
 const GRAVITY=0.55,SPEED=3.5,JUMP=-10.5;
 function collides(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 
-function updatePhysics(){
+function updatePhysics(dt){
   if(paused||scene!=='playing')return;
   const w=curLevel?curLevel.world:1;
-  const grav=w===3?0.28:GRAVITY;const spd=w===3?3.0:SPEED;const jmp=w===3?(-12.5):JUMP;
+  const grav=w===3?1008:1980;const spd=w===3?180:210;const jmp=w===3?-750:-630;
   if(keys['ArrowLeft']||keys['a']){player.vx=-spd;player.facing=-1;}
   else if(keys['ArrowRight']||keys['d']){player.vx=spd;player.facing=1;}
-  else player.vx*=0.7;
-  if(Math.abs(player.vx)<0.1)player.vx=0;
-  if((keys[' ']||keys['ArrowUp']||keys['w'])&&player.onGround){player.vy=jmp;player.onGround=false;}
+  else player.vx*=Math.pow(0.7,dt*60);
+  if(Math.abs(player.vx)<6)player.vx=0;
+  // Coyote time & jump buffer
+  const wasOnGround=player.onGround;
+  if(wasOnGround)player.coyoteTimer=0.1;else player.coyoteTimer=Math.max(0,player.coyoteTimer-dt);
+  const wantJump=keys[' ']||keys['ArrowUp']||keys['w'];
+  if(wantJump&&!wasOnGround)player.jumpBufferTimer=0.1;else player.jumpBufferTimer=Math.max(0,player.jumpBufferTimer-dt);
+  if(((wantJump&&wasOnGround)||(wantJump&&player.coyoteTimer>0)||(wasOnGround&&player.jumpBufferTimer>0))&&player.vy>=0){player.vy=jmp;player.onGround=false;player.coyoteTimer=0;player.jumpBufferTimer=0;}
   // Fireball shoot (press jump again in air with flower)
-  if(player.hasFlower&&(keys['f']||keys['Shift'])&&fireballs.length<2&&!player.onGround&&frame%8===0){fireballs.push({x:player.x+16,y:player.y+20,vx:player.facing*7,vy:-3,bounces:0});}
-  player.vy+=grav;player.x+=player.vx;player.y+=player.vy;
+  if(player.hasFlower&&(keys['f']||keys['Shift'])&&fireballs.length<2&&!player.onGround){const now=performance.now();if(!player.lastFireTime||now-player.lastFireTime>133){player.lastFireTime=now;fireballs.push({x:player.x+16,y:player.y+20,vx:player.facing*420,vy:-180,bounces:0});}}
+  player.vy+=grav*dt;player.x+=player.vx*dt;player.y+=player.vy*dt;
   // W4 wind
-  if(w===4&&!player.onGround){const wind=Math.sin(frame*0.02)*0.6+0.2;player.vx+=wind*0.15;player.vx=Math.max(-spd-1,Math.min(spd+1,player.vx));}
+  if(w===4&&!player.onGround){const wind=Math.sin(time*1.2)*0.6+0.2;player.vx+=wind*9*dt;player.vx=Math.max(-spd-60,Math.min(spd+60,player.vx));}
+
+  // Moving platforms (update before player collision)
+  (levelData.movePlatforms||[]).forEach(p=>{p.x+=p.moveSpeed*60*dt;if(Math.abs(p.x-p.startX)>p.range)p.moveSpeed*=-1;});
 
   player.onGround=false;
   const pb=player.big?{x:player.x,y:player.y,w:48,h:72}:{x:player.x,y:player.y,w:player.w,h:player.h};
@@ -455,20 +463,19 @@ function updatePhysics(){
     const ot=pb.y+pb.h-py,ob=py+p.h-pb.y,ol=pb.x+pb.w-px,orr=px+p.w-pb.x;
     const mo=Math.min(ot,ob,ol,orr);
   // Gold pipe: stand on it to enter bonus room
-    if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer++;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}if(p.type==='goldpipe'&&player.goldPipeTimer>=0){if(!player.goldPipeTimer)player.goldPipeTimer=0;player.goldPipeTimer++;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}}
+    if(mo===ot&&player.vy>=0){player.y=py-(player.big?72:48);player.vy=0;player.onGround=true;if(p.type==='move')player.x+=p.moveSpeed*60*dt||0;if(p.type==='cloud'&&!p.hidden){p.cloudTimer+=dt*60;if(p.cloudTimer>180){p.y=-200;p.hidden=true;}}if(p.type==='goldpipe'&&player.goldPipeTimer>=0){player.goldPipeTimer+=dt*60;if(player.goldPipeTimer>30){enterBonusRoom();player.goldPipeTimer=0;return;}}}
     else if(mo===ol&&player.vx>0)player.x=px-(player.big?48:32);
     else if(mo===orr&&player.vx<0)player.x=px+p.w;
   });
   if(player.y+(player.big?72:48)>=GROUND){player.y=GROUND-(player.big?72:48);player.vy=0;player.onGround=true;}
   if(!player.onGround)player.goldPipeTimer=Math.min(0,player.goldPipeTimer);
   // Cool down gold pipe after exiting bonus room
-  if(player.goldPipeTimer<0)player.goldPipeTimer++;
+  if(player.goldPipeTimer<0)player.goldPipeTimer+=dt*60;
   if(player.y>GROUND+200)die();
+  // Player bounds
+  if(player.x<0)player.x=0;if(player.x>levelData.w-32)player.x=levelData.w-32;
 
-  // Moving platforms
-  (levelData.movePlatforms||[]).forEach(p=>{p.x+=p.moveSpeed;if(Math.abs(p.x-p.startX)>p.range)p.moveSpeed*=-1;});
-
-  camera+=(player.x-camera-W*0.35)*0.08;if(camera<0)camera=0;if(camera>levelData.w-W)camera=levelData.w-W;
+  camera+=(player.x-camera-W*0.35)*4.8*dt;if(camera<0)camera=0;if(camera>levelData.w-W)camera=levelData.w-W;
 
   // Boss trigger
   if(levelData.hasBoss&&!bossPhase&&player.x>levelData.w-300)activateBoss();
@@ -476,47 +483,47 @@ function updatePhysics(){
   // Enemies
   enemies.forEach(e=>{
     if(e.y>GROUND+50)return;if(e.type==='shell')return;
-    if(e.crumbled){e.reviveTimer++;if(e.reviveTimer>150){e.crumbled=false;e.reviveTimer=0;e.y=GROUND-28;e.w=28;e.h=28;e.vx=-1-Math.random()*0.5;}return;}
-    if(e.type==='bowserjr'&&e.hits>0){e.stunTimer++;e.vx=0;if(e.stunTimer>60){e.hits=0;e.stunTimer=0;if(e.vx===0)e.vx=-1-Math.random()*0.5;}else return;}
-    if(e.type==='jellyfish'){e.y=e.baseY+Math.sin(frame*0.03+e.phase)*40;}
-    else if(e.type==='pufferfish'||e.type==='bowserjr'){if(e.type==='pufferfish'){e.puffTimer++;e.isPuffed=(e.puffTimer%120)>70;}e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
-    else if(e.type==='drybones'){e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
-    else{e.x+=e.vx;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
+    if(e.crumbled){e.reviveTimer+=dt*60;if(e.reviveTimer>150){e.crumbled=false;e.reviveTimer=0;e.y=GROUND-28;e.w=28;e.h=28;e.vx=-1-Math.random()*0.5;}return;}
+    if(e.type==='bowserjr'&&e.hits>0){e.stunTimer+=dt*60;e.vx=0;if(e.stunTimer>60){e.hits=0;e.stunTimer=0;if(e.vx===0)e.vx=-1-Math.random()*0.5;}else return;}
+    if(e.type==='jellyfish'){e.y=e.baseY+Math.sin(time*1.8+e.phase)*40;}
+    else if(e.type==='pufferfish'||e.type==='bowserjr'){if(e.type==='pufferfish'){e.puffTimer+=dt*60;e.isPuffed=(e.puffTimer%120)>70;}e.x+=e.vx*60*dt;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
+    else if(e.type==='drybones'){e.x+=e.vx*60*dt;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
+    else{e.x+=e.vx*60*dt;if(Math.abs(e.x-e.sx)>e.range)e.vx*=-1;}
     const el={x:e.x+2,y:e.y+2,w:(e.w||28)-4,h:(e.h||28)-4};
     if(!collides(pb,el))return;
     if(player.vy>0&&pb.y+pb.h-el.y<18){
       if(e.type==='jellyfish'||(e.type==='pufferfish'&&e.isPuffed)){die();return;}
-      else if(e.type==='bowserjr'){if(e.hits>0){e.y=GROUND+100;coins+=5;spawnParticles(e.x+18,e.y,'#FFD700',12);}else{e.hits=1;e.stunTimer=0;player.vy=-5;spawnParticles(e.x+18,e.y,'#E53935',6);coins+=2;}}
+      else if(e.type==='bowserjr'){if(e.hits>0){e.y=GROUND+100;coins+=5;spawnParticles(e.x+18,e.y,'#FFD700',12);}else{e.hits=1;e.stunTimer=0;player.vy=-300;spawnParticles(e.x+18,e.y,'#E53935',6);coins+=2;}}
       else if(e.type==='drybones'){e.crumbled=true;e.h=10;e.y+=18;e.vx=0;e.reviveTimer=0;spawnParticles(e.x+14,e.y,'#BDBDBD',6);coins+=5;}
       else if(e.type==='koopa'){e.type='shell';e.h=16;e.y+=12;e.vx=0;spawnParticles(e.x+14,e.y,'#FFD700',8);coins+=3;}
       else{e.y=GROUND+100;coins+=3;spawnParticles(e.x+14,e.y+14,'#FFD700',10);}
-      if(e.type!=='bowserjr'||e.hits===0)player.vy=-5;
+      if(e.type!=='bowserjr'||e.hits===0)player.vy=-300;
     }else if(invincible>0){e.y=GROUND+100;coins+=5;}
     else die();
   });
 
   // Shell
-  if(shell&&shell.active){shell.x+=shell.vx;enemies.forEach(e=>{if(e.y<GROUND+50&&collides(shell,{x:e.x+2,y:e.y+2,w:e.w-4,h:e.h-4})){e.y=GROUND+100;coins+=5;spawnParticles(e.x+14,e.y+14,'#FFD700',8);}});if(shell.vx!==0&&Math.abs(shell.x-shell.startX)>600){shell.active=false;shell=null;}}
-  if(shell&&shell.vx===0&&collides(pb,shell)){shell.vx=(player.x>shell.x)?8:-8;shell.active=true;}
+  if(shell&&shell.active){shell.x+=shell.vx*60*dt;enemies.forEach(e=>{if(e.y<GROUND+50&&collides(shell,{x:e.x+2,y:e.y+2,w:e.w-4,h:e.h-4})){e.y=GROUND+100;coins+=5;spawnParticles(e.x+14,e.y+14,'#FFD700',8);}});if(shell.vx!==0&&Math.abs(shell.x-shell.startX)>600){shell.active=false;shell=null;}}
+  if(shell&&shell.vx===0&&collides(pb,shell)){shell.vx=(player.x>shell.x)?480:-480;shell.active=true;}
 
   // Coins
-  levelData.coins.forEach(c=>{if(!c.collected&&Math.abs(player.x+16-c.x)<18&&Math.abs(player.y+24-c.y)<20){c.collected=true;coins++;spawnParticles(c.x,c.y,'#FFD700',4);}});
+  levelData.coins.forEach(c=>{if(!c.collected&&Math.abs(player.x+16-c.x)<18&&Math.abs((player.y+(player.big?36:24))-c.y)<20){c.collected=true;coins++;spawnParticles(c.x,c.y,'#FFD700',4);}});
 
   // Hit items
   hitItems.forEach(h=>{if(!h.hit&&!h.active&&Math.abs(player.x+16-h.x)<20&&Math.abs(player.y-h.y)<20&&player.vy<0){h.active=true;h.hit=true;if(h.item==='coin')coins+=3;else if(h.item==='mushroom'&&!player.big){player.big=true;player.y-=24;}else if(h.item==='star')invincible=300;else if(h.item==='flower')player.hasFlower=true;spawnParticles(h.x,h.y-10,'#FFD700',8);}});
 
   // Fire bars
-  (levelData.fireBars||[]).forEach(fb=>{fb.angle+=fb.speed;});
+  (levelData.fireBars||[]).forEach(fb=>{fb.angle+=fb.speed*60*dt;});
   if((levelData.fireBars||[]).some(fb=>{
     const segs=5,r=fb.len;
     for(let i=0;i<segs;i++){
       const a=fb.angle+i*Math.PI/segs,ax=fb.cx+Math.cos(a)*(r*i/segs),ay=fb.cy+Math.sin(a)*(r*i/segs);
-      if(Math.abs(player.x+16-ax)<12&&Math.abs(player.y+24-ay)<12)return true;
+      if(Math.abs(player.x+16-ax)<12&&Math.abs((player.y+(player.big?36:24))-ay)<12)return true;
     }return false;
   })){if(invincible>0){}else die();}
 
   // Fireballs
-  fireballs.forEach(fb=>{fb.x+=fb.vx;fb.y+=fb.vy;fb.vy+=0.2;if(fb.y>GROUND){fb.y=GROUND;fb.vy=-6;fb.bounces++;}
+  fireballs.forEach(fb=>{fb.x+=fb.vx*dt;fb.y+=fb.vy*dt;fb.vy+=720*dt;if(fb.y>GROUND){fb.y=GROUND;fb.vy=-360;fb.bounces++;}
     enemies.forEach(e=>{if(e.y<GROUND+50&&Math.abs(fb.x-e.x-14)<16&&Math.abs(fb.y-e.y-14)<16){e.y=GROUND+100;coins+=3;spawnParticles(e.x+14,e.y+14,'#FF5722',6);}});
   });
   fireballs=fireballs.filter(fb=>fb.bounces<3&&fb.x>camera-100&&fb.x<camera+W+100);
@@ -524,15 +531,15 @@ function updatePhysics(){
   // Quiz triggers
   levelData.quizzes.forEach((q,i)=>{if(!triggeredQuiz.includes(i)&&Math.abs(player.x-q.x)<40){triggeredQuiz.push(i);quizIdx=i;if(levelData.hasBoss&&i>=levelData.quizzes.length-1)activateBoss();else showWordCard();}});
 
-  if(invincible>0)invincible--;
-  if(bossRetreat>0)bossRetreat--;
-  particles=particles.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life--;return p.life>0;});
+  if(invincible>0)invincible-=dt*60;
+  if(bossRetreat>0)bossRetreat-=dt*60;
+  particles=particles.filter(p=>{p.x+=p.vx*60*dt;p.y+=p.vy*60*dt;p.vy+=540*dt;p.life-=dt*60;return p.life>0;});
 }
 
 function die(){
   if(scene==='dead')return;lives--;spawnParticles(player.x+16,player.y+24,'#E53935',15);
   if(lives<=0){scene='dead';updateUI();return;}
-  player.x=Math.max(80,camera+50);player.y=GROUND-48;player.vx=0;player.vy=0;player.big=false;invincible=120;updateUI();
+  player.x=Math.max(80,camera+50);player.y=GROUND-48;player.vx=0;player.vy=0;player.big=false;player.hasFlower=false;player.coyoteTimer=0;player.jumpBufferTimer=0;invincible=120;updateUI();
 }
 
 function activateBoss(){if(bossPhase)return;bossPhase=true;bossQIdx=0;bossCorrect=0;showBossQuestion();}
@@ -705,11 +712,12 @@ function initLevel(world, level){
   const hasBoss = level > 1;const maxBoss=(level===26)?5:3;
   curLevel = {world, level};
   levelData = generateLevelData(world, level, words, hasBoss);
-  player = {x:80, y:GROUND-48, w:32, h:48, vx:0, vy:0, onGround:false, facing:1, big:false, hasFlower:false, goldPipeTimer:0};
-  camera = 0; coins = 0; lives = 3; time = 0; frame = 0; quizIdx = 0; quizAnswered = 0; quizCorrect = 0;
+  player = {x:80, y:GROUND-48, w:32, h:48, vx:0, vy:0, onGround:false, facing:1, big:false, hasFlower:false, goldPipeTimer:0, lastFireTime:0, coyoteTimer:0, jumpBufferTimer:0};
+  camera = 0; coins = 0; lives = 3; time = 0; frame = 0; levelStartTime = performance.now(); pausedTime = 0; quizIdx = 0; quizAnswered = 0; quizCorrect = 0;
   triggeredQuiz = []; particles = []; invincible = 0; bossPhase = false; bossQIdx = 0; bossCorrect = 0; bossRetreat = 0; shell = null; paused = false;
   enemies = levelData.enemies.map(e => ({...e}));
   hitItems = levelData.platforms.filter(p => p.item).map(p => ({x:p.x+20, y:p.y+50, item:p.item, active:false, hit:false}));
+  bonusRoom = null;
   scene = 'playing';
   document.getElementById('ui-bar').classList.add('show');
   document.getElementById('pause-btn').classList.add('show');
@@ -718,7 +726,7 @@ function initLevel(world, level){
 }
 
 function resetLevel(){initLevel(curLevel.world,curLevel.level);}
-function togglePause(){if(scene!=='playing'&&scene!=='quiz')return;paused=!paused;document.getElementById('pause-overlay').classList.toggle('show',paused);}
+function togglePause(){if(scene!=='playing'&&scene!=='quiz')return;paused=!paused;if(paused)pauseStartTime=performance.now();else pausedTime+=performance.now()-pauseStartTime;document.getElementById('pause-overlay').classList.toggle('show',paused);}
 function goToMenu(){paused=false;scene='menu';document.getElementById('ui-bar').classList.remove('show');document.getElementById('pause-btn').classList.remove('show');document.getElementById('pause-overlay').classList.remove('show');document.getElementById('word-modal').classList.remove('active');document.getElementById('boss-modal').classList.remove('active');}
 
 // ===== BONUS ROOM =====
@@ -728,11 +736,14 @@ function enterBonusRoom(){
   const caps=letters[li],lower=caps.toLowerCase();
   const total=5;
   const bricks=[];
-  for(let i=0;i<total;i++)bricks.push({x:150+i*140,y:200+(i%2)*60,w:56,h:24,hit:false,letter:caps+lower});
-  bonusRoom={bricks,timer:0,maxTime:600,exitX:750,exitY:GROUND-60,totalCoins:0,exitTimer:0,lastJump:false,
+  // X positions spread across screen, Y alternates two rows
+  for(let i=0;i<total;i++)bricks.push({x:100+i*140,y:260-(i%2)*40,w:64,h:28,hit:false,letter:caps+lower});
+  bonusRoom={bricks,bonusStartTime:performance.now(),maxTime:20000,totalCoins:0,lastJump:true,freezeInput:167,
     savedPlayer:{x:player.x,y:player.y,vx:player.vx,vy:player.vy,onGround:player.onGround,facing:player.facing,big:player.big,hasFlower:player.hasFlower}};
-  // Clear all movement keys so Mario doesn't jump on entry
-  keys[' ']=false;keys['ArrowUp']=false;keys['ArrowLeft']=false;keys['ArrowRight']=false;keys['w']=false;keys['a']=false;keys['d']=false;
+  // Reset joystick + force small Mario for clean start
+  if(window._resetJoystick)window._resetJoystick();
+  keys['w']=false;keys['a']=false;keys['d']=false;
+  player.big=false;
   player.x=400;player.y=GROUND-48;player.vx=0;player.vy=0;player.onGround=true;player.goldPipeTimer=0;
 }
 function exitBonusRoom(){
@@ -740,42 +751,43 @@ function exitBonusRoom(){
   const sp=bonusRoom.savedPlayer;
   player.x=sp.x;player.y=sp.y;player.vx=sp.vx;player.vy=sp.vy;player.onGround=sp.onGround;
   player.facing=sp.facing;player.big=sp.big;player.hasFlower=sp.hasFlower;
-  player.goldPipeTimer=-180; // 3-second cooldown before gold pipe can re-trigger
+  player.goldPipeTimer=-180;
   bonusRoom=null;
 }
-function updateBonusRoom(){
+function updateBonusRoom(dt){
   if(!bonusRoom)return;
-  bonusRoom.timer++;if(bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();return;}
-  // Movement (same as game world)
-  if(keys['ArrowLeft']||keys['a']){player.vx=-3;player.facing=-1;}
-  else if(keys['ArrowRight']||keys['d']){player.vx=3;player.facing=1;}
-  else player.vx*=0.7;
-  // Jump: only on new press, not held from before entering room
+  if(bonusRoom.maxTime>0&&performance.now()-bonusRoom.bonusStartTime>bonusRoom.maxTime){exitBonusRoom();return;}
+  // Freeze input for first ~167ms
+  if(bonusRoom.freezeInput>0){bonusRoom.freezeInput-=dt*1000;player.vx*=Math.pow(0.7,dt*60);player.vy+=1800*dt;player.x+=player.vx*dt;player.y+=player.vy*dt;const ph=48;if(player.y+ph>=GROUND){player.y=GROUND-ph;player.vy=0;player.onGround=true;}return;}
+  // Movement
+  const spd=180;
+  if(keys['ArrowLeft']||keys['a']){player.vx=-spd;player.facing=-1;}
+  else if(keys['ArrowRight']||keys['d']){player.vx=spd;player.facing=1;}
+  else player.vx*=Math.pow(0.7,dt*60);
+  if(Math.abs(player.vx)<6)player.vx=0;
+  // Jump: require release-then-press cycle
   const jp=keys[' ']||keys['ArrowUp']||keys['w'];
-  if(!bonusRoom.lastJump&&jp&&player.onGround){player.vy=-11;player.onGround=false;}
+  if(!bonusRoom.lastJump&&jp&&player.onGround){player.vy=-840;player.onGround=false;}
   bonusRoom.lastJump=jp;
-  // Variable jump height: release jump key = cut velocity
-  if(!jp&&player.vy<-3)player.vy*=(player.vy<-7?0.45:0.65);
+  if(!jp&&player.vy<-180)player.vy*=(player.vy<-420?0.45:0.65);
   // Physics
-  player.vy+=0.5;player.x+=player.vx;player.y+=player.vy;
-  if(player.y>=GROUND){player.y=GROUND-48;player.vy=0;player.onGround=true;}
-  if(player.x<0)player.x=0;if(player.x>800)player.x=800;
+  player.vy+=1800*dt;player.x+=player.vx*dt;player.y+=player.vy*dt;
+  player.onGround=false;
+  const ph=48;
+  if(player.y+ph>=GROUND){player.y=GROUND-ph;player.vy=0;player.onGround=true;}
+  if(player.x<0)player.x=0;if(player.x>W-32)player.x=W-32;
   // Brick collision
   const pb={x:player.x,y:player.y,w:32,h:48};
   bonusRoom.bricks.forEach(b=>{
     if(b.hit)return;
     if(player.vy<0&&collides(pb,{x:b.x,y:b.y,w:b.w,h:b.h})&&pb.y+pb.h-b.y<20){
-      b.hit=true;player.vy=-5;player.onGround=false;bonusRoom.totalCoins+=3;coins+=3;
-      spawnParticles(b.x+28,b.y-10,'#FFD700',10);
-      speak(b.letter.substring(0,1)+', '+b.letter.substring(1)+'... '+b.letter.toLowerCase(),0.6);
+      b.hit=true;player.vy=300;player.onGround=false;bonusRoom.totalCoins+=3;coins+=3;
+      spawnParticles(b.x+b.w/2,b.y-10,'#FFD700',10);
+      speak(b.letter.substring(0,1)+', '+b.letter.substring(1)+'... '+b.letter.substring(1).toLowerCase(),0.6);
     }
   });
-  // Exit: stand on right exit pipe → auto after 0.7s. Tighter range (pipe is 48px wide)
-  const ex=bonusRoom.exitX;
-  const nearExit=player.x>ex-20&&player.x<ex+48&&player.y+48>=GROUND-8&&player.y+48<=GROUND+8;
-  if(nearExit){bonusRoom.exitTimer=(bonusRoom.exitTimer||0)+1;if(bonusRoom.exitTimer>42)exitBonusRoom();}else{bonusRoom.exitTimer=0;}
-  const allHit=bonusRoom.bricks.every(b=>b.hit);
-  if(allHit||bonusRoom.timer>bonusRoom.maxTime){exitBonusRoom();}
+  // All bricks hit → auto exit
+  if(bonusRoom.bricks.every(b=>b.hit)){exitBonusRoom();}
 }
 function drawBonusRoom(){
   if(!bonusRoom)return;
@@ -789,26 +801,19 @@ function drawBonusRoom(){
   bonusRoom.bricks.forEach(b=>{
     if(b.hit){ctx.fillStyle='rgba(255,215,0,0.15)';ctx.fillRect(b.x,b.y,b.w,b.h);return;}
     ctx.fillStyle='#8B6914';ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle='#A0782C';
-    for(let bx=0;bx<b.w;bx+=12)for(let by=0;by<b.h;by+=6)ctx.fillRect(b.x+bx+2,b.y+by+2,8,2);
+    for(let bx=0;bx<b.w;bx+=16)for(let by=0;by<b.h;by+=7)ctx.fillRect(b.x+bx+2,b.y+by+2,10,3);
     ctx.fillStyle='#C4A35A';ctx.fillRect(b.x,b.y,b.w,3);
-    ctx.fillStyle='#FFD700';ctx.font='bold 16px "Courier New",monospace';ctx.textAlign='center';
-    ctx.fillText(b.letter,b.x+b.w/2,b.y+17);
+    ctx.fillStyle='#FFD700';ctx.font='bold 18px "Courier New",monospace';ctx.textAlign='center';
+    ctx.fillText(b.letter,b.x+b.w/2,b.y+19);
   });
-  // Exit pipe
-  ctx.fillStyle='#4CAF50';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,60);ctx.fillStyle='#2E7D32';ctx.fillRect(bonusRoom.exitX,GROUND-60,48,12);
-  ctx.fillStyle='#1B5E20';ctx.fillRect(bonusRoom.exitX-2,GROUND-60,6,60);ctx.fillRect(bonusRoom.exitX+44,GROUND-60,6,60);
-  ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('EXIT',bonusRoom.exitX+24,GROUND-25);
-  // Exit prompt (match updateBonusRoom range: ex-20 to ex+48)
-  const near=player.x>bonusRoom.exitX-20&&player.x<bonusRoom.exitX+48&&player.y+48>=GROUND-8;
-  if(near){ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='13px sans-serif';ctx.fillText('↓ 离开',bonusRoom.exitX+24,GROUND-75);}
   // Player
   drawPixelChar(player.x,player.y,player.facing,player.big);
-  // Timer (flashes red in last 3 seconds)
-  const left=Math.ceil((bonusRoom.maxTime-bonusRoom.timer)/60);
-  const urgent=left<=3&&frame%30<15;
+  // Timer
+  const left=Math.ceil((bonusRoom.maxTime-(performance.now()-bonusRoom.bonusStartTime))/1000);
+  const urgent=left<=5&&frame%30<15;
   ctx.fillStyle=urgent?'#E53935':'#FFD700';ctx.font='20px "Courier New",monospace';ctx.textAlign='left';
   ctx.fillText('⏱ '+left+'s · 🪙 +'+bonusRoom.totalCoins,20,140);
-  if(bonusRoom.bricks.every(b=>b.hit)){ctx.fillStyle='#4CAF50';ctx.font='bold 24px "Courier New",monospace';ctx.textAlign='center';ctx.fillText('✅ 全部完成！走向出口',W/2,H-40);}
+  if(bonusRoom.bricks.every(b=>b.hit)){ctx.fillStyle='#4CAF50';ctx.font='bold 26px "Courier New",monospace';ctx.textAlign='center';ctx.fillText('✅ 全部完成！',W/2,H-50);}
 }
 
 // ===== RENDER =====
@@ -837,7 +842,7 @@ function render(){
     drawPixelChar(520,GROUND-48,-1,false);
     // Menu buttons (drawn as clickable zones)
     const btns=[
-      {y:300,t:'🎮 开始冒险',action:()=>{const p=JSON.parse(localStorage.getItem('marioProgress')||'{}');if(p.lastLevel){const[lw,ll]=p.lastLevel.replace('l','').split('-');scene='levels';selWorld=lw;}else scene='worlds';}},
+      {y:300,t:'🎮 开始冒险',action:()=>{let p={};try{p=JSON.parse(localStorage.getItem('marioProgress')||'{}');}catch(e){}if(p.lastLevel){const[lw,ll]=p.lastLevel.replace('l','').split('-');scene='levels';selWorld=lw;}else scene='worlds';}},
       {y:360,t:'🌍 选择世界',action:()=>{scene='worlds';}},
       {y:420,t:'📖 单词库',action:()=>{showWordbook();}},
     ];
@@ -1018,6 +1023,7 @@ window.addEventListener('keyup',e=>{keys[e.key]=false;});
   const base=document.getElementById('joy-base'),stick=document.getElementById('joy-stick');
   let active=false,pid=null,cx=0,cy=0,maxR=0;
   function reset(){active=false;pid=null;stick.style.transform='translate(-50%,-50%)';keys['ArrowLeft']=keys['ArrowRight']=keys[' ']=keys['ArrowUp']=false;}
+  window._resetJoystick=reset;
   function update(ex,ey){
     const dx=ex-cx,dy=ey-cy,dist=Math.sqrt(dx*dx+dy*dy),r=maxR*0.85;
     const sx=dist>r?dx/dist*r:dx,sy=dist>r?dy/dist*r:dy;
@@ -1031,8 +1037,11 @@ window.addEventListener('keyup',e=>{keys[e.key]=false;});
   base.addEventListener('pointermove',e=>{if(active&&e.pointerId===pid)update(e.clientX,e.clientY);});
   base.addEventListener('pointerup',e=>{if(e.pointerId===pid)reset();});
   base.addEventListener('pointercancel',reset);
-  document.getElementById('joy-jump').addEventListener('pointerdown',e=>{e.preventDefault();keys[' ']=true;keys['ArrowUp']=true;});
-  document.getElementById('joy-jump').addEventListener('pointerup',e=>{keys[' ']=false;keys['ArrowUp']=false;});
+  const jumpBtn=document.getElementById('joy-jump');
+  let jumpHeld=false;
+  jumpBtn.addEventListener('pointerdown',e=>{e.preventDefault();jumpHeld=true;keys[' ']=true;keys['ArrowUp']=true;});
+  jumpBtn.addEventListener('pointerup',e=>{jumpHeld=false;keys[' ']=false;keys['ArrowUp']=false;});
+  window._resetJoystick=function(){active=false;pid=null;stick.style.transform='translate(-50%,-50%)';keys['ArrowLeft']=keys['ArrowRight']=false;jumpHeld=false;keys[' ']=false;keys['ArrowUp']=false;};
 })();
 
 // ===== UI =====
@@ -1051,10 +1060,14 @@ function updateUI(){
 }
 
 // ===== LOOP =====
-function loop(){
-  if(scene==='playing'&&!paused){time=frame/60;if(bonusRoom)updateBonusRoom();else updatePhysics();}
+function loop(now){
+  requestAnimationFrame(loop);
+  if(!lastTime){lastTime=now||performance.now();return;}
+  const dt=Math.min(((now||performance.now())-lastTime)/1000,0.1);
+  lastTime=now||performance.now();
+  if(scene==='playing'&&!paused){time=(performance.now()-levelStartTime-pausedTime)/1000;if(bonusRoom)updateBonusRoom(dt);else updatePhysics(dt);}
   if(scene==='dead'&&(keys[' ']||keys['Enter']))resetLevel();
-  updateUI();render();frame++;requestAnimationFrame(loop);
+  updateUI();render();frame++;
 }
 loop();
 
