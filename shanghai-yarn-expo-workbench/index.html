@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>上海纱线展 · 走访工作台</title>
+<style>
+:root{
+  --bg:#fafaf8; --card:#ffffff; --ink:#2d2d2d; --title:#1a1a1a;
+  --gold:#c9a96e; --line:#ece8e0; --dim:#8a857b;
+  --red:#c0564a; --green:#4a8f6b; --blue:#4a6fa5;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;padding-bottom:env(safe-area-inset-bottom);}
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 16px;}
+header h1{font-size:17px;color:var(--title);font-weight:700;}
+header .sub{font-size:12px;color:var(--dim);margin-top:2px;}
+nav{display:flex;gap:8px;margin-top:10px;overflow-x:auto;}
+nav button{flex-shrink:0;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;}
+nav button.on{background:var(--gold);color:#fff;border-color:var(--gold);font-weight:600;}
+main{padding:14px 16px 40px;}
+.section{display:none;}
+.section.on{display:block;}
+.stats{display:flex;gap:10px;margin-bottom:14px;}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;}
+.stat .num{font-size:24px;font-weight:700;color:var(--title);}
+.stat .lab{font-size:11px;color:var(--dim);margin-top:2px;}
+.toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.toolbar button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer;color:var(--ink);}
+.group-title{font-size:14px;font-weight:700;color:var(--title);margin:18px 0 8px;padding-left:8px;border-left:3px solid var(--gold);}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;}
+.item .row-top{display:flex;align-items:flex-start;gap:10px;}
+.item .check{width:26px;height:26px;border-radius:6px;border:2px solid var(--line);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;margin-top:1px;}
+.item.done .check{background:var(--green);border-color:var(--green);}
+.item .name{flex:1;font-size:15px;font-weight:600;color:var(--title);}
+.item .cat{font-size:11px;color:var(--dim);margin-top:2px;}
+.item .status-tag{font-size:11px;padding:2px 8px;border-radius:10px;flex-shrink:0;}
+.status-未走{background:#f3efe7;color:#9c8a63;}
+.status-走到{background:#e3f0e8;color:var(--green);}
+.status-暂缓{background:#f7e8e5;color:var(--red);}
+.item .meta{font-size:12px;color:var(--dim);margin-top:8px;}
+.item .meta input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;margin-top:4px;background:#fcfbf9;}
+.item textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;margin-top:6px;min-height:52px;resize:vertical;background:#fcfbf9;font-family:inherit;}
+.item .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+.item .actions button{border:none;background:none;font-size:12px;color:var(--dim);cursor:pointer;}
+.item.skipped .name{color:var(--dim);}
+.fab{position:fixed;right:18px;bottom:24px;width:52px;height:52px;border-radius:50%;background:var(--gold);color:#fff;font-size:26px;border:none;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;z-index:20;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:30;align-items:flex-end;}
+.modal-bg.on{display:flex;}
+.modal{background:var(--bg);width:100%;border-radius:16px 16px 0 0;padding:20px 18px 30px;max-height:85vh;overflow-y:auto;}
+.modal h2{font-size:16px;color:var(--title);margin-bottom:14px;}
+.modal label{font-size:12px;color:var(--dim);display:block;margin:10px 0 4px;}
+.modal input,.modal textarea,.modal select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:14px;background:#fff;}
+.modal .btn-row{display:flex;gap:10px;margin-top:18px;}
+.modal .btn-row button{flex:1;padding:12px;border-radius:10px;border:none;font-size:15px;cursor:pointer;font-weight:600;}
+.btn-primary{background:var(--gold);color:#fff;}
+.btn-ghost{background:#eee9df;color:var(--ink);}
+.ledger-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;}
+.ledger-item .ln{font-size:14px;font-weight:600;color:var(--title);}
+.ledger-item .lr{font-size:13px;color:var(--ink);margin-top:6px;white-space:pre-wrap;}
+.ledger-item .lt{font-size:11px;color:var(--dim);margin-top:6px;}
+.empty{text-align:center;color:var(--dim);font-size:14px;padding:40px 0;}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:40;display:none;}
+</style>
+</head>
+<body>
+<header>
+  <h1>上海纱线展 · 走访工作台</h1>
+  <div class="sub">8.2 馆 · 效果纱 / 骨架纱 / 超轻 / 材料协同 / 高性能 / 环保 六条线</div>
+  <nav>
+    <button data-t="visit" class="on">走访清单</button>
+    <button data-t="record">记录区</button>
+    <button data-t="review">复盘导出</button>
+  </nav>
+</header>
+
+<main>
+  <!-- 走访清单 -->
+  <div id="visit" class="section on">
+    <div class="stats" id="visitStats"></div>
+    <div id="scanCard"></div>
+    <div id="flexSection"></div>
+    <div class="toolbar" style="align-items:center;">
+      <input id="visitSearch" oninput="setSearch(this.value)" placeholder="搜展商 / 关键词 / 材料" style="flex:1;min-width:150px;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:13px;background:#fff;">
+      <select id="visitCategory" onchange="setCategory(this.value)" style="border:1px solid var(--line);border-radius:8px;padding:9px 8px;font-size:13px;background:#fff;max-width:150px;">
+        <option value="all">所有线路</option>
+        <option value="效果纱">效果纱</option>
+        <option value="骨架纱">骨架纱</option>
+        <option value="超轻">超轻纱</option>
+        <option value="TPEE单丝二供">TPEE单丝二供</option>
+        <option value="未来对标">高性能/未来</option>
+        <option value="环保">环保差异化</option>
+      </select>
+      <button onclick="filterAll()" id="fAll">全部</button>
+      <button onclick="filterTodo()" id="fTodo">未走</button>
+      <button onclick="filterDone()" id="fDone">已走</button>
+    </div>
+    <div id="visitList"></div>
+  </div>
+
+  <!-- 记录区 -->
+  <div id="record" class="section">
+    <div class="toolbar">
+      <button onclick="newRecord()">+ 新增记录</button>
+      <button onclick="exportRecords()">导出记录</button>
+    </div>
+    <div id="recordList"></div>
+  </div>
+
+  <!-- 复盘导出 -->
+  <div id="review" class="section">
+    <div class="stats" id="reviewStats"></div>
+    <div class="toolbar">
+      <button onclick="exportAll()">导出全部（JSON）</button>
+      <button onclick="exportCSV()">导出 CSV（Excel 可开）</button>
+    </div>
+    <div class="group-title">复盘提示</div>
+    <div class="item" style="padding:14px;">
+      <div style="font-size:13px;color:var(--ink);white-space:pre-wrap;">晚上回填时，把每条记录收敛成三句：
+1. 这家能做什么规格（牌号/单丝D/克重/强力）
+2. 主推卖点是什么（尤其减震/吸能他们拿什么报告撑）
+3. 我的判断：能进 5g 以下吗？还是普通货？</div>
+    </div>
+    <div id="reviewList"></div>
+  </div>
+</main>
+
+<button class="fab" onclick="newRecord()">＋</button>
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LS_VISIT = 'yarnexpo_visit_v1';
+const LS_RECORD = 'yarnexpo_record_v1';
+const LS_SCAN = 'yarnexpo_scan_v1';
+const LS_FLEX = 'yarnexpo_flex_v1';
+
+// ===== 走访数据：四条线 =====
+const VISIT_DATA = [
+  // ===== 线一：视觉效果 + 物性 =====
+  {name:'东阳市恒光金银丝', en:'Hengguang', cat:'效果纱 · 金银丝', note:'问：亮丝截面/纤度，能否做运动鞋面低调质感的亮丝/钻石纱'},
+  {name:'东阳市华富金银丝', en:'Huafu', cat:'效果纱 · 金银丝', note:'同上，备选'},
+  {name:'东阳市晶日金银丝', en:'Jingri', cat:'效果纱 · 金银丝', note:'同上，备选'},
+  {name:'上海银之川金银线', en:'Silver River', cat:'效果纱 · 金银线', note:'问亮丝规格、物性（耐磨/耐水洗）'},
+  {name:'秀川金银线（浙江）', en:'Xiuchuan', cat:'效果纱 · 金银线', note:'备选'},
+  {name:'晋江市豪顺金银线织造', en:'Haoshun', cat:'效果纱 · 金银线', note:'福建本土，就近'},
+  {name:'杭州恒牛花式丝', en:'Hengniu Fancy', cat:'效果纱 · 花式丝', note:'花式/效果纱，看视觉+物性组合'},
+  {name:'杭州宏京泰花色纱', en:'Hongjingtai', cat:'效果纱 · 花色纱', note:'同上'},
+  {name:'绍兴鑫冉花式纱线', en:'Xinran Fancy', cat:'效果纱 · 花式纱', note:'同上'},
+  // ===== 线二：发泡纱搭档（锦纶/涤纶骨架纱）=====
+  {name:'福建永荣锦江股份', en:'Eversun Jinjiang', cat:'骨架纱 · 锦纶', note:'问：能否供高强锦纶细旦丝，做发泡纱强度补位'},
+  {name:'福建凯邦锦纶科技', en:'Kaibang Polyamide', cat:'骨架纱 · 锦纶', note:'福建本土锦纶二供'},
+  {name:'福建省恒申合纤科技', en:'Highsun Synthetic', cat:'骨架纱 · 锦纶', note:'恒申系高强尼龙，问细旦规格'},
+  {name:'义乌华鼎锦纶股份', en:'Huading Nylon', cat:'骨架纱 · 锦纶', note:'锦纶DPFY，问细旦高强'},
+  {name:'福建百宏聚纤科技实业', en:'Billion Polymerization', cat:'骨架纱 · 涤纶', note:'细旦/超细旦涤纶，问单丝/DTY规格'},
+  {name:'福建省金纶高纤股份', en:'Jinlun Fiber', cat:'骨架纱 · 涤纶', note:'福建本土涤纶长丝'},
+  {name:'南通新帝克单丝科技', en:'New DicKey Monofilament', cat:'骨架纱 · 单丝', note:'重点：单丝（monofilament），发泡纱搭配/细旦关键'},
+  {name:'东丽纤维（南通）', en:'Toray (Nantong)', cat:'骨架纱 · 单丝', note:'东丽系单丝，高端参照'},
+  // ===== 线三：回阿迪超轻（5g以下细旦纱）=====
+  {name:'桐昆集团股份', en:'Tongkun Group', cat:'超轻 · 涤纶龙头', note:'细旦丝头部，问5g以下主料规格'},
+  {name:'盛虹集团', en:'Shenghong Group', cat:'超轻 · 涤纶龙头', note:'细旦丝+功能改性'},
+  {name:'浙江恒逸石化', en:'Hengyi Petrochemical', cat:'超轻 · 涤纶龙头', note:'细旦丝/高性能尼龙'},
+  {name:'新凤鸣集团湖州中石', en:'Xinfengming Huzhou', cat:'超轻 · 涤纶龙头', note:''},
+  {name:'厦门翔鹭化纤股份', en:'Xianglu Chemical', cat:'超轻 · 涤纶龙头', note:''},
+  // ===== 线四：TPEE 单丝 ✓外购 → 找二供（未发泡普通单丝，不是发泡纱）=====
+  {name:'华峰化学股份', en:'Huafon Chemical', cat:'TPEE单丝二供 · 氨纶/TPU', note:'华峰有TPU业务，问能否供未发泡TPEE/TPU单丝'},
+  {name:'泰和新材集团', en:'Tayho Advanced', cat:'TPEE单丝二供 · 氨纶', note:'氨纶+芳纶，问TPEE/TPU弹性单丝'},
+  {name:'埃万特集团', en:'Avient', cat:'TPEE单丝二供 · 特种材料', note:'原PolyOne，问TPEE/TPU工程塑料单丝'},
+  {name:'神舟纤维科技（昆山）', en:'Asiatic Fiber', cat:'TPEE单丝二供 · 高性能纤维', note:'台资高性能纤维，问TPEE/TPU单丝'},
+  // ===== 线五：发泡纱未来/减震吸能对标（高性能纤维）=====
+  {name:'杭州高烯科技', en:'Gaoxi Technology', cat:'未来对标 · 高性能纤维', note:'石墨烯機能纱，问减震数据怎么来'},
+  {name:'江苏先诺新材料', en:'Shino New Material', cat:'未来对标 · 高性能纤维', note:''},
+  {name:'青岛平莱特纤维', en:'Pinglai Special Fiber', cat:'未来对标 · 高性能纤维', note:''},
+  {name:'浙江千禧龙纤特种纤维', en:'Qianxilong Special Fibre', cat:'未来对标 · 高性能纤维', note:''},
+  {name:'南冥新材料（苏州）', en:'Southern Vastness', cat:'未来对标 · 高性能纤维', note:''},
+  {name:'天津荣唐高性能纤维', en:'Rongtang High Performance', cat:'未来对标 · 高性能纤维', note:''},
+  {name:'四川润厚特种纤维', en:'Runhou Special', cat:'未来对标 · 特种纤维', note:''},
+  // ===== 线六：环保差异化（再生/生物基，阿迪可持续卖点）=====
+  {name:'浙江佳人新材料', en:'Jiaren New Materials', cat:'环保 · 化纤再生', note:'化学法再生涤纶，全球龙头'},
+  {name:'福建丰原生物纤维', en:'Fujian Bbca', cat:'环保 · 生物基', note:'福建本土生物基'},
+  {name:'易生新材料（苏州）', en:'Esunfiber', cat:'环保 · 生物基', note:'PLA聚乳酸'},
+  {name:'中纺院绿色纤维股份', en:'CTA Green Fibre', cat:'环保 · 再生纤维素', note:'Lyocell莱赛尔'},
+  {name:'山东魏桥纺织科技', en:'Weiqiao Textile', cat:'环保 · 大手', note:'可持续面料龙头，可能代工'},
+];
+
+// ===== 存储 =====
+function getVisit(){ try{return JSON.parse(localStorage.getItem(LS_VISIT))||{};}catch(e){return {};} }
+function setVisit(v){ localStorage.setItem(LS_VISIT, JSON.stringify(v)); }
+function getRecords(){ try{return JSON.parse(localStorage.getItem(LS_RECORD))||[];}catch(e){return [];} }
+function setRecords(r){ localStorage.setItem(LS_RECORD, JSON.stringify(r)); }
+function getScan(){ try{return JSON.parse(localStorage.getItem(LS_SCAN))||{status:'未做',clue:'',filled:'',pos:''};}catch(e){return {status:'未做',clue:'',filled:'',pos:''};} }
+function setScan(s){ localStorage.setItem(LS_SCAN, JSON.stringify(s)); }
+function getFlex(){ try{return JSON.parse(localStorage.getItem(LS_FLEX))||[];}catch(e){return [];} }
+function setFlex(a){ localStorage.setItem(LS_FLEX, JSON.stringify(a)); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// 初始化走访状态
+function ensureVisit(){
+  const v = getVisit();
+  let dirty = false;
+  VISIT_DATA.forEach(d=>{ if(!(d.name in v)){ v[d.name]={status:'未走', note:'', pos:''}; dirty=true; } });
+  if(dirty) setVisit(v);
+  return v;
+}
+
+// ===== 渲染 =====
+let curFilter = 'all';
+let curCategory = 'all';
+let curSearch = '';
+function renderScanCard(){
+  const s=getScan();
+  const status=s.status==='已做'?'已做':(s.status==='暂缓'?'暂缓':'未做');
+  document.getElementById('scanCard').innerHTML=`
+    <div class="item" style="background:#f7efe0;border-color:#c9a96e;margin-bottom:12px;">
+      <div class="row-top">
+        <div class="check ${status==='已做'?'done':''}" onclick="toggleScan()">${status==='已做'?'✓':''}</div>
+        <div class="name" style="color:#8a6d2b;">第〇线 · 发泡纱市场扫描</div>
+        <div class="status-tag status-${status==='已做'?'走到':status==='暂缓'?'暂缓':'未走'}">${status}</div>
+      </div>
+      <div class="meta" style="color:#6b5f45;margin-top:8px;">目标：验证市场上有没有类似发泡纱/发泡纤维/中空纱/微孔纤维/缓冲纱。问：能否发泡？密度？闭孔还是开孔？量产了吗？</div>
+      <div class="meta">找到的展商/线索/关键词：<textarea placeholder="现场找到相关产品就记在这里；没有展商名也先记关键词" onchange="saveScanField('clue',this.value)">${esc(s.clue)}</textarea></div>
+      <div class="meta">位置或对方联系人：<input value="${esc(s.pos)}" placeholder="展位位置 / 联系人 / 名片" onchange="saveScanField('pos',this.value)"></div>
+      <div class="meta">晚上补充判断：<textarea placeholder="是否量产、性能差距、是否值得跟进" onchange="saveScanField('filled',this.value)">${esc(s.filled)}</textarea></div>
+      <div class="actions"><button onclick="newScanRecord()">＋把线索另存为记录</button></div>
+    </div>`;
+}
+function renderFlexSection(){
+  const arr=getFlex();
+  let html=`<div class="item" style="border-color:#d8c7a5;background:#fffdf8;margin-bottom:12px;">
+    <div class="row-top"><div class="name" style="color:#8a6d2b;">其他发现 · 灵活卡片</div><button onclick="newFlexCard()" style="border:1px solid var(--gold);background:#fff8e9;color:#8a6d2b;border-radius:8px;padding:6px 9px;font-size:12px;">＋新增</button></div>
+    <div class="meta">不在目标品类但值得记的：设备、检测机构、工艺、其他纱线、品牌应用、意外发现，都放这里，不污染主清单。</div>`;
+  if(!arr.length) html+=`<div class="empty" style="padding:16px 0 4px;">还没有其他发现，现场看到就点“＋新增”</div>`;
+  arr.forEach((r,i)=>{
+    html+=`<div class="ledger-item" style="margin-top:10px;margin-bottom:0;">
+      <div class="row-top"><div class="name">${esc(r.name||'未命名发现')}</div><span class="status-tag" style="background:#eee9df;color:#6b6256;">${esc(r.kind||'其他')} · ${esc(r.status||'待整理')}</span></div>
+      ${r.clue?`<div class="lr">${esc(r.clue)}</div>`:''}
+      ${r.pos?`<div class="lt">位置/联系人：${esc(r.pos)}</div>`:''}
+      ${r.filled?`<div class="lr" style="color:#4a6fa5;">补：${esc(r.filled)}</div>`:''}
+      <div class="lt">${esc(r.time||'')} · <a href="#" style="color:#4a6fa5" onclick="editFlexCard(${i});return false;">编辑</a> · <a href="#" style="color:#c0564a" onclick="delFlexCard(${i});return false;">删</a></div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('flexSection').innerHTML=html;
+}
+function renderVisit(){
+  const v = ensureVisit();
+  renderScanCard();
+  renderFlexSection();
+  const wrap = document.getElementById('visitList');
+  const groups = {};
+  VISIT_DATA.forEach(d=>{
+    const g = d.cat.split(' · ')[0];
+    const hay = (d.name+' '+d.en+' '+d.cat+' '+d.note).toLowerCase();
+    if(curCategory!=='all' && g!==curCategory) return;
+    if(curSearch && !hay.includes(curSearch.toLowerCase())) return;
+    if(!groups[g]) groups[g]=[];
+    groups[g].push(d);
+  });
+  let html='';
+  for(const g of Object.keys(groups)){
+    html += `<div class="group-title">${g}（${groups[g].length}）</div>`;
+    groups[g].forEach(d=>{
+      const st = v[d.name] || {status:'未走', note:'', pos:''};
+      if(curFilter==='todo' && st.status!=='未走') return;
+      if(curFilter==='done' && st.status==='未走') return;
+      const doneCls = st.status==='走到' ? 'done' : '';
+      const skipCls = st.status==='暂缓' ? 'skipped' : '';
+      const statusCn = st.status==='走到' ? '走到' : (st.status==='暂缓' ? '暂缓':'未走');
+      const key=d.name.replace(/'/g,"\\'");
+      html += `<div class="item ${doneCls} ${skipCls}" data-name="${esc(d.name)}">
+        <div class="row-top">
+          <div class="check" onclick="toggle('${key}')">${st.status==='走到'?'✓':''}</div>
+          <div class="name">${esc(d.name)}</div>
+          <div class="status-tag status-${statusCn}">${statusCn}</div>
+        </div>
+        <div class="cat">${esc(d.cat)} · ${esc(d.en)}</div>
+        ${d.note?`<div class="meta" style="font-size:12px;color:#8a857b;margin-top:6px;">💡 ${esc(d.note)}</div>`:''}
+        ${st.status!=='走到'?`<div class="meta">没走到位置/原因：<input value="${esc(st.pos)}" placeholder="如：在8.2馆E区，人多没挤进去" onchange="savePos('${key}', this.value)"></div>`:''}
+        <textarea placeholder="现场记一句：拿了什么 / 主推卖点 / 你的判断" onchange="saveNote('${key}', this.value)">${esc(st.note)}</textarea>
+      </div>`;
+    });
+  }
+  wrap.innerHTML = html || '<div class="empty">没有匹配项</div>';
+  renderVisitStats();
+}
+function renderVisitStats(){
+  const v = ensureVisit();
+  let done=0, todo=0, hold=0;
+  VISIT_DATA.forEach(d=>{ const s=(v[d.name]||{}).status; if(s==='走到')done++; else if(s==='暂缓')hold++; else todo++; });
+  const scan=getScan();
+  document.getElementById('visitStats').innerHTML = `
+    <div class="stat"><div class="num" style="color:var(--green)">${done}</div><div class="lab">已走</div></div>
+    <div class="stat"><div class="num">${todo}</div><div class="lab">未走</div></div>
+    <div class="stat"><div class="num" style="color:var(--red)">${hold}</div><div class="lab">暂缓</div></div>
+    <div class="stat"><div class="num">${VISIT_DATA.length}</div><div class="lab">展商总计</div></div>
+    <div class="stat"><div class="num" style="color:var(--gold)">${scan.status==='已做'?'✓':'—'}</div><div class="lab">市场扫描</div></div>`;
+}
+function toggle(name){
+  const v = ensureVisit();
+  const cur = v[name] || {status:'未走', note:'', pos:''};
+  if(cur.status==='未走') cur.status='走到';
+  else if(cur.status==='走到') cur.status='暂缓';
+  else cur.status='未走';
+  v[name]=cur; setVisit(v); renderVisit();
+}
+function savePos(name, val){ const v=ensureVisit(); v[name].pos=val; setVisit(v); }
+function saveNote(name, val){ const v=ensureVisit(); v[name].note=val; setVisit(v); }
+function toggleScan(){ const s=getScan(); s.status=s.status==='未做'?'已做':(s.status==='已做'?'暂缓':'未做'); setScan(s); renderVisit(); }
+function saveScanField(k,val){ const s=getScan(); s[k]=val; setScan(s); renderVisitStats(); }
+function setSearch(v){ curSearch=v.trim(); renderVisit(); }
+function setCategory(v){ curCategory=v; renderVisit(); }
+function filterAll(){curFilter='all'; setFilterBtn(); renderVisit();}
+function filterTodo(){curFilter='todo'; setFilterBtn(); renderVisit();}
+function filterDone(){curFilter='done'; setFilterBtn(); renderVisit();}
+function setFilterBtn(){
+  document.getElementById('fAll').className = curFilter==='all'?'on':'';
+  document.getElementById('fTodo').className = curFilter==='todo'?'on':'';
+  document.getElementById('fDone').className = curFilter==='done'?'on':'';
+  const c=document.getElementById('visitCategory'); if(c) c.value=curCategory;
+}
+
+// ===== 记录区 =====
+function renderRecords(){
+  const rs = getRecords();
+  const wrap = document.getElementById('recordList');
+  if(!rs.length){ wrap.innerHTML='<div class="empty">还没有记录，点右下角 ＋ 记一条</div>'; return; }
+  wrap.innerHTML = rs.map((r,i)=>`
+    <div class="ledger-item">
+      <div class="ln">${r.name||'(未命名)'} <span style="color:#c9a96e;font-size:12px;font-weight:400">${r.line||''}</span></div>
+      ${r.clue?`<div class="lr">${r.clue.replace(/</g,'&lt;')}</div>`:''}
+      ${r.filled?`<div class="lr" style="color:#4a6fa5;">补：${r.filled.replace(/</g,'&lt;')}</div>`:''}
+      <div class="lt">${r.time||''} · <a href="#" style="color:#4a6fa5" onclick="editRecord(${i});return false;">编辑</a> · <a href="#" style="color:#c0564a" onclick="delRecord(${i});return false;">删</a></div>
+    </div>`).join('');
+}
+
+function newRecord(defaultLine){ openModal(undefined, defaultLine||''); }
+function newScanRecord(){ openModal(undefined,'第〇线·市场扫描'); }
+function editRecord(i){ openModal(i); }
+function newFlexCard(){ openFlexModal(null); }
+function editFlexCard(i){ openFlexModal(i); }
+function delFlexCard(i){ if(!confirm('删除这张其他发现卡片？')) return; const a=getFlex(); a.splice(i,1); setFlex(a); renderFlexSection(); toast('已删除'); }
+function openFlexModal(i){
+  const arr=getFlex();
+  const r=i===null?{kind:'其他',name:'',clue:'',pos:'',filled:'',status:'待整理'}:arr[i];
+  const bg=document.getElementById('modalBg'); const m=document.getElementById('modal');
+  m.innerHTML=`
+    <h2>${i===null?'新增其他发现':'编辑其他发现'}</h2>
+    <label>发现类型</label>
+    <select id="fKind">
+      <option ${r.kind==='其他纱线/材料'?'selected':''}>其他纱线/材料</option>
+      <option ${r.kind==='设备'?'selected':''}>设备</option>
+      <option ${r.kind==='检测机构/测试'?'selected':''}>检测机构/测试</option>
+      <option ${r.kind==='工艺/技术'?'selected':''}>工艺/技术</option>
+      <option ${r.kind==='品牌/应用'?'selected':''}>品牌/应用</option>
+      <option ${r.kind==='其他'?'selected':''}>其他</option>
+    </select>
+    <label>名称</label><input id="fName" value="${esc(r.name)}" placeholder="公司名 / 设备名 / 技术名">
+    <label>现场线索</label><textarea id="fClue" placeholder="为什么觉得值得记？看到了什么？">${esc(r.clue)}</textarea>
+    <label>位置 / 联系人</label><input id="fPos" value="${esc(r.pos)}" placeholder="展位、联系人、电话或名片">
+    <label>晚上补充</label><textarea id="fFilled" placeholder="后续查什么、是否转成跟进事项">${esc(r.filled)}</textarea>
+    <label>状态</label><select id="fStatus"><option ${r.status==='待整理'?'selected':''}>待整理</option><option ${r.status==='值得跟进'?'selected':''}>值得跟进</option><option ${r.status==='仅记录'?'selected':''}>仅记录</option></select>
+    <div class="btn-row"><button class="btn-ghost" onclick="closeModal()">取消</button><button class="btn-primary" onclick="saveFlexModal(${i===null?'null':i})">保存</button></div>`;
+  bg.className='modal-bg on';
+}
+function saveFlexModal(i){
+  const arr=getFlex();
+  const obj={kind:document.getElementById('fKind').value,name:document.getElementById('fName').value,clue:document.getElementById('fClue').value,pos:document.getElementById('fPos').value,filled:document.getElementById('fFilled').value,status:document.getElementById('fStatus').value,time:new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})};
+  if(i===null) arr.unshift(obj); else arr[i]={...arr[i],...obj};
+  setFlex(arr); renderFlexSection(); closeModal(); toast('已保存');
+}
+function delRecord(i){
+  const rs=getRecords(); rs.splice(i,1); setRecords(rs); renderRecords(); toast('已删除');
+}
+function openModal(i,presetLine){
+  const rs=getRecords();
+  const r = (i!==undefined)?rs[i]:{name:'',line:presetLine||'',clue:'',filled:''};
+  const currentLine=r.line||presetLine||'';
+  const bg=document.getElementById('modalBg'); const m=document.getElementById('modal');
+  m.innerHTML = `
+    <h2>${i!==undefined?'编辑记录':'新增记录'}</h2>
+    <label>展商名（可空，当场来不及填）</label>
+    <input id="mName" value="${(r.name||'').replace(/"/g,'&quot;')}" placeholder="如：百宏聚纤">
+    <label>所属线（可选）</label>
+    <select id="mLine">
+      <option value="">——</option>
+      <option ${currentLine==='第〇线·市场扫描'?'selected':''}>第〇线·市场扫描</option>
+      <option ${currentLine==='效果纱'?'selected':''}>效果纱</option>
+      <option ${currentLine==='骨架纱'?'selected':''}>骨架纱</option>
+      <option ${currentLine==='超轻纱'?'selected':''}>超轻纱</option>
+      <option ${currentLine==='TPEE单丝二供'?'selected':''}>TPEE单丝二供</option>
+      <option ${currentLine==='高性能/未来'?'selected':''}>高性能/未来</option>
+      <option ${currentLine==='环保差异化'?'selected':''}>环保差异化</option>
+      <option ${currentLine==='其他'?'selected':''}>其他</option>
+    </select>
+    <label>现场线索（当场记）</label>
+    <textarea id="mClue" placeholder="拿了什么/卖点/一句话判断">${(r.clue||'').replace(/</g,'&lt;')}</textarea>
+    <label>补充整理（晚上回填）</label>
+    <textarea id="mFilled" placeholder="回程路上补：规格、报价、判断">${(r.filled||'').replace(/</g,'&lt;')}</textarea>
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn-primary" onclick="saveModal(${i!==undefined?i:'null'})">保存</button>
+    </div>`;
+  bg.className='modal-bg on';
+}
+function closeModal(){ document.getElementById('modalBg').className='modal-bg'; }
+function saveModal(i){
+  const name=document.getElementById('mName').value;
+  const line=document.getElementById('mLine').value;
+  const clue=document.getElementById('mClue').value;
+  const filled=document.getElementById('mFilled').value;
+  const rs=getRecords();
+  const obj={name,line,clue,filled,time:new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})};
+  if(i===null){ rs.unshift(obj); } else { rs[i]={...rs[i],...obj}; }
+  setRecords(rs); renderRecords(); closeModal(); toast('已保存');
+}
+
+// ===== 复盘 =====
+function renderReview(){
+  const rs=getRecords(); const v=ensureVisit();
+  let doneCount=0; VISIT_DATA.forEach(d=>{ if((v[d.name]||{}).status==='走到')doneCount++; });
+  document.getElementById('reviewStats').innerHTML = `
+    <div class="stat"><div class="num" style="color:var(--green)">${doneCount}</div><div class="lab">已走访</div></div>
+    <div class="stat"><div class="num">${rs.length}</div><div class="lab">记录条数</div></div>`;
+  // 已走清单汇总
+  const doneArr = VISIT_DATA.filter(d=>(v[d.name]||{}).status==='走到');
+  let html = '<div class="group-title">已走访清单</div>';
+  doneArr.forEach(d=>{
+    const st=v[d.name]||{};
+    html += `<div class="ledger-item"><div class="ln">${d.name}</div>${st.note?`<div class="lr">${st.note.replace(/</g,'&lt;')}</div>`:'<div class="lr" style="color:#8a857b">（还没记，去记录区补）</div>'}</div>`;
+  });
+  if(!doneArr.length) html += '<div class="empty">还没勾选已走的展商</div>';
+  document.getElementById('reviewList').innerHTML = html;
+}
+
+// ===== 导出 =====
+function exportRecords(){
+  const rs=getRecords();
+  if(!rs.length){toast('还没有记录');return;}
+  download(JSON.stringify(rs,null,2), '走访记录.json');
+  toast('记录已导出');
+}
+function exportAll(){
+  const data={scan:getScan(), flex:getFlex(), visit:ensureVisit(), records:getRecords(), _meta:{exportTime:new Date().toISOString(), exhibitorTotal:VISIT_DATA.length}};
+  download(JSON.stringify(data,null,2), '纱线展走访全量.json');
+  toast('全量已导出');
+}
+function exportCSV(){
+  const v=ensureVisit(); const rs=getRecords();
+  let csv='\uFEFF展商名,英文名,分类,状态,位置/原因,现场记录\n';
+  VISIT_DATA.forEach(d=>{
+    const st=v[d.name]||{};
+    csv += `${csvCell(d.name)},${csvCell(d.en)},${csvCell(d.cat)},${csvCell(st.status)},${csvCell(st.pos||'')},${csvCell(st.note||'')}\n`;
+  });
+  const scan=getScan();
+  csv += `\n\n第〇线市场扫描\n状态,找到的展商/线索/关键词,位置或联系人,晚上补充判断\n${csvCell(scan.status)},${csvCell(scan.clue)},${csvCell(scan.pos)},${csvCell(scan.filled)}\n`;
+  csv += '\n其他发现\n时间,类型,名称,现场线索,位置/联系人,晚上补充,状态\n';
+  getFlex().forEach(r=>{ csv += `${csvCell(r.time||'')},${csvCell(r.kind||'')},${csvCell(r.name||'')},${csvCell(r.clue||'')},${csvCell(r.pos||'')},${csvCell(r.filled||'')},${csvCell(r.status||'')}\n`; });
+  csv += '\n记录区\n时间,展商名,线,现场线索,补充整理\n';
+  rs.forEach(r=>{ csv += `${csvCell(r.time||'')},${csvCell(r.name||'')},${csvCell(r.line||'')},${csvCell(r.clue||'')},${csvCell(r.filled||'')}\n`; });
+  download(csv, '纱线展走访.csv');
+  toast('CSV 已导出');
+}
+function csvCell(s){ return '"'+(s||'').replace(/"/g,'""')+'"'; }
+function download(content, filename){
+  const blob=new Blob([content],{type:'application/octet-stream'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
+}
+
+// ===== 导航 =====
+document.querySelectorAll('nav button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.className='');
+    b.className='on';
+    document.querySelectorAll('.section').forEach(s=>s.className='section');
+    document.getElementById(b.dataset.t==='visit'?'visit':b.dataset.t==='record'?'record':'review').className='section on';
+    if(b.dataset.t==='record') renderRecords();
+    if(b.dataset.t==='review') renderReview();
+  });
+});
+
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block';
+  clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',1600);
+}
+
+// init
+ensureVisit(); renderVisit(); renderRecords(); renderReview();
+</script>
+</body>
+</html>
