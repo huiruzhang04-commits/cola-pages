@@ -66,7 +66,7 @@ main{padding:14px 16px 40px;}
 <body>
 <header>
   <h1>上海纱线展 · 走访工作台</h1>
-  <div class="sub">8.2 馆 · 效果纱 / 骨架纱 / 超轻 / 材料协同 / 高性能 / 环保 六条线</div>
+  <div class="sub">8.2 馆 · 当前候选 38 家 · 官方名录已命中 38/38 · 展位号与具体产品现场确认</div>
   <nav>
     <button data-t="visit" class="on">走访清单</button>
     <button data-t="record">记录区</button>
@@ -78,6 +78,14 @@ main{padding:14px 16px 40px;}
   <!-- 走访清单 -->
   <div id="visit" class="section on">
     <div class="stats" id="visitStats"></div>
+    <div class="item" style="background:#f7efe0;border-color:#c9a96e;margin-bottom:12px;">
+      <div class="row-top">
+        <div class="name" style="color:#8a6d2b;">今天怎么用这张清单</div>
+        <div class="status-tag" style="background:#e3f0e8;color:#4a8f6b;">38/38 名录命中</div>
+      </div>
+      <div class="meta" style="color:#6b5f45;margin-top:8px;">名单中的 38 家都能在官方 2026 展商名录中找到。官方名录没有具体展位号；产品牌号、成品纱/单丝形态、供货状态也没有在名录中确认，现场必须问到规格、样品或联系人，才能记为“值得跟进”。</div>
+      <div class="meta" style="color:#6b5f45;">现场判断：问得到具体产品和规格 = 值得跟进；只能讲材料概念 = 仅作对标；不在做目标产品 = 暂不跟进。</div>
+    </div>
     <div id="scanCard"></div>
     <div id="flexSection"></div>
     <div class="toolbar" style="align-items:center;">
@@ -87,7 +95,7 @@ main{padding:14px 16px 40px;}
         <option value="效果纱">效果纱</option>
         <option value="骨架纱">骨架纱</option>
         <option value="超轻">超轻纱</option>
-        <option value="TPEE单丝二供">TPEE单丝二供</option>
+        <option value="材料协同">未发泡单丝/材料协同</option>
         <option value="未来对标">高性能/未来</option>
         <option value="环保">环保差异化</option>
       </select>
@@ -137,14 +145,14 @@ const LS_RECORD = 'yarnexpo_record_v1';
 const LS_SCAN = 'yarnexpo_scan_v1';
 const LS_FLEX = 'yarnexpo_flex_v1';
 
-// ===== 走访数据：四条线 =====
+// ===== 走访数据：六条线，官方名录命中 38 家；具体产品与展位现场确认 =====
 const VISIT_DATA = [
   // ===== 线一：视觉效果 + 物性 =====
   {name:'东阳市恒光金银丝', en:'Hengguang', cat:'效果纱 · 金银丝', note:'问：亮丝截面/纤度，能否做运动鞋面低调质感的亮丝/钻石纱'},
   {name:'东阳市华富金银丝', en:'Huafu', cat:'效果纱 · 金银丝', note:'同上，备选'},
   {name:'东阳市晶日金银丝', en:'Jingri', cat:'效果纱 · 金银丝', note:'同上，备选'},
   {name:'上海银之川金银线', en:'Silver River', cat:'效果纱 · 金银线', note:'问亮丝规格、物性（耐磨/耐水洗）'},
-  {name:'秀川金银线（浙江）', en:'Xiuchuan', cat:'效果纱 · 金银线', note:'备选'},
+  {name:'绣川金银线（浙江）', en:'Xiuchuan', cat:'效果纱 · 金银线', note:'备选；官方名录名称为“绣川”，现场以展位实牌为准'},
   {name:'晋江市豪顺金银线织造', en:'Haoshun', cat:'效果纱 · 金银线', note:'福建本土，就近'},
   {name:'杭州恒牛花式丝', en:'Hengniu Fancy', cat:'效果纱 · 花式丝', note:'花式/效果纱，看视觉+物性组合'},
   {name:'杭州宏京泰花色纱', en:'Hongjingtai', cat:'效果纱 · 花色纱', note:'同上'},
@@ -164,11 +172,11 @@ const VISIT_DATA = [
   {name:'浙江恒逸石化', en:'Hengyi Petrochemical', cat:'超轻 · 涤纶龙头', note:'细旦丝/高性能尼龙'},
   {name:'新凤鸣集团湖州中石', en:'Xinfengming Huzhou', cat:'超轻 · 涤纶龙头', note:''},
   {name:'厦门翔鹭化纤股份', en:'Xianglu Chemical', cat:'超轻 · 涤纶龙头', note:''},
-  // ===== 线四：TPEE 单丝 ✓外购 → 找二供（未发泡普通单丝，不是发泡纱）=====
-  {name:'华峰化学股份', en:'Huafon Chemical', cat:'TPEE单丝二供 · 氨纶/TPU', note:'华峰有TPU业务，问能否供未发泡TPEE/TPU单丝'},
-  {name:'泰和新材集团', en:'Tayho Advanced', cat:'TPEE单丝二供 · 氨纶', note:'氨纶+芳纶，问TPEE/TPU弹性单丝'},
-  {name:'埃万特集团', en:'Avient', cat:'TPEE单丝二供 · 特种材料', note:'原PolyOne，问TPEE/TPU工程塑料单丝'},
-  {name:'神舟纤维科技（昆山）', en:'Asiatic Fiber', cat:'TPEE单丝二供 · 高性能纤维', note:'台资高性能纤维，问TPEE/TPU单丝'},
+  // ===== 线四：材料协同（未发泡单丝候选，不能预设为二供）=====
+  {name:'华峰化学股份', en:'Huafon Chemical', cat:'材料协同 · TPU/TPEE候选', note:'官方名录已确认；公开资料未证明成品TPEE/TPU单丝，现场先问：成品单丝还是树脂粒料？'},
+  {name:'泰和新材集团', en:'Tayho Advanced', cat:'材料协同 · 弹性材料候选', note:'官方名录已确认；不能预设有TPEE单丝，现场问成品单丝、树脂或其他弹性纱线，以及样品状态'},
+  {name:'埃万特集团', en:'Avient', cat:'材料协同 · 工程材料候选', note:'官方名录已确认；公开资料更偏工程材料/纤维方案，现场确认是否有成品单丝及纺丝供应'},
+  {name:'神舟纤维科技（昆山）', en:'Asiatic Fiber', cat:'材料协同 · 高性能纤维候选', note:'官方名录已确认；现场确认是否有TPEE/TPU单丝，不能把高性能纤维身份当成二供证据'},
   // ===== 线五：发泡纱未来/减震吸能对标（高性能纤维）=====
   {name:'杭州高烯科技', en:'Gaoxi Technology', cat:'未来对标 · 高性能纤维', note:'石墨烯機能纱，问减震数据怎么来'},
   {name:'江苏先诺新材料', en:'Shino New Material', cat:'未来对标 · 高性能纤维', note:''},
@@ -389,7 +397,7 @@ function openModal(i,presetLine){
       <option ${currentLine==='效果纱'?'selected':''}>效果纱</option>
       <option ${currentLine==='骨架纱'?'selected':''}>骨架纱</option>
       <option ${currentLine==='超轻纱'?'selected':''}>超轻纱</option>
-      <option ${currentLine==='TPEE单丝二供'?'selected':''}>TPEE单丝二供</option>
+      <option ${currentLine==='材料协同'?'selected':''}>未发泡单丝/材料协同</option>
       <option ${currentLine==='高性能/未来'?'selected':''}>高性能/未来</option>
       <option ${currentLine==='环保差异化'?'selected':''}>环保差异化</option>
       <option ${currentLine==='其他'?'selected':''}>其他</option>
